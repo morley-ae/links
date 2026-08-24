@@ -42,22 +42,19 @@
         body::after {
             content: '';
             position: fixed;
-            inset: -30%;
+            inset: -8%;
             pointer-events: none;
             z-index: 0;
             opacity: 0.7;
-            filter: blur(46px);
-            background: linear-gradient(120deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.08), rgba(14, 116, 144, 0.18), rgba(0, 242, 254, 0.04));
-            background-size: 240% 240%;
-            animation: ambient-gradient 24s ease-in-out infinite alternate;
+            filter: blur(22px);
+            background: radial-gradient(circle at 18% 18%, rgba(0, 242, 254, 0.18), transparent 34%), radial-gradient(circle at 84% 28%, rgba(79, 172, 254, 0.14), transparent 38%), linear-gradient(145deg, #050b14 0%, #071b2b 52%, #062d38 100%);
         }
         body::after {
             opacity: 0.35;
-            background: linear-gradient(300deg, rgba(56, 189, 248, 0.16), transparent 42%, rgba(20, 184, 166, 0.15));
-            background-size: 220% 220%;
-            animation: ambient-gradient-reverse 32s ease-in-out infinite alternate;
+            background: radial-gradient(circle at 72% 76%, rgba(20, 184, 166, 0.16), transparent 34%), radial-gradient(circle at 28% 86%, rgba(56, 189, 248, 0.1), transparent 36%);
         }
-        main, footer { position: relative; z-index: 1; }
+        main { position: relative; z-index: 1; padding-bottom: 10rem !important; }
+        footer { position: relative; z-index: 1; }
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -73,8 +70,8 @@
         }
         .glass-panel {
             background: rgba(10, 22, 40, 0.7);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(30, 58, 96, 0.5);
         }
         @keyframes float {
@@ -128,6 +125,21 @@
             0% { opacity: 0; transform: translateY(28px); }
             100% { opacity: 1; transform: translateY(0); }
         }
+        @keyframes about-orbit {
+            0%, 100% { transform: rotate(-4deg) translateY(0); }
+            50% { transform: rotate(4deg) translateY(-10px); }
+        }
+        @keyframes about-line {
+            0% { transform: scaleX(0); transform-origin: left; opacity: 0; }
+            100% { transform: scaleX(1); transform-origin: left; opacity: 1; }
+        }
+        .about-line { animation: about-line 900ms 320ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .faq-item { animation: build-item 700ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .faq-answer { animation: faq-open 260ms ease-out both; }
+        @keyframes faq-open {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
         @keyframes build-item {
             0% { opacity: 0; transform: translateY(20px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -145,7 +157,7 @@
         .view-enter > *:nth-child(2) { animation-delay: 180ms; }
         .view-enter > *:nth-child(3) { animation-delay: 360ms; }
         .view-enter > *:nth-child(4) { animation-delay: 540ms; }
-        .initial-build { animation: initial-build 1800ms ease-out forwards; }
+        .initial-build { animation: initial-build 900ms ease-out forwards; }
         .animate-float {
             animation: float 5s ease-in-out infinite;
         }
@@ -187,7 +199,7 @@
         <div class="text-center space-y-4">
             <div class="space-y-2">
                 <p class="text-sm font-bold tracking-[0.25em] text-white uppercase">morley.ae</p>
-                <div class="h-1 w-40 overflow-hidden rounded-full bg-slate-800 mx-auto"><div class="h-full bg-neon-blue" style="animation: loading-progress 1800ms linear forwards;"></div></div>
+                <div class="h-1 w-40 overflow-hidden rounded-full bg-slate-800 mx-auto"><div class="h-full bg-neon-blue" style="animation: loading-progress 900ms linear forwards;"></div></div>
             </div>
         </div>
     </div>
@@ -338,6 +350,19 @@
                     </div>
                 </a>
 
+                <h2 class="px-1 pt-5 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">About Me</h2>
+                <div onclick="switchView('about')" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform">
+                                <i data-lucide="user-round" aria-hidden="true" class="w-7 h-7"></i>
+                            </div>
+                            <div><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">About Me</h3></div>
+                        </div>
+                        <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">About Me</span>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -379,6 +404,58 @@
             </button>
             <div id="productDetailCategories" class="hidden text-center" aria-label="Product categories"></div>
             <div id="productDetailContent"></div>
+        </section>
+
+        <section id="aboutView" class="hidden space-y-6">
+            <button type="button" onclick="switchView('home')" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 text-base font-semibold text-slate-300 hover:border-neon-blue/50 hover:text-neon-blue transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i><span>Back to links</span>
+            </button>
+            <div class="relative overflow-hidden rounded-3xl border border-neon-blue/40 bg-[#0a1628]/80 p-6 shadow-glow-lg sm:p-10">
+                <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border border-neon-blue/20 bg-neon-blue/10 blur-2xl"></div>
+                <div class="relative grid gap-10 md:grid-cols-[.8fr_1.2fr] md:items-center">
+                    <div class="text-center md:text-left">
+                        <div class="mx-auto flex h-44 w-44 items-center justify-center rounded-full border-2 border-neon-blue/50 bg-neon-blue/10 shadow-glow-lg animate-float md:mx-0">
+                            <img src="image_0.png" alt="Your profile picture" class="h-36 w-36 rounded-full object-cover">
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold uppercase tracking-[0.25em] text-neon-blue">About me</p>
+                        <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">FAQ</h2>
+                        <div class="mt-5 h-1 w-24 rounded-full bg-neon-blue about-line"></div>
+                        <div class="mt-7 space-y-3">
+                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:420ms">
+                                <button type="button" onclick="toggleAccordion('aboutFaqSoftware')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqSoftware">
+                                    <span>What software do I use?</span><i id="icon-aboutFaqSoftware" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
+                                </button>
+                                <div id="aboutFaqSoftware" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">For normal editing → Adobe After Effects<br>For Scenepacks → Adobe Premiere Pro<br>For Quality enhancement → Topaz Video AI</div>
+                            </div>
+                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:520ms">
+                                <button type="button" onclick="toggleAccordion('aboutFaqCreator')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqCreator">
+                                    <span>Who am I?</span><i id="icon-aboutFaqCreator" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
+                                </button>
+                                <div id="aboutFaqCreator" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">Just call me morley :)</div>
+                            </div>
+                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:620ms">
+                                <button type="button" onclick="toggleAccordion('aboutFaqInspiration')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqInspiration">
+                                    <span>When did I start editing?</span><i id="icon-aboutFaqInspiration" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
+                                </button>
+                                <div id="aboutFaqInspiration" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">Started with CapCut → 2023<br>Switched to After Effects → April 2024</div>
+                            </div>
+                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:720ms">
+                                <button type="button" onclick="toggleAccordion('aboutFaqCommunity')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqCommunity">
+                                    <span>How can I reach out to you?</span><i id="icon-aboutFaqCommunity" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
+                                </button>
+                                <div id="aboutFaqCommunity" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">DM me on Discord → morley.ae<br>DM me on TikTok → morley.ae</div>
+                            </div>
+                        </div>
+                        <div class="mt-8 flex flex-wrap gap-3 text-xs font-bold uppercase tracking-wider text-slate-300">
+                            <span class="rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-2">Editor</span>
+                            <span class="rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-2">Scenepack creator</span>
+                            <span class="rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-2">Audio Creator</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <div id="cartView" class="hidden fixed inset-0 z-30 flex items-start justify-center bg-black/75 px-4 py-24" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
@@ -434,12 +511,14 @@
                 const navScenepacksBtn = document.getElementById('navScenepacksBtn');
                 const scenepacksView = document.getElementById('scenepacksView');
                 const productDetailView = document.getElementById('productDetailView');
+                    const aboutView = document.getElementById('aboutView');
             let activeView;
 
             homeView.classList.add('hidden');
             presetsView.classList.add('hidden');
             scenepacksView.classList.add('hidden');
             productDetailView.classList.add('hidden');
+            aboutView.classList.add('hidden');
 
             navHomeBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
             navPresetsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
@@ -466,6 +545,10 @@
                 productDetailView.classList.remove('hidden');
                 activeView = productDetailView;
                 renderProductDetail(window.location.hash.split('/')[1]);
+            } else if (view === 'about') {
+                aboutView.classList.remove('hidden');
+                activeView = aboutView;
+                window.history.pushState({}, '', '#about');
             }
             if (activeView) {
                 activeView.classList.remove('view-enter');
@@ -476,9 +559,20 @@
                     const detailView = document.getElementById('productDetailView');
                     window.scrollTo(0, Math.max(0, detailView.offsetTop - 16));
                 }, 120);
+            } else if (view === 'presets' || view === 'scenepacks' || view === 'about') {
+                scrollPastProfile(activeView);
             } else {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+        }
+
+        function scrollPastProfile(viewElement) {
+            window.setTimeout(() => {
+                const targetView = viewElement || document.getElementById('presetsView');
+                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const target = Math.min(maxScroll, Math.max(0, targetView.offsetTop - 20));
+                window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
+            }, 80);
         }
 
         document.addEventListener('click', event => {
@@ -498,6 +592,8 @@
                 switchView('presets');
             } else if (hash === '#scenepacks') {
                 switchView('scenepacks');
+            } else if (hash === '#about') {
+                switchView('about');
             } else {
                 switchView('home');
             }
@@ -509,12 +605,16 @@
         function toggleAccordion(id) {
             const el = document.getElementById(id);
             const icon = document.getElementById('icon-' + id);
+            const button = document.querySelector(`[aria-controls="${id}"]`);
             if (el.classList.contains('hidden')) {
                 el.classList.remove('hidden');
+                el.classList.add('faq-answer');
                 if (icon) icon.style.transform = 'rotate(180deg)';
+                if (button) button.setAttribute('aria-expanded', 'true');
             } else {
                 el.classList.add('hidden');
                 if (icon) icon.style.transform = 'rotate(0deg)';
+                if (button) button.setAttribute('aria-expanded', 'false');
             }
         }
 
@@ -887,6 +987,7 @@
         function goBackToShop() {
             const product = getStoredPresets().find(item => String(item.id) === window.location.hash.split('/')[1]);
             switchView(product && product.type === 'scenepack' ? 'scenepacks' : 'presets');
+            window.setTimeout(() => window.scrollTo({ top: 400, behavior: 'auto' }), 140);
         }
 
         function closeDownloadGate() {
