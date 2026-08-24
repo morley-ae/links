@@ -22,6 +22,31 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
+        "id": 1787587276330,
+        "title": "TEST",
+        "desc": "test1",
+        "price": "10€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/bellamy%20s1%20best%20scenes.jpg",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/bellamy%20s1%20best%20scenes.jpg"
+            }
+        ],
+        "categories": [],
+        "presetCategories": [
+            "Packs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/bellamy%20s1%20best%20scenes.jpg"
+        ],
+        "details": "",
+        "type": "preset",
+        "payhip": "Vt5VC"
+    },
+    {
         "id": 1787579517348,
         "title": "CC 1",
         "desc": "Description",
@@ -102,5 +127,19 @@ window.PRODUCTS_DATA = [
         "details": "details here",
         "type": "preset",
         "payhip": "Vt5WC"
+    }
+];
+window.SALES_DATA = [
+    {
+        "id": "sale-1787588404317",
+        "name": "NEW TEST SALE",
+        "code": "TEST123",
+        "discountType": "percent",
+        "discountValue": 25,
+        "startsAt": "2026-08-24T16:27:00.000Z",
+        "endsAt": "2026-08-24T16:29:00.000Z",
+        "productIds": [
+            1787587276330
+        ]
     }
 ];

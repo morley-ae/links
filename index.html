@@ -46,16 +46,16 @@
             pointer-events: none;
             z-index: 0;
             opacity: 0.7;
-            filter: blur(30px);
+            filter: blur(46px);
             background: linear-gradient(120deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.08), rgba(14, 116, 144, 0.18), rgba(0, 242, 254, 0.04));
             background-size: 240% 240%;
-            animation: ambient-gradient 18s ease-in-out infinite alternate;
+            animation: ambient-gradient 24s ease-in-out infinite alternate;
         }
         body::after {
             opacity: 0.35;
             background: linear-gradient(300deg, rgba(56, 189, 248, 0.16), transparent 42%, rgba(20, 184, 166, 0.15));
             background-size: 220% 220%;
-            animation: ambient-gradient-reverse 24s ease-in-out infinite alternate;
+            animation: ambient-gradient-reverse 32s ease-in-out infinite alternate;
         }
         main, footer { position: relative; z-index: 1; }
         ::-webkit-scrollbar {
@@ -136,6 +136,10 @@
             0%, 18% { opacity: 1; }
             100% { opacity: 0; visibility: hidden; pointer-events: none; }
         }
+        @keyframes loading-progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
         .view-enter { animation: view-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .view-enter > * { animation: build-item 800ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .view-enter > *:nth-child(2) { animation-delay: 180ms; }
@@ -181,18 +185,12 @@
 
     <div id="initialBuild" class="initial-build fixed inset-0 z-50 flex items-center justify-center bg-[#050b14]">
         <div class="text-center space-y-4">
-            <div class="mx-auto w-14 h-14 rounded-2xl border border-neon-blue/50 bg-neon-blue/10 flex items-center justify-center shadow-glow-lg animate-pulse">
-                <span class="text-xl font-black italic text-neon-blue">AE</span>
-            </div>
             <div class="space-y-2">
                 <p class="text-sm font-bold tracking-[0.25em] text-white uppercase">morley.ae</p>
-                <div class="h-1 w-32 overflow-hidden rounded-full bg-slate-800 mx-auto"><div class="h-full w-1/2 bg-neon-blue animate-pulse"></div></div>
+                <div class="h-1 w-40 overflow-hidden rounded-full bg-slate-800 mx-auto"><div class="h-full bg-neon-blue" style="animation: loading-progress 1800ms linear forwards;"></div></div>
             </div>
         </div>
     </div>
-
-    <!-- Ambient Background -->
-    <div class="fixed inset-0 pointer-events-none opacity-20" style="background-image: linear-gradient(rgba(148,163,184,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.08) 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(to bottom, black, transparent 85%);"></div>
 
     <!-- Main Content Container -->
     <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-12 relative z-10">
@@ -258,7 +256,7 @@
                                 <span class="text-sm font-black tracking-tight text-neon-blue">AE</span>
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">Editing Presets - morley.ae</h3>
+                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">My Editing Presets</h3>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
@@ -277,7 +275,7 @@
                                 <i data-lucide="clapperboard" aria-hidden="true" class="w-7 h-7"></i>
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">Scenepacks - morley.ae</h3>
+                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">My Scenepacks</h3>
                             </div>
                         </div>
                         <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">View Packs</span>
@@ -292,7 +290,7 @@
                                 <img src="https://cdn.simpleicons.org/tiktok/00f2fe" alt="TikTok" class="w-7 h-7 object-contain">
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">EndlessAudios™ - TikTok</h3>
+                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">EndlessAudios™</h3>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
@@ -310,7 +308,7 @@
                                 <img src="https://cdn.simpleicons.org/tiktok/00f2fe" alt="TikTok" class="w-7 h-7 object-contain">
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">morley.ae - TikTok</h3>
+                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">morley.ae</h3>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
@@ -329,7 +327,7 @@
                                 <img src="https://cdn.simpleicons.org/instagram/00f2fe" alt="Instagram" class="w-7 h-7 object-contain">
                             </div>
                             <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">Morley.ae - Instagram</h3>
+                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">morley.ae</h3>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
@@ -354,6 +352,7 @@
             </div>
 
             <div id="presetCategories" class="flex flex-wrap justify-center gap-2" aria-label="Preset categories"></div>
+            <p id="presetScrollHint" class="hidden text-center text-xs font-bold uppercase tracking-[0.2em] text-slate-500"><i data-lucide="chevrons-down" class="mr-1 inline-block h-4 w-4 align-middle"></i>Scroll to explore more presets</p>
             <div id="presetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Dynamically populated via JS -->
             </div>
@@ -364,11 +363,12 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h2 class="text-3xl font-extrabold text-white">Scenepacks</h2>
-                    <p class="text-slate-400 text-sm">Complete scenes and motion assets for your next edit.</p>
+                    <p class="text-slate-400 text-sm">Explore all my Scenepacks here.</p>
                 </div>
                 <button type="button" onclick="switchView('home')" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 text-base font-semibold text-slate-300 hover:border-neon-blue/50 hover:text-neon-blue transition-colors"><i data-lucide="arrow-left" class="w-5 h-5"></i>Links</button>
             </div>
             <div id="scenepackCategories" class="space-y-3" aria-label="Scenepack categories"></div>
+            <p id="scenepackScrollHint" class="hidden text-center text-xs font-bold uppercase tracking-[0.2em] text-slate-500"><i data-lucide="chevrons-down" class="mr-1 inline-block h-4 w-4 align-middle"></i>Scroll to explore more scenepacks</p>
             <div id="scenepackGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
         </section>
 
@@ -412,129 +412,6 @@
             </div>
         </div>
 
-        <!-- ================= SECTION 4: LOGIN / ADMIN PANEL (`/login`) ================= -->
-        <section id="loginView" class="hidden space-y-8 max-w-2xl mx-auto py-12">
-            <!-- Login Form (wenn nicht eingeloggt) -->
-            <div id="loginCard" class="glass-panel rounded-2xl p-6 border border-neon-blue/40 shadow-glow-lg space-y-6 max-w-md mx-auto">
-                <div class="text-center space-y-2">
-                    <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue mx-auto">
-                        <i data-lucide="lock" class="w-6 h-6"></i>
-                    </div>
-                    <h2 id="authTitle" class="text-2xl font-extrabold text-white">Admin Login</h2>
-                    <p id="authDescription" class="text-xs text-slate-400">Enter your password to access the admin dashboard.</p>
-                </div>
-                <form onsubmit="handleLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
-                        <input type="password" id="adminPasswordInput" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="Enter password...">
-                    </div>
-                    <div id="confirmPasswordField" class="hidden">
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Confirm password</label>
-                        <input type="password" id="adminPasswordConfirm" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="Repeat password...">
-                    </div>
-                    <p id="authStatus" class="hidden text-xs text-red-400"></p>
-                    <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light text-black text-xs font-bold shadow-glow hover:opacity-90 transition-all">
-                        <span id="authButtonText">Login</span>
-                    </button>
-                </form>
-            </div>
-
-            <!-- Admin Dashboard (wenn eingeloggt) -->
-            <div id="adminDashboard" class="hidden glass-panel rounded-2xl p-6 border border-neon-blue/40 shadow-glow-lg space-y-8">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                    <div class="flex items-center space-x-2">
-                        <i data-lucide="shield-check" class="w-5 h-5 text-neon-blue"></i>
-                        <h3 class="font-bold text-lg text-white">Admin Dashboard</h3>
-                    </div>
-                    <button onclick="handleLogout()" class="px-3 py-1.5 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 text-xs font-semibold transition-colors">
-                        Logout
-                    </button>
-                </div>
-
-                <!-- Form zum Hinzufügen / Bearbeiten von Presets mit Preview -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <!-- Form Inputs -->
-                    <form id="presetForm" onsubmit="handlePresetSubmit(event)" class="space-y-4">
-                        <input type="hidden" id="pEditingId" value="">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-sm font-bold text-neon-blue" id="formTitleText">Add New Product</h4>
-                            <button type="button" id="cancelEditBtn" onclick="resetPresetForm()" class="hidden text-xs text-slate-400 hover:text-white underline">Cancel Edit</button>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Product type</label>
-                            <select id="pType" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors">
-                                <option value="preset">Editing Preset</option>
-                                <option value="scenepack">Scene Pack</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Title</label>
-                            <input type="text" id="pTitle" oninput="updateLivePreview()" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="e.g. Cinematic Glow Pack v2">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Description</label>
-                            <textarea id="pDesc" rows="3" oninput="updateLivePreview()" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="Detailed info about the preset..."></textarea>
-                        </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Price</label>
-                                <input type="text" id="pPrice" oninput="updateLivePreview()" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="e.g. $9.99">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1">Payhip Checkout Link</label>
-                                <input type="text" id="pPayhip" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="Payhip ID, z. B. Vt5WC">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Preview URLs from GitHub</label>
-                            <textarea id="pMediaUrls" rows="4" oninput="updateLivePreview()" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="https://raw.githubusercontent.com/username/repository/main/previews/product-01.jpg&#10;One direct URL per line"></textarea>
-                            <p id="mediaUploadStatus" class="mt-1 text-[10px] text-slate-500">Save preview files manually in GitHub's <strong>previews</strong> folder, then paste the direct raw URL for each file above. Permanent product data is maintained in <strong>products.js</strong>.</p>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Detailed product information</label>
-                            <textarea id="pDetails" rows="4" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="What is included, requirements, formats..."></textarea>
-                        </div>
-                        <button type="submit" id="savePresetBtn" class="w-full py-3 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light text-black text-xs font-bold shadow-glow hover:opacity-90 transition-all">
-                            Publish Product
-                        </button>
-                    </form>
-
-                    <!-- Live Preview Container -->
-                    <div class="space-y-3">
-                        <h4 class="text-sm font-bold text-neon-blue flex items-center justify-between">
-                            <span>Live Preview</span>
-                            <span class="text-[10px] bg-neon-blue/10 text-neon-blue px-2 py-0.5 rounded border border-neon-blue/30">Before publishing</span>
-                        </h4>
-                        <div id="livePreviewCard" class="glass-panel rounded-2xl overflow-hidden border border-neon-border/40 transition-all duration-300 flex flex-col group opacity-80 pointer-events-none">
-                            <div class="relative aspect-square overflow-hidden bg-slate-900">
-                                <img id="prevImage" src="https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80" alt="Preview" class="w-full h-full object-contain">
-                                <div id="prevPriceTag" class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-neon-blue text-xs font-bold shadow-glow">
-                                    $9.99
-                                </div>
-                            </div>
-                            <div class="p-4 flex flex-col flex-grow space-y-2">
-                                <h3 id="prevTitle" class="font-bold text-base text-white">Product Title</h3>
-                                <p id="prevDesc" class="text-xs text-slate-400 flex-grow leading-relaxed">Product description will appear here...</p>
-                                <div class="pt-2">
-                                    <div class="w-full py-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light text-black text-xs font-bold text-center">
-                                        Buy Now
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Product Management List -->
-                <div class="border-t border-slate-800 pt-6 space-y-4">
-                    <h4 class="text-sm font-bold text-white">Manage Existing Products</h4>
-                    <div id="adminProductList" class="space-y-3 max-h-64 overflow-y-auto pr-1">
-                        <!-- Populated via JS -->
-                    </div>
-                </div>
-            </div>
-        </section>
-
     </main>
 
     <!-- Footer -->
@@ -552,7 +429,6 @@
         function switchView(view) {
             const homeView = document.getElementById('homeView');
             const presetsView = document.getElementById('presetsView');
-            const loginView = document.getElementById('loginView');
             const navHomeBtn = document.getElementById('navHomeBtn');
                 const navPresetsBtn = document.getElementById('navPresetsBtn');
                 const navScenepacksBtn = document.getElementById('navScenepacksBtn');
@@ -564,7 +440,6 @@
             presetsView.classList.add('hidden');
             scenepacksView.classList.add('hidden');
             productDetailView.classList.add('hidden');
-            loginView.classList.add('hidden');
 
             navHomeBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
             navPresetsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
@@ -591,11 +466,6 @@
                 productDetailView.classList.remove('hidden');
                 activeView = productDetailView;
                 renderProductDetail(window.location.hash.split('/')[1]);
-            } else if (view === 'login') {
-                loginView.classList.remove('hidden');
-                activeView = loginView;
-                window.history.pushState({}, '', '#login');
-                checkAuthStatus();
             }
             if (activeView) {
                 activeView.classList.remove('view-enter');
@@ -619,79 +489,6 @@
             setTimeout(() => target.classList.remove('click-feedback'), 420);
         });
 
-        // Login & Auth Management
-        async function hashPassword(password, salt) {
-            const keyMaterial = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveBits']);
-            const buffer = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: new TextEncoder().encode(salt), iterations: 120000, hash: 'SHA-256' }, keyMaterial, 256);
-            return Array.from(new Uint8Array(buffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
-        }
-
-        function showAuthMessage(message) {
-            const status = document.getElementById('authStatus');
-            status.textContent = message;
-            status.classList.remove('hidden');
-        }
-
-        async function handleLogin(e) {
-            e.preventDefault();
-            const val = document.getElementById('adminPasswordInput').value;
-            const credentials = JSON.parse(localStorage.getItem('endless_admin_credentials') || 'null');
-            const confirmField = document.getElementById('confirmPasswordField');
-            if (!credentials) {
-                const confirmation = document.getElementById('adminPasswordConfirm').value;
-                if (val.length < 12) { showAuthMessage('Choose a password with at least 12 characters.'); return; }
-                if (val !== confirmation) { showAuthMessage('The passwords do not match.'); return; }
-                const salt = crypto.getRandomValues(new Uint8Array(16)).join('');
-                const hash = await hashPassword(val, salt);
-                localStorage.setItem('endless_admin_credentials', JSON.stringify({ salt, hash }));
-                sessionStorage.setItem('is_admin_logged_in', 'true');
-                checkAuthStatus();
-            } else {
-                const now = Date.now();
-                const attempts = JSON.parse(sessionStorage.getItem('endless_admin_attempts') || '{"count":0,"until":0}');
-                if (attempts.until > now) { showAuthMessage(`Too many attempts. Try again in ${Math.ceil((attempts.until - now) / 1000)} seconds.`); return; }
-                const hash = await hashPassword(val, credentials.salt);
-                if (hash === credentials.hash) {
-                    sessionStorage.removeItem('endless_admin_attempts');
-                    sessionStorage.setItem('is_admin_logged_in', 'true');
-                    checkAuthStatus();
-                } else {
-                    const count = attempts.count + 1;
-                    sessionStorage.setItem('endless_admin_attempts', JSON.stringify({ count, until: count >= 5 ? now + 30000 : 0 }));
-                    showAuthMessage('Incorrect password.');
-                }
-            }
-        }
-
-        function handleLogout() {
-            sessionStorage.removeItem('is_admin_logged_in');
-            checkAuthStatus();
-        }
-
-        function checkAuthStatus() {
-            const isLoggedIn = sessionStorage.getItem('is_admin_logged_in') === 'true';
-            const loginCard = document.getElementById('loginCard');
-            const adminDashboard = document.getElementById('adminDashboard');
-
-            if (isLoggedIn) {
-                loginCard.classList.add('hidden');
-                adminDashboard.classList.remove('hidden');
-                renderAdminProductList();
-                updateLivePreview();
-            } else {
-                loginCard.classList.remove('hidden');
-                adminDashboard.classList.add('hidden');
-                document.getElementById('adminPasswordInput').value = '';
-                const hasCredentials = Boolean(localStorage.getItem('endless_admin_credentials'));
-                document.getElementById('authTitle').textContent = hasCredentials ? 'Admin Login' : 'Create Admin Password';
-                document.getElementById('authDescription').textContent = hasCredentials ? 'Enter your password to access the admin dashboard.' : 'Set a strong password for this admin panel.';
-                document.getElementById('authButtonText').textContent = hasCredentials ? 'Login' : 'Create Admin Access';
-                document.getElementById('confirmPasswordField').classList.toggle('hidden', hasCredentials);
-                document.getElementById('adminPasswordConfirm').required = !hasCredentials;
-                document.getElementById('authStatus').classList.add('hidden');
-            }
-        }
-
         // URL Routing Handling
         function handleUrlRoute() {
             const hash = window.location.hash;
@@ -701,8 +498,6 @@
                 switchView('presets');
             } else if (hash === '#scenepacks') {
                 switchView('scenepacks');
-            } else if (hash === '#login') {
-                switchView('login');
             } else {
                 switchView('home');
             }
@@ -725,6 +520,58 @@
 
         function getStoredPresets() {
             return window.PRODUCTS_DATA || [];
+        }
+
+        function getStoredSales() {
+            return Array.isArray(window.SALES_DATA) ? window.SALES_DATA : [];
+        }
+
+        function getActiveSales() {
+            const now = Date.now();
+            return getStoredSales().filter(sale => {
+                const startsAt = sale.startsAt ? new Date(sale.startsAt).getTime() : 0;
+                const endsAt = sale.endsAt ? new Date(sale.endsAt).getTime() : Infinity;
+                return sale.productIds?.length && now >= startsAt && now <= endsAt;
+            });
+        }
+
+        function getSaleForProduct(product) {
+            if (!product || product.type === 'scenepack') return null;
+            return getActiveSales().find(sale => sale.productIds.map(String).includes(String(product.id))) || null;
+        }
+
+        function getNumericPrice(price) {
+            const match = String(price || '').match(/-?\d+(?:[.,]\d+)?/);
+            return match ? Number(match[0].replace(',', '.')) : null;
+        }
+
+        function getSalePrice(product, sale = getSaleForProduct(product)) {
+            const original = getNumericPrice(product?.price);
+            if (!sale || original === null) return null;
+            const value = Number(sale.discountValue);
+            if (!Number.isFinite(value) || value <= 0) return null;
+            const discount = sale.discountType === 'percent' ? original * Math.min(value, 100) / 100 : value;
+            return Math.max(0, original - discount);
+        }
+
+        function formatSalePrice(product, sale = getSaleForProduct(product)) {
+            const salePrice = getSalePrice(product, sale);
+            if (salePrice === null) return '';
+            const original = String(product.price);
+            const match = original.match(/(-?\d+(?:[.,]\d+)?)/);
+            if (!match) return `${salePrice.toFixed(2)}`;
+            const prefix = original.slice(0, match.index);
+            const suffix = original.slice(match.index + match[0].length);
+            const decimals = salePrice % 1 !== 0 || match[0].includes('.') || match[0].includes(',') ? 2 : 0;
+            const formatted = salePrice.toFixed(decimals).replace('.', match[0].includes(',') || suffix.includes('€') ? ',' : '.');
+            return `${prefix}${formatted}${suffix}`;
+        }
+
+        function renderPrice(product, className = 'text-neon-blue') {
+            const sale = getSaleForProduct(product);
+            const salePrice = formatSalePrice(product, sale);
+            if (!salePrice) return `<span class="${className}">${escapeHtml(product.price)}</span>`;
+            return `<span class="text-slate-500 line-through">${escapeHtml(product.price)}</span> <span class="text-lime-300">${escapeHtml(salePrice)}</span>`;
         }
 
         const CART_KEY = 'endless_product_cart';
@@ -815,7 +662,7 @@
                 requestAnimationFrame(() => cartButton.classList.add('cart-pop'));
             }
             status.textContent = products.length ? `${products.length} ${products.length === 1 ? 'item' : 'items'} · ${products[0].type === 'scenepack' ? 'Scenepacks' : 'Products'}` : 'Your cart is empty.';
-            items.innerHTML = products.length ? products.map((product, index) => `<div class="cart-item-enter flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-white/5 p-3" style="animation-delay:${index * 70}ms"><div class="min-w-0"><p class="truncate text-sm font-bold text-white">${escapeHtml(product.title)}</p><p class="text-xs text-neon-blue">${escapeHtml(product.price)}</p></div><button type="button" onclick="removeFromCart(${product.id})" class="shrink-0 text-xs font-semibold text-slate-400 hover:text-red-400">Remove</button></div>`).join('') : '<p class="rounded-xl border border-dashed border-slate-700 p-5 text-center text-sm text-slate-500">No products selected.</p>';
+            items.innerHTML = products.length ? products.map((product, index) => `<div class="cart-item-enter flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-white/5 p-3" style="animation-delay:${index * 70}ms"><div class="min-w-0"><p class="truncate text-sm font-bold text-white">${escapeHtml(product.title)}</p><p class="text-xs">${renderPrice(product)}</p></div><button type="button" onclick="removeFromCart(${product.id})" class="shrink-0 text-xs font-semibold text-slate-400 hover:text-red-400">Remove</button></div>`).join('') : '<p class="rounded-xl border border-dashed border-slate-700 p-5 text-center text-sm text-slate-500">No products selected.</p>';
             checkout.disabled = !products.length;
         }
 
@@ -994,6 +841,8 @@
                 return movieShowMatches && characterMatches;
             });
             renderCategoryFilters(type, activeCategory);
+            const scrollHint = document.getElementById(type === 'preset' ? 'presetScrollHint' : 'scenepackScrollHint');
+            if (scrollHint) scrollHint.classList.toggle('hidden', products.length <= 2);
             grid.innerHTML = products.length ? products.map((product, index) => productCard(product, index)).join('') : `<div class="md:col-span-2 glass-panel rounded-2xl p-8 text-center text-sm text-slate-500">No ${type === 'preset' ? 'presets' : 'scenepacks'} published yet.</div>`;
             lucide.createIcons();
             observeProductCards(grid);
@@ -1017,10 +866,11 @@
 
         function productCard(p, index = 0) {
             const media = getProductMedia(p)[0];
+            const sale = getSaleForProduct(p);
             const preview = media.type === 'video' ? `<video src="${media.src}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" muted></video>` : `<img src="${media.src}" alt="${p.title}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700">`;
             return `<article onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 hover:border-neon-blue/60 hover:shadow-glow transition-all duration-300 flex flex-col group cursor-pointer">
-                <div class="relative aspect-square overflow-hidden bg-slate-900">${preview}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-neon-blue text-xs font-bold shadow-glow">${p.price}</div><div class="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-black/60 text-[10px] text-slate-200">${getProductMedia(p).length} previews</div></div>
-                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${p.price}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button></div></div>
+                <div class="relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
+                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button></div></div>
             </article>`;
         }
 
@@ -1065,12 +915,14 @@
             const product = getStoredPresets().find(item => String(item.id) === String(id));
             const container = document.getElementById('productDetailContent');
             if (!product) { container.innerHTML = '<p class="text-slate-400">Product not found.</p>'; return; }
+            const sale = getSaleForProduct(product);
             const productMedia = getProductMedia(product);
             const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div><button type="button" onclick="changePresetPreview(-1)" aria-label="Previous preview" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-left" class="h-5 w-5"></i></button><button type="button" onclick="changePresetPreview(1)" aria-label="Next preview" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-right" class="h-5 w-5"></i></button></div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" controls class="w-full aspect-square object-contain rounded-xl bg-black"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
-            const action = `<div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${product.price}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button></div>`;
+            const saleHint = sale ? `<p class="mt-3 rounded-lg border border-lime-300/30 bg-lime-300/10 px-3 py-2 text-xs font-semibold text-lime-200">Use code <span class="font-black text-lime-300">${escapeHtml(sale.code)}</span> at checkout to get this sale.</p>` : '';
+            const action = `<div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(product, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button>${saleHint}</div>`;
             const previewVideos = product.type === 'preset' && Array.isArray(product.previewVideos) ? product.previewVideos : [];
             const videoLinks = previewVideos.length ? `<div class="mt-4 space-y-2"><h4 class="text-sm font-bold text-white">Preview videos</h4>${previewVideos.map((url, index) => `<a href="${url}" target="_blank" rel="noopener" class="block text-sm font-semibold text-neon-blue underline hover:text-white">Preview ${index + 1}</a>`).join('')}</div>` : '';
-            container.innerHTML = `<div class="glass-panel rounded-2xl p-5 sm:p-8 border border-neon-blue/30 shadow-glow-lg space-y-6"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div><span class="text-[10px] uppercase tracking-widest text-neon-blue">${product.type === 'scenepack' ? 'Scene Pack' : 'Editing Preset'}</span><h2 class="text-3xl font-extrabold text-white mt-2">${product.title}</h2><p class="text-slate-400 mt-2">${product.desc}</p></div><span class="text-2xl font-bold text-neon-blue">${product.price}</span></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"><div>${media}</div><div class="border-t border-slate-800 pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0"><h3 class="font-bold text-white mb-2">Product information</h3><p class="text-sm leading-relaxed text-slate-300 whitespace-pre-line">${product.details || product.desc}</p>${videoLinks}<div class="mt-6">${action}</div></div></div></div>`;
+            container.innerHTML = `<div class="glass-panel rounded-2xl p-5 sm:p-8 border border-neon-blue/30 shadow-glow-lg space-y-6"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div>${sale ? '<span class="inline-flex rounded-md bg-lime-300 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-950">Sale</span>' : ''}<span class="block text-[10px] uppercase tracking-widest text-neon-blue mt-2">${product.type === 'scenepack' ? 'Scene Pack' : 'Editing Preset'}</span><h2 class="text-3xl font-extrabold text-white mt-2">${product.title}</h2><p class="text-slate-400 mt-2">${product.desc}</p></div><span class="text-2xl font-bold">${renderPrice(product)}</span></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"><div>${media}</div><div class="border-t border-slate-800 pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0"><h3 class="font-bold text-white mb-2">Product information</h3><p class="text-sm leading-relaxed text-slate-300 whitespace-pre-line">${product.details || product.desc}</p>${videoLinks}<div class="mt-6">${action}</div></div></div></div>`;
             const activeFilter = product.type === 'preset' ? ((window.activeProductCategory && window.activeProductCategory.preset) || 'all') : ((window.activeProductCategory && window.activeProductCategory.scenepack) || { movieShow: 'all', characterActor: 'all' });
             renderCategoryFilters(product.type, activeFilter, 'productDetailCategories');
             if (product.type === 'preset') renderPresetPreview(productMedia);
@@ -1090,126 +942,6 @@
             const media = getProductMedia(product);
             window.presetPreviewIndex = ((window.presetPreviewIndex || 0) + direction + media.length) % media.length;
             renderPresetPreview(media);
-        }
-
-        // Live Preview Update function
-        function updateLivePreview() {
-            const title = document.getElementById('pTitle').value || 'Product Title';
-            const desc = document.getElementById('pDesc').value || 'Product description will appear here...';
-            const price = document.getElementById('pPrice').value || '$9.99';
-            const image = (mediaFromUrls(document.getElementById('pMediaUrls').value)[0] || {}).src || 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?auto=format&fit=crop&w=800&q=80';
-
-            document.getElementById('prevTitle').textContent = title;
-            document.getElementById('prevDesc').textContent = desc;
-            document.getElementById('prevPriceTag').textContent = price;
-            document.getElementById('prevImage').src = image;
-        }
-
-        // Render Management List in Admin Dashboard
-        function renderAdminProductList() {
-            const container = document.getElementById('adminProductList');
-            const presets = getStoredPresets();
-
-            if (presets.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-500">No products found.</p>`;
-                return;
-            }
-
-            container.innerHTML = presets.map(p => `
-                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/60 border border-slate-800">
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <img src="${p.image}" class="w-10 h-10 rounded-lg object-cover flex-shrink-0">
-                        <div class="truncate">
-                            <h5 class="text-xs font-bold text-white truncate">${p.title}</h5>
-                            <span class="text-[10px] text-neon-blue">${p.price}</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2 flex-shrink-0">
-                        <button type="button" onclick="editPreset(${p.id})" class="px-2.5 py-1 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 text-[10px] font-semibold transition-colors">Edit</button>
-                        <button type="button" onclick="deletePreset(${p.id})" class="px-2.5 py-1 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 text-[10px] font-semibold transition-colors">Delete</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Edit existing preset
-        function editPreset(id) {
-            const presets = getStoredPresets();
-            const product = presets.find(p => p.id === id);
-            if (!product) return;
-
-            document.getElementById('pEditingId').value = product.id;
-            document.getElementById('pTitle').value = product.title;
-            document.getElementById('pDesc').value = product.desc;
-            document.getElementById('pPrice').value = product.price;
-            document.getElementById('pPayhip').value = product.payhip;
-            document.getElementById('pType').value = product.type || 'preset';
-            document.getElementById('pDetails').value = product.details || '';
-            document.getElementById('pMediaUrls').value = (product.media || [{ type: 'image', src: product.image }]).map(media => media.src).join('\n');
-
-            document.getElementById('formTitleText').textContent = "Edit Product";
-            document.getElementById('savePresetBtn').textContent = "Save Changes";
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
-
-            updateLivePreview();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // Reset Form state
-        function resetPresetForm() {
-            document.getElementById('presetForm').reset();
-            document.getElementById('pEditingId').value = '';
-            document.getElementById('formTitleText').textContent = "Add New Product";
-            document.getElementById('savePresetBtn').textContent = "Publish Product";
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('pMediaUrls').value = '';
-            document.getElementById('mediaUploadStatus').textContent = "Save preview files manually in GitHub's previews folder, then paste the direct raw URL for each file above.";
-            updateLivePreview();
-        }
-
-        // Delete preset
-        function deletePreset(id) {
-            if (!confirm('Are you sure you want to delete this product?')) return;
-            let presets = getStoredPresets();
-            presets = presets.filter(p => p.id !== id);
-            saveProductCatalog(presets);
-            renderAdminProductList();
-            renderProducts('preset');
-            renderProducts('scenepack');
-        }
-
-        // Handle Form Submit (Add or Update)
-        function handlePresetSubmit(e) {
-            e.preventDefault();
-            const editingId = document.getElementById('pEditingId').value;
-            let presets = getStoredPresets();
-            const media = mediaFromUrls(document.getElementById('pMediaUrls').value);
-            if (!media.length) return;
-
-            const productData = {
-                id: editingId ? Number(editingId) : Date.now(),
-                title: document.getElementById('pTitle').value,
-                desc: document.getElementById('pDesc').value,
-                price: document.getElementById('pPrice').value,
-                image: media[0].src,
-                media,
-                details: document.getElementById('pDetails').value,
-                type: document.getElementById('pType').value,
-                payhip: document.getElementById('pPayhip').value
-            };
-
-            if (editingId) {
-                presets = presets.map(p => p.id === Number(editingId) ? productData : p);
-                alert('Product successfully updated!');
-            } else {
-                presets.unshift(productData);
-                alert('Product successfully published!');
-            }
-
-            saveProductCatalog(presets);
-            resetPresetForm();
-            renderAdminProductList();
-            if (productData.type === 'scenepack') renderProducts('scenepack'); else renderProducts('preset');
         }
 
         // Initialize on load

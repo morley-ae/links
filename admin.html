@@ -22,6 +22,7 @@
         header { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 26px; } .product-list { display: grid; gap: 10px; }
         .product-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px; border: 1px solid #1e293b; border-radius: 10px; background: rgba(7,16,30,.8); }
         .product-row strong { display: block; } .product-row small { color: var(--muted); } .status { min-height: 22px; color: var(--blue); font-size: 13px; }
+        .sale-row { border-color: rgba(190,242,100,.35); } .sale-row small { color: #d9f99d; }
         .warning { margin: 0 0 22px; padding: 13px 15px; border-left: 3px solid var(--blue); background: rgba(0,242,254,.07); color: #cbd5e1; font-size: 13px; }
         @media (max-width: 700px) { main { width: min(100% - 20px, 600px); padding-top: 22px; } header, .product-row { align-items: stretch; flex-direction: column; } .grid { grid-template-columns: 1fr; } }
     </style>
@@ -43,6 +44,20 @@
                 <div class="actions" style="margin-top:12px"><button id="addCategoryButton" class="primary" type="button">Add category</button></div>
                 <p id="categoryStatus" class="status"></p>
                 <div id="categoryList" class="product-list"></div>
+            </section>
+            <section class="panel">
+                <div class="actions" style="justify-content:space-between"><h2>Manage product sales</h2><button id="newSaleButton" class="secondary" type="button">New sale</button></div>
+                <p class="muted">Sales apply to presets only. Scenepacks are always free and cannot be selected.</p>
+                <div id="saleList" class="product-list"></div>
+                <form id="saleForm" class="stack hidden" style="margin-top:16px">
+                    <input id="saleId" type="hidden">
+                    <div class="grid"><label>Sale name<input id="saleName" required placeholder="Summer sale"></label><label>Payhip sale code<input id="saleCode" required placeholder="SUMMER25"></label></div>
+                    <div class="grid"><label>Discount type<select id="discountType"><option value="percent">Percentage</option><option value="amount">Fixed amount</option></select></label><label>Discount value<input id="discountValue" type="number" min="0.01" step="0.01" required placeholder="25"></label></div>
+                    <div class="grid"><label>Starts<input id="startsAt" type="datetime-local" required></label><label>Ends<input id="endsAt" type="datetime-local" required></label></div>
+                    <label>Products affected<select id="saleProducts" multiple size="5"></select></label>
+                    <div class="actions"><button class="primary" type="submit">Save sale</button><button id="cancelSaleButton" class="secondary" type="button">Clear</button></div>
+                    <p id="saleStatus" class="status"></p>
+                </form>
             </section>
             <section class="panel">
                 <h2 id="formTitle">New product</h2>
@@ -78,9 +93,11 @@
 <script>
     const CATALOG_KEY = 'morley_admin_catalog';
     const CATEGORY_KEY = 'morley_admin_categories';
+    const SALES_KEY = 'morley_admin_sales';
     const PASSWORD_KEY = 'morley_download_password';
     let products = [];
     let categories = { preset: [], scenepack: { movieShow: [], characterActor: [] } };
+    let sales = [];
 
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
@@ -97,11 +114,16 @@
         categories.scenepack = categories.scenepack || { movieShow: [], characterActor: [] };
         categories.scenepack.movieShow = Array.isArray(categories.scenepack.movieShow) ? categories.scenepack.movieShow : [];
         categories.scenepack.characterActor = Array.isArray(categories.scenepack.characterActor) ? categories.scenepack.characterActor : [];
+        const savedSales = localStorage.getItem(SALES_KEY);
+        sales = savedSales ? JSON.parse(savedSales) : clone(window.SALES_DATA || []);
+        sales = Array.isArray(sales) ? sales.filter(sale => Array.isArray(sale.productIds)) : [];
     }
 
     function persistCatalog() { localStorage.setItem(CATALOG_KEY, JSON.stringify(products)); }
 
     function persistCategories() { localStorage.setItem(CATEGORY_KEY, JSON.stringify(categories)); }
+
+    function persistSales() { localStorage.setItem(SALES_KEY, JSON.stringify(sales)); }
 
     function renderList() {
         $('productList').innerHTML = products.length ? products.map(product => `<div class="product-row"><div><strong>${escapeHtml(product.title)}</strong><small>${product.type === 'scenepack' ? 'Scenepack' : 'Preset'} · ${escapeHtml(product.price)} · ${escapeHtml(getProductCategorySummary(product) || 'No category')}</small></div><div class="actions"><button class="secondary edit" data-id="${product.id}" type="button">Edit</button><button class="danger delete" data-id="${product.id}" type="button">Delete</button></div></div>`).join('') : '<p class="muted">No products yet.</p>';
@@ -109,7 +131,48 @@
         document.querySelectorAll('.delete').forEach(button => button.onclick = () => deleteProduct(Number(button.dataset.id)));
         renderCategoryList();
         renderCategorySelect();
+        renderSales();
     }
+
+    function renderSales() {
+        const now = Date.now();
+        $('saleList').innerHTML = sales.length ? sales.map(sale => {
+            const active = new Date(sale.startsAt).getTime() <= now && new Date(sale.endsAt).getTime() >= now;
+            const productCount = sale.productIds.length;
+            return `<div class="product-row sale-row"><div><strong>${escapeHtml(sale.name)}</strong><small>${sale.discountType === 'percent' ? `${sale.discountValue}%` : `${sale.discountValue} fixed amount`} · code ${escapeHtml(sale.code)} · ${productCount} preset${productCount === 1 ? '' : 's'} · ${active ? 'Active now' : 'Scheduled or expired'}</small></div><div class="actions"><button class="secondary edit-sale" data-id="${escapeHtml(sale.id)}" type="button">Edit</button><button class="danger delete-sale" data-id="${escapeHtml(sale.id)}" type="button">Delete</button></div></div>`;
+        }).join('') : '<p class="muted">No sales yet.</p>';
+        document.querySelectorAll('.edit-sale').forEach(button => button.onclick = () => editSale(button.dataset.id));
+        document.querySelectorAll('.delete-sale').forEach(button => button.onclick = () => deleteSale(button.dataset.id));
+    }
+
+    function renderSaleProducts(selected = []) {
+        $('saleProducts').replaceChildren(...products.filter(product => product.type !== 'scenepack').map(product => {
+            const option = document.createElement('option'); option.value = product.id; option.textContent = product.title; option.selected = selected.map(String).includes(String(product.id)); return option;
+        }));
+    }
+
+    function resetSaleForm() {
+        $('saleForm').reset(); $('saleId').value = ''; $('saleStatus').textContent = ''; renderSaleProducts(); $('saleForm').classList.add('hidden');
+    }
+
+    function editSale(id) {
+        const sale = sales.find(item => String(item.id) === String(id)); if (!sale) return;
+        $('saleId').value = sale.id; $('saleName').value = sale.name; $('saleCode').value = sale.code; $('discountType').value = sale.discountType; $('discountValue').value = sale.discountValue; $('startsAt').value = sale.startsAt.slice(0, 16); $('endsAt').value = sale.endsAt.slice(0, 16); renderSaleProducts(sale.productIds); $('saleForm').classList.remove('hidden'); $('saleForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function saveSale(event) {
+        event.preventDefault();
+        const productIds = Array.from($('saleProducts').selectedOptions).map(option => Number(option.value));
+        const startsAt = new Date($('startsAt').value); const endsAt = new Date($('endsAt').value);
+        if (!productIds.length) { $('saleStatus').textContent = 'Select at least one preset.'; return; }
+        if (endsAt <= startsAt) { $('saleStatus').textContent = 'The end must be after the start.'; return; }
+        const id = $('saleId').value || `sale-${Date.now()}`;
+        const sale = { id, name: $('saleName').value.trim(), code: $('saleCode').value.trim(), discountType: $('discountType').value, discountValue: Number($('discountValue').value), startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString(), productIds };
+        const index = sales.findIndex(item => String(item.id) === String(id)); if (index === -1) sales.push(sale); else sales[index] = sale;
+        persistSales(); renderSales(); resetSaleForm(); $('saleStatus').textContent = 'Sale saved locally. Download products.js to publish it.';
+    }
+
+    function deleteSale(id) { if (!confirm('Delete this sale?')) return; sales = sales.filter(sale => String(sale.id) !== String(id)); persistSales(); renderSales(); resetSaleForm(); }
 
     function renderCategoryList() {
         $('categoryList').innerHTML = [['preset', 'Preset categories'], ['movieShow', 'Movie / Show categories'], ['characterActor', 'Character / Actor categories']].map(([type, label]) => `<div><h3>${label}</h3><div class="actions">${getCategoryValues(type).map(category => `<span class="product-row" style="padding:7px 10px"><small>${escapeHtml(category)}</small><button class="danger remove-category" data-type="${type}" data-category="${escapeHtml(category)}" type="button">Remove</button></span>`).join('') || '<small class="muted">None yet.</small>'}</div></div>`).join('');
@@ -187,12 +250,12 @@
 
     function downloadCatalog() {
         const password = localStorage.getItem(PASSWORD_KEY) || window.SCENEPACK_DOWNLOAD_PASSWORD || 'CHANGE_THIS_PASSWORD';
-        const output = `/* Permanent product catalog. Edit with admin.html, then commit this file to GitHub. */\nwindow.SCENEPACK_DOWNLOAD_PASSWORD = ${JSON.stringify(password)};\nwindow.PRODUCT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\nwindow.PRODUCTS_DATA = ${JSON.stringify(products, null, 4)};\n`;
+        const output = `/* Permanent product catalog. Edit with admin.html, then commit this file to GitHub. */\nwindow.SCENEPACK_DOWNLOAD_PASSWORD = ${JSON.stringify(password)};\nwindow.PRODUCT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\nwindow.PRODUCTS_DATA = ${JSON.stringify(products, null, 4)};\nwindow.SALES_DATA = ${JSON.stringify(sales, null, 4)};\n`;
         const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([output], { type: 'text/javascript' })); link.download = 'products.js'; link.click(); URL.revokeObjectURL(link.href); $('saveStatus').textContent = 'products.js downloaded. Replace the repository file and push it to GitHub.';
     }
 
-    $('productForm').onsubmit = saveProduct; $('newButton').onclick = resetForm; $('cancelButton').onclick = resetForm; $('downloadButton').onclick = downloadCatalog; $('addCategoryButton').onclick = addCategory; $('type').onchange = renderCategorySelect; $('categoryType').onchange = renderCategoryList;
-    $('resetButton').onclick = () => { if (!confirm('Discard local catalog changes and reload products.js?')) return; localStorage.removeItem(CATALOG_KEY); localStorage.removeItem(CATEGORY_KEY); loadCatalog(); renderList(); resetForm(); $('saveStatus').textContent = 'Local changes reset.'; };
+    $('productForm').onsubmit = saveProduct; $('newButton').onclick = resetForm; $('cancelButton').onclick = resetForm; $('downloadButton').onclick = downloadCatalog; $('addCategoryButton').onclick = addCategory; $('type').onchange = renderCategorySelect; $('categoryType').onchange = renderCategoryList; $('saleForm').onsubmit = saveSale; $('newSaleButton').onclick = () => { resetSaleForm(); $('saleForm').classList.remove('hidden'); }; $('cancelSaleButton').onclick = resetSaleForm;
+    $('resetButton').onclick = () => { if (!confirm('Discard local catalog changes and reload products.js?')) return; localStorage.removeItem(CATALOG_KEY); localStorage.removeItem(CATEGORY_KEY); localStorage.removeItem(SALES_KEY); loadCatalog(); renderList(); resetForm(); resetSaleForm(); $('saveStatus').textContent = 'Local changes reset.'; };
     loadCatalog(); renderList(); resetForm();
 </script>
 </body>
