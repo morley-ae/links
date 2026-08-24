@@ -46,7 +46,7 @@ window.PRODUCTS_DATA = [
         ],
         "details": "details here\ndeatai\ndadkjadjk\nadada\nadjaodoa\nadoado\nadojaodj\nadojaod\nadojao\najodjaojdoa\njoadaoj",
         "type": "preset",
-        "payhip": "https://payhip.com"
+        "payhip": "05SvN"
     },
     {
         "id": 1787559098245,
@@ -72,7 +72,7 @@ window.PRODUCTS_DATA = [
         ],
         "details": "more details",
         "type": "scenepack",
-        "payhip": "https://payhip.com"
+        "payhip": "05SvN"
     },
     {
         "id": 1787559030375,
@@ -101,6 +101,6 @@ window.PRODUCTS_DATA = [
         ],
         "details": "details here",
         "type": "preset",
-        "payhip": "https://payhip.com"
+        "payhip": "Vt5WC"
     }
 ];

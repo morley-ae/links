@@ -45,15 +45,17 @@
             inset: -30%;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.55;
+            opacity: 0.7;
             filter: blur(30px);
-            background: conic-gradient(from 120deg at 30% 40%, rgba(0, 242, 254, 0.16), transparent 32%, rgba(79, 172, 254, 0.1) 58%, transparent 78%);
-            animation: ambient-drift 26s ease-in-out infinite alternate;
+            background: linear-gradient(120deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.08), rgba(14, 116, 144, 0.18), rgba(0, 242, 254, 0.04));
+            background-size: 240% 240%;
+            animation: ambient-gradient 18s ease-in-out infinite alternate;
         }
         body::after {
-            opacity: 0.3;
-            background: radial-gradient(circle at 70% 20%, rgba(0, 242, 254, 0.2), transparent 30%), radial-gradient(circle at 20% 80%, rgba(79, 172, 254, 0.12), transparent 28%);
-            animation: ambient-drift-reverse 34s ease-in-out infinite alternate;
+            opacity: 0.35;
+            background: linear-gradient(300deg, rgba(56, 189, 248, 0.16), transparent 42%, rgba(20, 184, 166, 0.15));
+            background-size: 220% 220%;
+            animation: ambient-gradient-reverse 24s ease-in-out infinite alternate;
         }
         main, footer { position: relative; z-index: 1; }
         ::-webkit-scrollbar {
@@ -89,11 +91,38 @@
             50% { transform: translate3d(-3%, -4%, 0) scale(1.08); }
             100% { transform: translate3d(2%, -1%, 0) scale(1.03); }
         }
+        @keyframes ambient-gradient {
+            0% { background-position: 0% 50%; transform: rotate(-3deg) scale(1.05); }
+            50% { background-position: 100% 30%; transform: rotate(4deg) scale(1.14); }
+            100% { background-position: 20% 100%; transform: rotate(-1deg) scale(1.08); }
+        }
+        @keyframes ambient-gradient-reverse {
+            0% { background-position: 100% 50%; transform: rotate(4deg) scale(1.08); }
+            50% { background-position: 0% 70%; transform: rotate(-4deg) scale(1.16); }
+            100% { background-position: 70% 0%; transform: rotate(2deg) scale(1.1); }
+        }
         .click-feedback { animation: click-feedback 360ms ease-out; }
         @keyframes click-feedback {
             0% { transform: scale(1); }
             45% { transform: scale(0.96); }
             100% { transform: scale(1); }
+        }
+        @keyframes cart-pop {
+            0% { opacity: 0; transform: translateY(-10px) scale(.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes cart-item-enter {
+            0% { opacity: 0; transform: translateX(-12px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+        .cart-pop { animation: cart-pop 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .cart-item-enter { animation: cart-item-enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .product-card-enter { opacity: 0; transform: translateY(24px); transition: opacity 620ms cubic-bezier(0.16, 1, 0.3, 1), transform 620ms cubic-bezier(0.16, 1, 0.3, 1); }
+        .product-card-enter.is-visible { opacity: 1; transform: translateY(0); }
+        .cart-fade-out { animation: cart-fade-out 260ms ease-in both; }
+        @keyframes cart-fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
         @keyframes view-enter {
             0% { opacity: 0; transform: translateY(28px); }
@@ -119,6 +148,32 @@
         .font-bold-italic {
             font-weight: 700;
             font-style: italic;
+        }
+        .cart-badge {
+            min-width: 1.25rem;
+            height: 1.25rem;
+            padding: 0 .3rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #00f2fe;
+            color: #031018;
+            font-size: .65rem;
+            line-height: 1;
+        }
+        #shopNotice {
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -12px);
+            transition: opacity 260ms ease, transform 260ms ease;
+        }
+        #shopNotice.is-visible {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
         }
     </style>
 </head>
@@ -155,7 +210,7 @@
                     </h1>
                 </div>
 
-                <div class="flex items-center space-x-3 pt-2">
+                <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
                     <button onclick="switchView('home')" id="navHomeBtn" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow">
                         Links
                     </button>
@@ -164,6 +219,9 @@
                     </button>
                     <button onclick="switchView('scenepacks')" id="navScenepacksBtn" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800">
                         Scenepacks
+                    </button>
+                    <button id="cartButton" type="button" onclick="openCart()" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-white/5 border border-slate-800" aria-label="Open cart">
+                        <i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Cart</span><span id="cartCount" class="cart-badge">0</span>
                     </button>
                 </div>
         </header>
@@ -323,6 +381,20 @@
             <div id="productDetailContent"></div>
         </section>
 
+        <div id="cartView" class="hidden fixed inset-0 z-30 flex items-start justify-center bg-black/75 px-4 py-24" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
+            <div id="cartPanel" class="glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 shadow-glow-lg">
+                <div class="flex items-center justify-between gap-4">
+                    <h2 id="cartTitle" class="text-2xl font-extrabold text-white">Cart</h2>
+                    <button type="button" onclick="closeCart()" class="text-slate-400 hover:text-white" aria-label="Close cart"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <p id="cartStatus" class="mt-2 text-xs text-slate-400"></p>
+                <div id="cartItems" class="mt-5 space-y-3"></div>
+                <div class="mt-6 flex gap-3"><button id="checkoutButton" type="button" onclick="checkoutCart()" class="flex-1 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">Proceed to Payhip checkout</button><button type="button" onclick="clearCart()" class="rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold text-slate-300 hover:border-red-400 hover:text-red-400">Clear</button></div>
+            </div>
+        </div>
+
+        <div id="shopNotice" class="fixed left-1/2 top-6 z-[60] w-[min(92vw,36rem)] rounded-xl border border-neon-blue/50 bg-[#0a1628]/95 px-4 py-3 text-center text-sm font-semibold text-white shadow-glow-lg" role="alert" aria-live="polite"></div>
+
         <!-- Simple community gate for Scenepack downloads -->
         <div id="downloadGate" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/75 px-4" role="dialog" aria-modal="true" aria-labelledby="downloadGateTitle">
             <div class="glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 sm:p-8 text-center shadow-glow-lg">
@@ -410,7 +482,7 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-semibold text-slate-300 mb-1">Payhip Checkout Link</label>
-                                <input type="url" id="pPayhip" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="https://payhip.com/b/xxxx">
+                                <input type="text" id="pPayhip" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900/80 border border-slate-700 text-white text-sm focus:outline-none focus:border-neon-blue transition-colors" placeholder="Payhip ID, z. B. Vt5WC">
                             </div>
                         </div>
                         <div>
@@ -655,6 +727,175 @@
             return window.PRODUCTS_DATA || [];
         }
 
+        const CART_KEY = 'endless_product_cart';
+
+        function getCart() {
+            try {
+                const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+                return Array.isArray(cart) ? cart : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        function saveCart(cart) {
+            localStorage.setItem(CART_KEY, JSON.stringify(cart));
+            renderCart();
+        }
+
+        function getPayhipId(product) {
+            const value = String(product.payhip || '').trim();
+            if (!value) return '';
+            try {
+                const url = new URL(value);
+                return url.searchParams.get('link') || url.pathname.match(/^\/b\/([A-Za-z0-9]+)$/)?.[1] || '';
+            } catch (error) {
+                return /^[A-Za-z0-9]+$/.test(value) ? value : '';
+            }
+        }
+
+        let shopNoticeTimer;
+
+        function showShopNotice(message) {
+            const notice = document.getElementById('shopNotice');
+            if (!notice) return;
+            window.clearTimeout(shopNoticeTimer);
+            notice.textContent = message;
+            notice.classList.add('is-visible');
+            shopNoticeTimer = window.setTimeout(() => notice.classList.remove('is-visible'), 4200);
+        }
+
+        function addToCart(productId) {
+            const product = getStoredPresets().find(item => String(item.id) === String(productId));
+            if (!product) return;
+            const productIdFromPayhip = getPayhipId(product);
+            if (!productIdFromPayhip) {
+                showShopNotice('This product has no valid Payhip product ID yet.');
+                return;
+            }
+            const cart = getCart();
+            const currentType = cart.length ? cart[0].type : null;
+            if (currentType && currentType !== product.type) {
+                showShopNotice('Presets and Scenepacks cannot be mixed in one cart. Empty the cart first or finish the current checkout.');
+                return;
+            }
+            if (!cart.some(item => String(item.id) === String(product.id))) {
+                cart.push({ id: product.id, type: product.type });
+                saveCart(cart);
+            }
+            openCart();
+        }
+
+        function removeFromCart(productId) {
+            saveCart(getCart().filter(item => String(item.id) !== String(productId)));
+        }
+
+        function clearCart() {
+            saveCart([]);
+        }
+
+        function getCartProducts() {
+            return getCart().map(item => getStoredPresets().find(product => String(product.id) === String(item.id))).filter(Boolean);
+        }
+
+        function renderCart() {
+            const cart = getCart();
+            const products = getCartProducts();
+            const count = document.getElementById('cartCount');
+            const items = document.getElementById('cartItems');
+            const status = document.getElementById('cartStatus');
+            const checkout = document.getElementById('checkoutButton');
+            const cartButton = document.getElementById('cartButton');
+            if (!count || !items || !status || !checkout || !cartButton) return;
+            count.textContent = products.length;
+            const wasHidden = cartButton.classList.contains('hidden');
+            cartButton.classList.toggle('hidden', products.length === 0);
+            if (wasHidden && products.length) {
+                cartButton.classList.remove('cart-pop');
+                requestAnimationFrame(() => cartButton.classList.add('cart-pop'));
+            }
+            status.textContent = products.length ? `${products.length} ${products.length === 1 ? 'item' : 'items'} · ${products[0].type === 'scenepack' ? 'Scenepacks' : 'Products'}` : 'Your cart is empty.';
+            items.innerHTML = products.length ? products.map((product, index) => `<div class="cart-item-enter flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-white/5 p-3" style="animation-delay:${index * 70}ms"><div class="min-w-0"><p class="truncate text-sm font-bold text-white">${escapeHtml(product.title)}</p><p class="text-xs text-neon-blue">${escapeHtml(product.price)}</p></div><button type="button" onclick="removeFromCart(${product.id})" class="shrink-0 text-xs font-semibold text-slate-400 hover:text-red-400">Remove</button></div>`).join('') : '<p class="rounded-xl border border-dashed border-slate-700 p-5 text-center text-sm text-slate-500">No products selected.</p>';
+            checkout.disabled = !products.length;
+        }
+
+        function openCart() {
+            renderCart();
+            const cartView = document.getElementById('cartView');
+            cartView.classList.remove('hidden', 'cart-fade-out');
+            const cartPanel = document.getElementById('cartPanel');
+            cartPanel.classList.remove('cart-pop');
+            requestAnimationFrame(() => cartPanel.classList.add('cart-pop'));
+            lucide.createIcons();
+        }
+
+        function closeCart() {
+            const cartView = document.getElementById('cartView');
+            cartView.classList.remove('cart-pop');
+            cartView.classList.add('cart-fade-out');
+            window.setTimeout(() => {
+                cartView.classList.add('hidden');
+                cartView.classList.remove('cart-fade-out');
+            }, 260);
+        }
+
+        function buildCheckoutUrl(products) {
+            const ids = products.map(getPayhipId);
+            if (!ids.length || ids.some(id => !id)) return '';
+            const checkout = new URL('https://payhip.com/buy');
+            ids.forEach(id => checkout.searchParams.append('cart_links[]', id));
+            return checkout.toString();
+        }
+
+        function checkoutCart() {
+            const products = getCartProducts();
+            if (!products.length) return;
+            if (products.some(product => product.type !== products[0].type)) {
+                showShopNotice('Presets and Scenepacks cannot be mixed in one cart. Empty the cart first or finish the current checkout.');
+                return;
+            }
+            const checkoutUrl = buildCheckoutUrl(products);
+            if (!checkoutUrl) {
+                showShopNotice('At least one selected product has no valid Payhip product ID.');
+                return;
+            }
+            if (products[0].type === 'scenepack') {
+                openScenepackCheckout(products);
+                closeCart();
+                return;
+            }
+            window.open(checkoutUrl, '_blank', 'noopener');
+        }
+
+        function openScenepackCheckout(products) {
+                window.pendingDownloadProducts = products;
+                document.getElementById('downloadPassword').value = '';
+                document.getElementById('downloadGateStatus').classList.add('hidden');
+                document.getElementById('downloadGate').classList.remove('hidden');
+                lucide.createIcons();
+                document.getElementById('downloadPassword').focus();
+        }
+
+        function buyProduct(productId) {
+            const product = getStoredPresets().find(item => String(item.id) === String(productId));
+            if (!product) return;
+            const checkoutUrl = buildCheckoutUrl([product]);
+            if (!checkoutUrl) {
+                showShopNotice('This product has no valid Payhip product ID yet.');
+                return;
+            }
+            if (product.type === 'scenepack') {
+                openScenepackCheckout([product]);
+                return;
+            }
+            window.open(checkoutUrl, '_blank', 'noopener');
+        }
+
+        function openDownloadGate(productId) {
+            const product = getStoredPresets().find(item => String(item.id) === String(productId));
+            if (product) openScenepackCheckout([product]);
+        }
+
         function getProductCategories(type) {
             const categories = window.PRODUCT_CATEGORIES || {};
             if (type === 'scenepack') {
@@ -753,16 +994,33 @@
                 return movieShowMatches && characterMatches;
             });
             renderCategoryFilters(type, activeCategory);
-            grid.innerHTML = products.length ? products.map(productCard).join('') : `<div class="md:col-span-2 glass-panel rounded-2xl p-8 text-center text-sm text-slate-500">No ${type === 'preset' ? 'presets' : 'scenepacks'} published yet.</div>`;
+            grid.innerHTML = products.length ? products.map((product, index) => productCard(product, index)).join('') : `<div class="md:col-span-2 glass-panel rounded-2xl p-8 text-center text-sm text-slate-500">No ${type === 'preset' ? 'presets' : 'scenepacks'} published yet.</div>`;
             lucide.createIcons();
+            observeProductCards(grid);
         }
 
-        function productCard(p) {
+        function observeProductCards(grid) {
+            const cards = grid.querySelectorAll('.product-card-enter');
+            if (!('IntersectionObserver' in window)) {
+                cards.forEach(card => card.classList.add('is-visible'));
+                return;
+            }
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                });
+            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+            cards.forEach(card => observer.observe(card));
+        }
+
+        function productCard(p, index = 0) {
             const media = getProductMedia(p)[0];
             const preview = media.type === 'video' ? `<video src="${media.src}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" muted></video>` : `<img src="${media.src}" alt="${p.title}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700">`;
-            return `<article onclick="openProduct(${p.id})" class="glass-panel rounded-2xl overflow-hidden border border-neon-border/40 hover:border-neon-blue/60 hover:shadow-glow transition-all duration-300 flex flex-col group cursor-pointer">
+            return `<article onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 hover:border-neon-blue/60 hover:shadow-glow transition-all duration-300 flex flex-col group cursor-pointer">
                 <div class="relative aspect-square overflow-hidden bg-slate-900">${preview}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-neon-blue text-xs font-bold shadow-glow">${p.price}</div><div class="absolute bottom-3 left-3 px-2 py-1 rounded-lg bg-black/60 text-[10px] text-slate-200">${getProductMedia(p).length} previews</div></div>
-                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="pt-2 w-full py-2.5 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light text-black text-xs font-bold text-center"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="w-4 h-4 inline-block align-middle mr-1"></i>${p.type === 'scenepack' ? 'Download' : 'View product'}</div></div>
+                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${p.price}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button></div></div>
             </article>`;
         }
 
@@ -781,24 +1039,15 @@
             switchView(product && product.type === 'scenepack' ? 'scenepacks' : 'presets');
         }
 
-        function openDownloadGate(productId) {
-            window.pendingDownloadProduct = getStoredPresets().find(product => String(product.id) === String(productId));
-            if (!window.pendingDownloadProduct) return;
-            document.getElementById('downloadPassword').value = '';
-            document.getElementById('downloadGateStatus').classList.add('hidden');
-            document.getElementById('downloadGate').classList.remove('hidden');
-            lucide.createIcons();
-            document.getElementById('downloadPassword').focus();
-        }
-
         function closeDownloadGate() {
             document.getElementById('downloadGate').classList.add('hidden');
             window.pendingDownloadProduct = null;
+            window.pendingDownloadProducts = null;
         }
 
         function unlockScenepack(event) {
             event.preventDefault();
-            const product = window.pendingDownloadProduct;
+            const product = window.pendingDownloadProducts && window.pendingDownloadProducts[0];
             const password = document.getElementById('downloadPassword').value;
             const status = document.getElementById('downloadGateStatus');
             if (!product || password !== window.SCENEPACK_DOWNLOAD_PASSWORD) {
@@ -806,8 +1055,10 @@
                 status.classList.remove('hidden');
                 return;
             }
+            const products = window.pendingDownloadProducts || [product];
             closeDownloadGate();
-            window.open(product.payhip, '_blank', 'noopener');
+            const checkoutUrl = buildCheckoutUrl(products);
+            if (checkoutUrl) window.open(checkoutUrl, '_blank', 'noopener');
         }
 
         function renderProductDetail(id) {
@@ -816,9 +1067,7 @@
             if (!product) { container.innerHTML = '<p class="text-slate-400">Product not found.</p>'; return; }
             const productMedia = getProductMedia(product);
             const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div><button type="button" onclick="changePresetPreview(-1)" aria-label="Previous preview" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-left" class="h-5 w-5"></i></button><button type="button" onclick="changePresetPreview(1)" aria-label="Next preview" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-right" class="h-5 w-5"></i></button></div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" controls class="w-full aspect-square object-contain rounded-xl bg-black"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
-            const action = product.type === 'scenepack'
-                ? `<button type="button" onclick="openDownloadGate(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="download" class="mr-2 inline-block h-4 w-4"></i>Download</button>`
-                : `<a href="${product.payhip}" target="_blank" class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="shopping-cart" class="h-4 w-4"></i>Buy now · ${product.price}</a>`;
+            const action = `<div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${product.price}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button></div>`;
             const previewVideos = product.type === 'preset' && Array.isArray(product.previewVideos) ? product.previewVideos : [];
             const videoLinks = previewVideos.length ? `<div class="mt-4 space-y-2"><h4 class="text-sm font-bold text-white">Preview videos</h4>${previewVideos.map((url, index) => `<a href="${url}" target="_blank" rel="noopener" class="block text-sm font-semibold text-neon-blue underline hover:text-white">Preview ${index + 1}</a>`).join('')}</div>` : '';
             container.innerHTML = `<div class="glass-panel rounded-2xl p-5 sm:p-8 border border-neon-blue/30 shadow-glow-lg space-y-6"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div><span class="text-[10px] uppercase tracking-widest text-neon-blue">${product.type === 'scenepack' ? 'Scene Pack' : 'Editing Preset'}</span><h2 class="text-3xl font-extrabold text-white mt-2">${product.title}</h2><p class="text-slate-400 mt-2">${product.desc}</p></div><span class="text-2xl font-bold text-neon-blue">${product.price}</span></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"><div>${media}</div><div class="border-t border-slate-800 pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0"><h3 class="font-bold text-white mb-2">Product information</h3><p class="text-sm leading-relaxed text-slate-300 whitespace-pre-line">${product.details || product.desc}</p>${videoLinks}<div class="mt-6">${action}</div></div></div></div>`;
@@ -964,6 +1213,7 @@
         }
 
         // Initialize on load
+        renderCart();
         handleUrlRoute();
     </script>
 </body>
