@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morley.ae Admin</title>
+    <style>
+        :root { color-scheme: dark; --bg: #050b14; --panel: #0a1628; --line: #1e3a60; --blue: #00f2fe; --text: #f8fafc; --muted: #94a3b8; --danger: #fb7185; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-width: 320px; background: radial-gradient(circle at 50% 0%, #0b2944, var(--bg) 48%); color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        main { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 64px; }
+        h1, h2, h3, p { margin-top: 0; } h1 { margin-bottom: 6px; } h2 { font-size: 18px; } h3 { font-size: 15px; }
+        .muted { color: var(--muted); font-size: 13px; } .hidden { display: none !important; }
+        .panel { background: rgba(10, 22, 40, .9); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 14px 50px rgba(0,0,0,.2); }
+        .stack { display: grid; gap: 16px; } .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        label { display: grid; gap: 6px; color: #cbd5e1; font-size: 13px; font-weight: 600; }
+        input, textarea, select { width: 100%; border: 1px solid #334155; border-radius: 9px; padding: 11px 12px; background: #07101e; color: var(--text); font: inherit; }
+        textarea { resize: vertical; min-height: 90px; } input:focus, textarea:focus, select:focus { outline: 2px solid rgba(0,242,254,.3); border-color: var(--blue); }
+        button { border: 0; border-radius: 9px; padding: 11px 15px; cursor: pointer; font: inherit; font-weight: 700; }
+        button.primary { background: var(--blue); color: #031018; } button.secondary { background: #123050; color: var(--text); } button.danger { background: rgba(251,113,133,.15); color: var(--danger); }
+        button:disabled { cursor: not-allowed; opacity: .5; } .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        header { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 26px; } .product-list { display: grid; gap: 10px; }
+        .product-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px; border: 1px solid #1e293b; border-radius: 10px; background: rgba(7,16,30,.8); }
+        .product-row strong { display: block; } .product-row small { color: var(--muted); } .status { min-height: 22px; color: var(--blue); font-size: 13px; }
+        .warning { margin: 0 0 22px; padding: 13px 15px; border-left: 3px solid var(--blue); background: rgba(0,242,254,.07); color: #cbd5e1; font-size: 13px; }
+        @media (max-width: 700px) { main { width: min(100% - 20px, 600px); padding-top: 22px; } header, .product-row { align-items: stretch; flex-direction: column; } .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<main>
+    <section id="adminPanel">
+        <header><div><h1>Morley.ae Admin</h1><p class="muted">Local editor for the versioned <strong>products.js</strong> catalog.</p></div></header>
+        <p class="warning"><strong>Workflow:</strong> edit here, download the generated <strong>products.js</strong>, replace the repository file with it, then commit/push it to GitHub. Only that upload makes changes permanent for every visitor.</p>
+        <div class="stack">
+            <section class="panel"><div class="actions" style="justify-content:space-between"><h2>Products and Scenepacks</h2><button id="newButton" class="secondary" type="button">New product</button></div><div id="productList" class="product-list"></div></section>
+            <section class="panel">
+                <h2>Manage categories</h2>
+                <p class="muted">Preset and Scenepack categories are separate. Add or remove them here.</p>
+                <div class="grid">
+                    <label>Category type<select id="categoryType"><option value="preset">Preset category</option><option value="movieShow">Movie / Show category</option><option value="characterActor">Character / Actor category</option></select></label>
+                    <label>New category<input id="categoryName" placeholder="e.g. Transitions"></label>
+                </div>
+                <div class="actions" style="margin-top:12px"><button id="addCategoryButton" class="primary" type="button">Add category</button></div>
+                <p id="categoryStatus" class="status"></p>
+                <div id="categoryList" class="product-list"></div>
+            </section>
+            <section class="panel">
+                <h2 id="formTitle">New product</h2>
+                <form id="productForm" class="stack">
+                    <input id="productId" type="hidden">
+                    <div class="grid">
+                        <label>Type<select id="type"><option value="preset">Editing Preset</option><option value="scenepack">Scenepack</option></select></label>
+                        <label>Title<input id="title" required></label>
+                    </div>
+                    <div id="presetCategoryField">
+                        <label>Preset categories<select id="presetCategories" multiple size="4"></select></label>
+                    </div>
+                    <div id="scenepackCategoryFields" class="hidden grid">
+                        <label>Movie / Show<select id="movieShows" multiple size="4"></select></label>
+                        <label>Character / Actor<select id="characters" multiple size="4"></select></label>
+                    </div>
+                    <label>Description<textarea id="desc" required></textarea></label>
+                    <div class="grid"><label>Price / label<input id="price" placeholder="$9.99" required></label><label>Payhip URL<input id="payhip" type="url" required placeholder="https://payhip.com/..." ></label></div>
+                    <label>Preview URLs<textarea id="media" required placeholder="One GitHub raw URL per line"></textarea></label>
+                    <div id="presetVideoField">
+                        <label>Preview video URLs <span class="muted">Presets only</span><textarea id="previewVideos" placeholder="One video link per line"></textarea></label>
+                    </div>
+                    <label>Product details<textarea id="details" placeholder="Included files, requirements, formats..."></textarea></label>
+                    <div class="actions"><button class="primary" type="submit">Save product</button><button id="cancelButton" class="secondary" type="button">Clear</button></div>
+                    <p id="formStatus" class="status"></p>
+                </form>
+            </section>
+            <section class="panel"><h2>Download permanent file</h2><p class="muted">The download contains the complete current catalog and the Scenepack marketing password.</p><div class="actions"><button id="downloadButton" class="primary" type="button">Download products.js</button><button id="resetButton" class="danger" type="button">Reset local changes</button></div><p id="saveStatus" class="status"></p></section>
+        </div>
+    </section>
+</main>
+<script src="products.js"></script>
+<script>
+    const CATALOG_KEY = 'morley_admin_catalog';
+    const CATEGORY_KEY = 'morley_admin_categories';
+    const PASSWORD_KEY = 'morley_download_password';
+    let products = [];
+    let categories = { preset: [], scenepack: { movieShow: [], characterActor: [] } };
+
+    const $ = id => document.getElementById(id);
+    const clone = value => JSON.parse(JSON.stringify(value));
+    const mediaFromText = value => value.split('\n').map(url => url.trim()).filter(Boolean).map(src => ({ type: /\.(mp4|webm|mov)(\?.*)?$/i.test(src) ? 'video' : 'image', src }));
+    const textFromMedia = media => (media || []).map(item => item.src).join('\n');
+
+    function loadCatalog() {
+        const saved = localStorage.getItem(CATALOG_KEY);
+        products = saved ? JSON.parse(saved) : clone(window.PRODUCTS_DATA || []);
+        const savedCategories = localStorage.getItem(CATEGORY_KEY);
+        categories = savedCategories ? JSON.parse(savedCategories) : clone(window.PRODUCT_CATEGORIES || { preset: [], scenepack: { movieShow: [], characterActor: [] } });
+        categories.preset = Array.isArray(categories.preset) ? categories.preset : [];
+        if (Array.isArray(categories.scenepack)) categories.scenepack = { movieShow: categories.scenepack, characterActor: [] };
+        categories.scenepack = categories.scenepack || { movieShow: [], characterActor: [] };
+        categories.scenepack.movieShow = Array.isArray(categories.scenepack.movieShow) ? categories.scenepack.movieShow : [];
+        categories.scenepack.characterActor = Array.isArray(categories.scenepack.characterActor) ? categories.scenepack.characterActor : [];
+    }
+
+    function persistCatalog() { localStorage.setItem(CATALOG_KEY, JSON.stringify(products)); }
+
+    function persistCategories() { localStorage.setItem(CATEGORY_KEY, JSON.stringify(categories)); }
+
+    function renderList() {
+        $('productList').innerHTML = products.length ? products.map(product => `<div class="product-row"><div><strong>${escapeHtml(product.title)}</strong><small>${product.type === 'scenepack' ? 'Scenepack' : 'Preset'} · ${escapeHtml(product.price)} · ${escapeHtml(getProductCategorySummary(product) || 'No category')}</small></div><div class="actions"><button class="secondary edit" data-id="${product.id}" type="button">Edit</button><button class="danger delete" data-id="${product.id}" type="button">Delete</button></div></div>`).join('') : '<p class="muted">No products yet.</p>';
+        document.querySelectorAll('.edit').forEach(button => button.onclick = () => editProduct(Number(button.dataset.id)));
+        document.querySelectorAll('.delete').forEach(button => button.onclick = () => deleteProduct(Number(button.dataset.id)));
+        renderCategoryList();
+        renderCategorySelect();
+    }
+
+    function renderCategoryList() {
+        $('categoryList').innerHTML = [['preset', 'Preset categories'], ['movieShow', 'Movie / Show categories'], ['characterActor', 'Character / Actor categories']].map(([type, label]) => `<div><h3>${label}</h3><div class="actions">${getCategoryValues(type).map(category => `<span class="product-row" style="padding:7px 10px"><small>${escapeHtml(category)}</small><button class="danger remove-category" data-type="${type}" data-category="${escapeHtml(category)}" type="button">Remove</button></span>`).join('') || '<small class="muted">None yet.</small>'}</div></div>`).join('');
+        document.querySelectorAll('.remove-category').forEach(button => button.onclick = () => removeCategory(button.dataset.type, button.dataset.category));
+    }
+
+    function getCategoryValues(type) { return type === 'preset' ? categories.preset : categories.scenepack[type] || []; }
+
+    function getProductCategorySummary(product) {
+        if (product.type === 'preset') return (product.presetCategories || product.categories || []).join(', ');
+        return [...(product.movieShows || []), ...(product.characters || [])].join(', ');
+    }
+
+    function renderCategorySelect() {
+        const type = $('type').value;
+        $('presetCategoryField').classList.toggle('hidden', type !== 'preset');
+        $('scenepackCategoryFields').classList.toggle('hidden', type !== 'scenepack');
+        $('presetVideoField').classList.toggle('hidden', type !== 'preset');
+        setOptions($('presetCategories'), categories.preset, type === 'preset' ? getSelectedValues($('presetCategories')) : []);
+        setOptions($('movieShows'), categories.scenepack.movieShow, type === 'scenepack' ? getSelectedValues($('movieShows')) : []);
+        setOptions($('characters'), categories.scenepack.characterActor, type === 'scenepack' ? getSelectedValues($('characters')) : []);
+    }
+
+    function getSelectedValues(select) { return Array.from(select.selectedOptions || []).map(option => option.value); }
+
+    function setOptions(select, values, selectedValues) {
+        select.replaceChildren(...values.map(value => { const option = document.createElement('option'); option.value = value; option.textContent = value; option.selected = selectedValues.includes(value); return option; }));
+    }
+
+    function addCategory() {
+        const type = $('categoryType').value;
+        const name = $('categoryName').value.trim();
+        if (!name) return;
+        const values = getCategoryValues(type);
+        if (!values.includes(name)) values.push(name);
+        $('categoryName').value = '';
+        persistCategories();
+        renderList();
+        $('categoryStatus').textContent = 'Category saved locally. Download products.js to publish it.';
+    }
+
+    function removeCategory(type, name) {
+        if (type === 'preset') categories.preset = categories.preset.filter(category => category !== name);
+        else categories.scenepack[type] = categories.scenepack[type].filter(category => category !== name);
+        products.forEach(product => {
+            if (type === 'preset' && product.type === 'preset') product.presetCategories = (product.presetCategories || product.categories || []).filter(category => category !== name);
+            if (type !== 'preset' && product.type === 'scenepack') product[type === 'movieShow' ? 'movieShows' : 'characters'] = (product[type === 'movieShow' ? 'movieShows' : 'characters'] || []).filter(category => category !== name);
+        });
+        persistCategories();
+        persistCatalog();
+        renderList();
+    }
+
+    function editProduct(id) {
+        const product = products.find(item => item.id === id); if (!product) return;
+        $('productId').value = product.id; $('type').value = product.type || 'preset'; renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    function resetForm() { $('productForm').reset(); $('productId').value = ''; $('formTitle').textContent = 'New product'; $('formStatus').textContent = ''; renderCategorySelect(); }
+
+    function saveProduct(event) {
+        event.preventDefault();
+        const media = mediaFromText($('media').value); if (!media.length) { $('formStatus').textContent = 'Add at least one preview URL.'; return; }
+        const id = $('productId').value ? Number($('productId').value) : Date.now();
+        const type = $('type').value;
+        const previewVideos = type === 'preset' ? $('previewVideos').value.split('\n').map(url => url.trim()).filter(Boolean) : [];
+        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: media[0].src, media, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
+        const index = products.findIndex(item => item.id === id); if (index === -1) products.unshift(product); else products[index] = product;
+        persistCatalog(); renderList(); resetForm(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
+    }
+
+    function deleteProduct(id) { if (!confirm('Delete this product?')) return; products = products.filter(product => product.id !== id); persistCatalog(); renderList(); resetForm(); }
+
+    function escapeHtml(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char])); }
+
+    function downloadCatalog() {
+        const password = localStorage.getItem(PASSWORD_KEY) || window.SCENEPACK_DOWNLOAD_PASSWORD || 'CHANGE_THIS_PASSWORD';
+        const output = `/* Permanent product catalog. Edit with admin.html, then commit this file to GitHub. */\nwindow.SCENEPACK_DOWNLOAD_PASSWORD = ${JSON.stringify(password)};\nwindow.PRODUCT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\nwindow.PRODUCTS_DATA = ${JSON.stringify(products, null, 4)};\n`;
+        const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([output], { type: 'text/javascript' })); link.download = 'products.js'; link.click(); URL.revokeObjectURL(link.href); $('saveStatus').textContent = 'products.js downloaded. Replace the repository file and push it to GitHub.';
+    }
+
+    $('productForm').onsubmit = saveProduct; $('newButton').onclick = resetForm; $('cancelButton').onclick = resetForm; $('downloadButton').onclick = downloadCatalog; $('addCategoryButton').onclick = addCategory; $('type').onchange = renderCategorySelect; $('categoryType').onchange = renderCategoryList;
+    $('resetButton').onclick = () => { if (!confirm('Discard local catalog changes and reload products.js?')) return; localStorage.removeItem(CATALOG_KEY); localStorage.removeItem(CATEGORY_KEY); loadCatalog(); renderList(); resetForm(); $('saveStatus').textContent = 'Local changes reset.'; };
+    loadCatalog(); renderList(); resetForm();
+</script>
+</body>
+</html>
