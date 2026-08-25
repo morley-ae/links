@@ -13,7 +13,7 @@
         .muted { color: var(--muted); font-size: 13px; } .hidden { display: none !important; }
         .panel { background: rgba(10, 22, 40, .9); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 14px 50px rgba(0,0,0,.2); }
         .stack { display: grid; gap: 16px; } .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-        label { display: grid; gap: 6px; color: #cbd5e1; font-size: 13px; font-weight: 600; }
+        label { display: grid; gap: 6px; color: #cbd5e1; font-size: 13px; font-weight: 600; } .checkbox-label { display: flex; grid-template-columns: auto 1fr; align-items: center; gap: 8px; } .checkbox-label input { width: auto; }
         input, textarea, select { width: 100%; border: 1px solid #334155; border-radius: 9px; padding: 11px 12px; background: #07101e; color: var(--text); font: inherit; }
         textarea { resize: vertical; min-height: 90px; } input:focus, textarea:focus, select:focus { outline: 2px solid rgba(0,242,254,.3); border-color: var(--blue); }
         button { border: 0; border-radius: 9px; padding: 11px 15px; cursor: pointer; font: inherit; font-weight: 700; }
@@ -47,11 +47,11 @@
             </section>
             <section class="panel">
                 <div class="actions" style="justify-content:space-between"><h2>Manage product sales</h2><button id="newSaleButton" class="secondary" type="button">New sale</button></div>
-                <p class="muted">Sales apply to presets only. Scenepacks are always free and cannot be selected.</p>
+                <p class="muted">Sales apply to presets only and are handled automatically by Payhip. Scenepacks are always free and cannot be selected.</p>
                 <div id="saleList" class="product-list"></div>
                 <form id="saleForm" class="stack hidden" style="margin-top:16px">
                     <input id="saleId" type="hidden">
-                    <div class="grid"><label>Sale name<input id="saleName" required placeholder="Summer sale"></label><label>Payhip sale code<input id="saleCode" required placeholder="SUMMER25"></label></div>
+                    <label>Sale name<input id="saleName" required placeholder="Summer sale"></label>
                     <div class="grid"><label>Discount type<select id="discountType"><option value="percent">Percentage</option><option value="amount">Fixed amount</option></select></label><label>Discount value<input id="discountValue" type="number" min="0.01" step="0.01" required placeholder="25"></label></div>
                     <div class="grid"><label>Starts<input id="startsAt" type="datetime-local" required></label><label>Ends<input id="endsAt" type="datetime-local" required></label></div>
                     <label>Products affected<select id="saleProducts" multiple size="5"></select></label>
@@ -77,6 +77,12 @@
                     <label>Description<textarea id="desc" required></textarea></label>
                     <div class="grid"><label>Price / label<input id="price" placeholder="$9.99" required></label><label>Payhip ID<input id="payhip" type="text" required placeholder="e.g. Vt5WC" ></label></div>
                     <label>Preview URLs<textarea id="media" required placeholder="One GitHub raw URL per line"></textarea></label>
+                    <label class="checkbox-label"><input id="isColoring" type="checkbox"> This product is a coloring (CC)</label>
+                    <div id="ccPreviewFields" class="hidden stack">
+                        <p class="muted">For the second preview, add matching images with the coloring and without the coloring. The first preview above stays the normal product preview.</p>
+                        <label>Preview with CC<input id="ccPreviewWith" type="url" placeholder="Image URL with coloring"></label>
+                        <label>Preview without CC<input id="ccPreviewWithout" type="url" placeholder="Image URL without coloring"></label>
+                    </div>
                     <div id="presetVideoField">
                         <label>Preview video URLs <span class="muted">Presets only</span><textarea id="previewVideos" placeholder="One video link per line"></textarea></label>
                     </div>
@@ -116,7 +122,7 @@
         categories.scenepack.characterActor = Array.isArray(categories.scenepack.characterActor) ? categories.scenepack.characterActor : [];
         const savedSales = localStorage.getItem(SALES_KEY);
         sales = savedSales ? JSON.parse(savedSales) : clone(window.SALES_DATA || []);
-        sales = Array.isArray(sales) ? sales.filter(sale => Array.isArray(sale.productIds)) : [];
+        sales = Array.isArray(sales) ? sales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale) : [];
     }
 
     function persistCatalog() { localStorage.setItem(CATALOG_KEY, JSON.stringify(products)); }
@@ -139,7 +145,7 @@
         $('saleList').innerHTML = sales.length ? sales.map(sale => {
             const active = new Date(sale.startsAt).getTime() <= now && new Date(sale.endsAt).getTime() >= now;
             const productCount = sale.productIds.length;
-            return `<div class="product-row sale-row"><div><strong>${escapeHtml(sale.name)}</strong><small>${sale.discountType === 'percent' ? `${sale.discountValue}%` : `${sale.discountValue} fixed amount`} · code ${escapeHtml(sale.code)} · ${productCount} preset${productCount === 1 ? '' : 's'} · ${active ? 'Active now' : 'Scheduled or expired'}</small></div><div class="actions"><button class="secondary edit-sale" data-id="${escapeHtml(sale.id)}" type="button">Edit</button><button class="danger delete-sale" data-id="${escapeHtml(sale.id)}" type="button">Delete</button></div></div>`;
+            return `<div class="product-row sale-row"><div><strong>${escapeHtml(sale.name)}</strong><small>${sale.discountType === 'percent' ? `${sale.discountValue}%` : `${sale.discountValue} fixed amount`} · automatic Payhip sale · ${productCount} preset${productCount === 1 ? '' : 's'} · ${active ? 'Active now' : 'Scheduled or expired'}</small></div><div class="actions"><button class="secondary edit-sale" data-id="${escapeHtml(sale.id)}" type="button">Edit</button><button class="danger delete-sale" data-id="${escapeHtml(sale.id)}" type="button">Delete</button></div></div>`;
         }).join('') : '<p class="muted">No sales yet.</p>';
         document.querySelectorAll('.edit-sale').forEach(button => button.onclick = () => editSale(button.dataset.id));
         document.querySelectorAll('.delete-sale').forEach(button => button.onclick = () => deleteSale(button.dataset.id));
@@ -157,7 +163,7 @@
 
     function editSale(id) {
         const sale = sales.find(item => String(item.id) === String(id)); if (!sale) return;
-        $('saleId').value = sale.id; $('saleName').value = sale.name; $('saleCode').value = sale.code; $('discountType').value = sale.discountType; $('discountValue').value = sale.discountValue; $('startsAt').value = sale.startsAt.slice(0, 16); $('endsAt').value = sale.endsAt.slice(0, 16); renderSaleProducts(sale.productIds); $('saleForm').classList.remove('hidden'); $('saleForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        $('saleId').value = sale.id; $('saleName').value = sale.name; $('discountType').value = sale.discountType; $('discountValue').value = sale.discountValue; $('startsAt').value = sale.startsAt.slice(0, 16); $('endsAt').value = sale.endsAt.slice(0, 16); renderSaleProducts(sale.productIds); $('saleForm').classList.remove('hidden'); $('saleForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function saveSale(event) {
@@ -167,7 +173,7 @@
         if (!productIds.length) { $('saleStatus').textContent = 'Select at least one preset.'; return; }
         if (endsAt <= startsAt) { $('saleStatus').textContent = 'The end must be after the start.'; return; }
         const id = $('saleId').value || `sale-${Date.now()}`;
-        const sale = { id, name: $('saleName').value.trim(), code: $('saleCode').value.trim(), discountType: $('discountType').value, discountValue: Number($('discountValue').value), startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString(), productIds };
+        const sale = { id, name: $('saleName').value.trim(), discountType: $('discountType').value, discountValue: Number($('discountValue').value), startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString(), productIds };
         const index = sales.findIndex(item => String(item.id) === String(id)); if (index === -1) sales.push(sale); else sales[index] = sale;
         persistSales(); renderSales(); resetSaleForm(); $('saleStatus').textContent = 'Sale saved locally. Download products.js to publish it.';
     }
@@ -191,6 +197,7 @@
         $('presetCategoryField').classList.toggle('hidden', type !== 'preset');
         $('scenepackCategoryFields').classList.toggle('hidden', type !== 'scenepack');
         $('presetVideoField').classList.toggle('hidden', type !== 'preset');
+        $('ccPreviewFields').classList.toggle('hidden', type !== 'preset' || !$('isColoring').checked);
         setOptions($('presetCategories'), categories.preset, type === 'preset' ? getSelectedValues($('presetCategories')) : []);
         setOptions($('movieShows'), categories.scenepack.movieShow, type === 'scenepack' ? getSelectedValues($('movieShows')) : []);
         setOptions($('characters'), categories.scenepack.characterActor, type === 'scenepack' ? getSelectedValues($('characters')) : []);
@@ -228,7 +235,7 @@
 
     function editProduct(id) {
         const product = products.find(item => item.id === id); if (!product) return;
-        $('productId').value = product.id; $('type').value = product.type || 'preset'; renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; renderCategorySelect(); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function resetForm() { $('productForm').reset(); $('productId').value = ''; $('formTitle').textContent = 'New product'; $('formStatus').textContent = ''; renderCategorySelect(); }
@@ -239,7 +246,10 @@
         const id = $('productId').value ? Number($('productId').value) : Date.now();
         const type = $('type').value;
         const previewVideos = type === 'preset' ? $('previewVideos').value.split('\n').map(url => url.trim()).filter(Boolean) : [];
-        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: media[0].src, media, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
+        const isColoring = type === 'preset' && $('isColoring').checked;
+        const ccPreview = isColoring ? { withCc: $('ccPreviewWith').value.trim(), withoutCc: $('ccPreviewWithout').value.trim() } : null;
+        if (isColoring && (!ccPreview.withCc || !ccPreview.withoutCc)) { $('formStatus').textContent = 'Add both CC comparison image URLs.'; return; }
+        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: media[0].src, media, isColoring, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
         const index = products.findIndex(item => item.id === id); if (index === -1) products.unshift(product); else products[index] = product;
         persistCatalog(); renderList(); resetForm(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
     }
@@ -254,7 +264,7 @@
         const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([output], { type: 'text/javascript' })); link.download = 'products.js'; link.click(); URL.revokeObjectURL(link.href); $('saveStatus').textContent = 'products.js downloaded. Replace the repository file and push it to GitHub.';
     }
 
-    $('productForm').onsubmit = saveProduct; $('newButton').onclick = resetForm; $('cancelButton').onclick = resetForm; $('downloadButton').onclick = downloadCatalog; $('addCategoryButton').onclick = addCategory; $('type').onchange = renderCategorySelect; $('categoryType').onchange = renderCategoryList; $('saleForm').onsubmit = saveSale; $('newSaleButton').onclick = () => { resetSaleForm(); $('saleForm').classList.remove('hidden'); }; $('cancelSaleButton').onclick = resetSaleForm;
+    $('productForm').onsubmit = saveProduct; $('newButton').onclick = resetForm; $('cancelButton').onclick = resetForm; $('downloadButton').onclick = downloadCatalog; $('addCategoryButton').onclick = addCategory; $('type').onchange = renderCategorySelect; $('isColoring').onchange = renderCategorySelect; $('categoryType').onchange = renderCategoryList; $('saleForm').onsubmit = saveSale; $('newSaleButton').onclick = () => { resetSaleForm(); $('saleForm').classList.remove('hidden'); }; $('cancelSaleButton').onclick = resetSaleForm;
     $('resetButton').onclick = () => { if (!confirm('Discard local catalog changes and reload products.js?')) return; localStorage.removeItem(CATALOG_KEY); localStorage.removeItem(CATEGORY_KEY); localStorage.removeItem(SALES_KEY); loadCatalog(); renderList(); resetForm(); resetSaleForm(); $('saveStatus').textContent = 'Local changes reset.'; };
     loadCatalog(); renderList(); resetForm();
 </script>
