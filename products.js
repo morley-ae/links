@@ -23,6 +23,61 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
+        "id": 1787689956846,
+        "title": "TEST CC",
+        "desc": "COLORING",
+        "price": "2,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview1.jpg",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview1.jpg"
+            }
+        ],
+        "isColoring": true,
+        "ccPreview": {
+            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview3.jpg",
+            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview2.jpg"
+        },
+        "categories": [],
+        "presetCategories": [
+            "CCs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [],
+        "details": "dddddd",
+        "type": "preset",
+        "payhip": "ff899"
+    },
+    {
+        "id": 1787687307732,
+        "title": "EDITING PACK V1",
+        "desc": "My first editing pack",
+        "price": "4,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg"
+            }
+        ],
+        "isColoring": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [
+            "Packs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/payhip%20video5.mp4"
+        ],
+        "details": "Contains:\n-MAIN CC\n-zoom in (main, fast, reverse)\n-zoom out (main, fast)\n-twixtor (main, fast, reverse)\n-slides (left, right, up-down, left-right)\n-lens blur\n-exposure\n-white/black jaws\n-ripple effect\n-rotation transition\n-muffled audio\n﻿(my outro is not included and only my main cc is included)\n\nPlugins which are required for some presets:\nBCC, Sapphire, Magic Bullet Looks, Twixtor\n\nImportant Notes:\nAll sales are final (no refunds).\nPersonal usage only: Do not share or redistribute the files.\nCredits: Please tag/credit me if you use these presets.\nCompatibility: Built for After Effects 2024, 2025 and 2026. DM me on TikTok or Discord (@morley.ae) for AE 2022/2023 versions.\n\nNeed help? Send me a message on TikTok or Discord (@morley.ae)!",
+        "type": "preset",
+        "payhip": "dJVcz"
+    },
+    {
         "id": 1787680489101,
         "title": "HUNGER GAMES SOTR - TRAILER & TEASER",
         "desc": "TRAILER & TEASER & ISOLATED VOCALS",
@@ -289,6 +344,35 @@ window.PRODUCTS_DATA = [
         "details": "Season: 1\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 35 min\nSize: 2,17 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
         "payhip": "97QaS"
+    },
+    {
+        "id": 1787680768491,
+        "title": "BOB MORLEY - THE ROOKIE",
+        "desc": "BOB MORLEY IN EP 3X14",
+        "price": "FREE",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bob%20morley/bob%20morley%20the%20rookie%20s03e14%20all%20scenes.jpg",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bob%20morley/bob%20morley%20the%20rookie%20s03e14%20all%20scenes.jpg"
+            }
+        ],
+        "isColoring": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [],
+        "movieShows": [
+            "The 100",
+            "The Rookie"
+        ],
+        "characters": [
+            "Bellamy Blake",
+            "Bob Morley"
+        ],
+        "previewVideos": [],
+        "details": "Episode: 3x14\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 3:45 min\nSize: 308 mb\n\nPlease give credits if you use this!",
+        "type": "scenepack",
+        "payhip": "F02r6"
     }
 ];
 window.SALES_DATA = [

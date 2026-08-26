@@ -439,7 +439,7 @@
                                 <button type="button" onclick="toggleAccordion('aboutFaqCreator')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqCreator">
                                     <span>Who am I?</span><i id="icon-aboutFaqCreator" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
                                 </button>
-                                <div id="aboutFaqCreator" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">Just call me morley :)</div>
+                                <div id="aboutFaqCreator" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">morley :)</div>
                             </div>
                             <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:620ms">
                                 <button type="button" onclick="toggleAccordion('aboutFaqInspiration')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqInspiration">
@@ -449,7 +449,7 @@
                             </div>
                             <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:720ms">
                                 <button type="button" onclick="toggleAccordion('aboutFaqCommunity')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqCommunity">
-                                    <span>How can I reach out to you?</span><i id="icon-aboutFaqCommunity" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
+                                    <span>How can you reach out to me?</span><i id="icon-aboutFaqCommunity" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
                                 </button>
                                 <div id="aboutFaqCommunity" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">DM me on Discord → morley.ae<br>DM me on TikTok → morley.ae</div>
                             </div>
@@ -473,6 +473,16 @@
                 <p id="cartStatus" class="mt-2 text-xs text-slate-400"></p>
                 <div id="cartItems" class="mt-5 space-y-3"></div>
                 <div class="mt-6 flex gap-3"><button id="checkoutButton" type="button" onclick="checkoutCart()" class="flex-1 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">Proceed to Payhip checkout</button><button type="button" onclick="clearCart()" class="rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold text-slate-300 hover:border-red-400 hover:text-red-400">Clear</button></div>
+            </div>
+        </div>
+
+        <div id="previewVideoModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/80 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="previewVideoTitle">
+            <div id="previewVideoPanel" class="glass-panel w-full max-w-4xl rounded-2xl border border-neon-blue/50 p-4 shadow-glow-lg sm:p-6">
+                <div class="flex items-center justify-between gap-4">
+                    <h2 id="previewVideoTitle" class="truncate text-lg font-extrabold text-white sm:text-2xl">Preview video</h2>
+                    <button type="button" onclick="closePreviewVideo()" class="shrink-0 text-slate-400 hover:text-white" aria-label="Close preview video"><i data-lucide="x" class="h-5 w-5"></i></button>
+                </div>
+                <video id="previewVideoPlayer" class="mt-4 max-h-[75vh] w-full rounded-xl bg-black" controls autoplay playsinline></video>
             </div>
         </div>
 
@@ -718,6 +728,30 @@
             shopNoticeTimer = window.setTimeout(() => notice.classList.remove('is-visible'), 4200);
         }
 
+        function getProductShareUrl(productId) {
+            const url = new URL(window.location.href);
+            url.hash = `product/${productId}`;
+            return url.href;
+        }
+
+        async function shareProduct(productId) {
+            const shareUrl = getProductShareUrl(productId);
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+            } catch (error) {
+                const textarea = document.createElement('textarea');
+                textarea.value = shareUrl;
+                textarea.setAttribute('readonly', '');
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                textarea.remove();
+            }
+            showShopNotice('Link copied to clipboard.');
+        }
+
         function addToCart(productId) {
             const product = getStoredPresets().find(item => String(item.id) === String(productId));
             if (!product) return;
@@ -849,6 +883,60 @@
             if (product) openScenepackCheckout([product]);
         }
 
+        function getPlayableVideoUrl(value) {
+            try {
+                const url = new URL(String(value).trim());
+                if (url.hostname === 'github.com') {
+                    const parts = url.pathname.split('/').filter(Boolean);
+                    if (parts.length >= 5 && parts[2] === 'blob') {
+                        return `https://raw.githubusercontent.com/${parts[0]}/${parts[1]}/${parts.slice(3).join('/')}`;
+                    }
+                    if (parts.length >= 5 && parts[2] === 'raw') {
+                        return `https://raw.githubusercontent.com/${parts[0]}/${parts[1]}/${parts.slice(3).join('/')}`;
+                    }
+                }
+                return url.href;
+            } catch (error) {
+                return '';
+            }
+        }
+
+        function openPreviewVideo(url, title, index) {
+            const playableUrl = getPlayableVideoUrl(url);
+            const modal = document.getElementById('previewVideoModal');
+            const player = document.getElementById('previewVideoPlayer');
+            const heading = document.getElementById('previewVideoTitle');
+            if (!playableUrl || !modal || !player) {
+                showShopNotice('This preview video URL is not valid.');
+                return;
+            }
+            heading.textContent = `${title} · Preview ${index + 1}`;
+            player.src = playableUrl;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            lucide.createIcons();
+            player.play().catch(() => {});
+        }
+
+        function closePreviewVideo() {
+            const modal = document.getElementById('previewVideoModal');
+            const player = document.getElementById('previewVideoPlayer');
+            if (player) {
+                player.pause();
+                player.removeAttribute('src');
+                player.load();
+            }
+            if (modal) modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        document.getElementById('previewVideoModal').addEventListener('click', event => {
+            if (event.target.id === 'previewVideoModal') closePreviewVideo();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closePreviewVideo();
+        });
+
         function getProductCategories(type) {
             const categories = window.PRODUCT_CATEGORIES || {};
             if (type === 'scenepack') {
@@ -912,6 +1000,14 @@
 
         function escapeHtml(value) {
             return String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[character]));
+        }
+
+        function formatProductInfo(value) {
+            const escaped = escapeHtml(value || '').replace(/^\s*([-*_])(?:\s*\1){2,}\s*$/gm, '<hr class="my-4 border-slate-700">');
+            return escaped
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
+                .replace(/\n/g, '<br>');
         }
 
         function categoryButtons(type, categories, activeCategory) {
@@ -980,7 +1076,7 @@
             const preview = media.type === 'video' ? `<video src="${media.src}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" muted></video>` : `<img src="${media.src}" alt="${p.title}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700">`;
             return `<article onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 hover:border-neon-blue/60 hover:shadow-glow transition-all duration-300 flex flex-col group cursor-pointer">
                 <div class="relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
-                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button></div></div>
+                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${p.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div></div>
             </article>`;
         }
 
@@ -1031,10 +1127,10 @@
             const previewControls = productMedia.length > 1 ? `<button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(-1)" aria-label="Previous preview" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-left" class="h-5 w-5"></i></button><button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(1)" aria-label="Next preview" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>` : '';
             const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div>${previewControls}</div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" controls class="w-full aspect-square object-contain rounded-xl bg-black"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
             const saleHint = sale ? '<p class="mt-3 rounded-lg border border-lime-300/30 bg-lime-300/10 px-3 py-2 text-xs font-semibold text-lime-200">This sale is applied automatically at Payhip checkout.</p>' : '';
-            const action = `<div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(product, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button>${saleHint}</div>`;
+            const action = `<div class="mt-5 max-w-md space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(product, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${product.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div>${saleHint}`;
             const previewVideos = product.type === 'preset' && Array.isArray(product.previewVideos) ? product.previewVideos : [];
-            const videoLinks = previewVideos.length ? `<div class="mt-4 space-y-2"><h4 class="text-sm font-bold text-white">Preview videos</h4>${previewVideos.map((url, index) => `<a href="${url}" target="_blank" rel="noopener" class="block text-sm font-semibold text-neon-blue underline hover:text-white">Preview ${index + 1}</a>`).join('')}</div>` : '';
-            container.innerHTML = `<div class="glass-panel rounded-2xl p-5 sm:p-8 border border-neon-blue/30 shadow-glow-lg space-y-6"><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div>${sale ? '<span class="inline-flex rounded-md bg-lime-300 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-950">Sale</span>' : ''}<span class="block text-[10px] uppercase tracking-widest text-neon-blue mt-2">${product.type === 'scenepack' ? 'Scene Pack' : 'Editing Preset'}</span><h2 class="text-3xl font-extrabold text-white mt-2">${product.title}</h2><p class="text-slate-400 mt-2">${product.desc}</p></div><span class="text-2xl font-bold">${renderPrice(product)}</span></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"><div>${media}</div><div class="border-t border-slate-800 pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0"><h3 class="font-bold text-white mb-2">Product information</h3><p class="text-sm leading-relaxed text-slate-300 whitespace-pre-line">${product.details || product.desc}</p>${videoLinks}<div class="mt-6">${action}</div></div></div></div>`;
+            const videoLinks = previewVideos.length ? `<div class="mt-4 space-y-2"><h4 class="text-sm font-bold text-white">Preview videos</h4>${previewVideos.map((url, index) => `<button type="button" onclick="event.stopPropagation(); openPreviewVideo('${escapeHtml(url).replace(/'/g, '&#039;')}', '${escapeHtml(product.title).replace(/'/g, '&#039;')}', ${index})" class="flex w-full items-center gap-2 rounded-xl border border-neon-blue/40 bg-neon-blue/10 px-4 py-2.5 text-left text-sm font-semibold text-neon-blue transition-colors hover:bg-neon-blue/20 hover:text-white"><i data-lucide="play" class="h-4 w-4 shrink-0"></i>Preview ${index + 1}</button>`).join('')}</div>` : '';
+            container.innerHTML = `<div class="glass-panel rounded-2xl p-5 sm:p-8 border border-neon-blue/30 shadow-glow-lg space-y-6"><div><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div>${sale ? '<span class="inline-flex rounded-md bg-lime-300 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-950">Sale</span>' : ''}<span class="block text-[10px] uppercase tracking-widest text-neon-blue mt-2">${product.type === 'scenepack' ? 'Scene Pack' : 'Editing Preset'}</span><h2 class="text-3xl font-extrabold text-white mt-2">${product.title}</h2><p class="text-slate-400 mt-2">${product.desc}</p></div><span class="text-2xl font-bold">${renderPrice(product)}</span></div></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"><div>${media}${videoLinks}${action}</div><div class="border-t border-slate-800 pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0"><h3 class="font-bold text-white mb-2">Product information</h3><div class="text-sm leading-relaxed text-slate-300">${formatProductInfo(product.details || product.desc)}</div></div></div></div>`;
             const activeFilter = product.type === 'preset' ? ((window.activeProductCategory && window.activeProductCategory.preset) || 'all') : ((window.activeProductCategory && window.activeProductCategory.scenepack) || { movieShow: 'all', characterActor: 'all' });
             renderCategoryFilters(product.type, activeFilter, 'productDetailCategories');
             if (product.type === 'preset') renderPresetPreview(productMedia);
