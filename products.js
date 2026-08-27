@@ -105,7 +105,7 @@ window.PRODUCTS_DATA = [
     {
         "id": 1787680178117,
         "title": "BELLAMY BLAKE - SEASON 1",
-        "desc": "ALL SCENES",
+        "desc": "BEST SCENES",
         "price": "FREE",
         "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20best%20scenes.jpg",
         "media": [
