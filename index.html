@@ -123,6 +123,13 @@
         .video-autoplay-cover { display: block; width: 100%; height: 100%; transform: none !important; transition: opacity 240ms ease !important; filter: none !important; will-change: auto !important; backface-visibility: hidden !important; -webkit-backface-visibility: hidden !important; }
         .product-card-enter video,
         .product-card-enter img { object-fit: cover; }
+        .outro-hover-media { position: relative; width: 100%; height: 100%; }
+        .outro-hover-media .outro-hover-video,
+        .outro-hover-media .outro-static-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .outro-hover-media .outro-hover-video { display: none; z-index: 2; }
+        .outro-hover-media.is-hovering .outro-hover-video { display: block; }
+        .outro-hover-media .outro-static-image { display: block; z-index: 1; }
+        .outro-hover-media.is-hovering .outro-static-image { display: none; }
         .product-card-enter .media-frame video,
         .product-card-enter .media-frame img { opacity: 1; }
         .cart-fade-out { animation: cart-fade-out 260ms ease-in both; }
@@ -1209,13 +1216,39 @@
                 });
             }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
             cards.forEach(card => observer.observe(card));
+            bindOutroHoverVideos(grid);
+        }
+
+        function bindOutroHoverVideos(grid) {
+            const hoverCards = grid.querySelectorAll('[data-outro-video]');
+            hoverCards.forEach(card => {
+                const video = card.querySelector('video[data-outro-video-player]');
+                if (!video) return;
+                const mediaWrap = card.querySelector('.outro-hover-media');
+                if (!mediaWrap) return;
+                card.addEventListener('mouseenter', () => {
+                    mediaWrap.classList.add('is-hovering');
+                    video.currentTime = 0;
+                    const playPromise = video.play();
+                    if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
+                });
+                card.addEventListener('mouseleave', () => {
+                    mediaWrap.classList.remove('is-hovering');
+                    video.pause();
+                    video.currentTime = 0;
+                });
+            });
         }
 
         function productCard(p, index = 0) {
             const media = getProductMedia(p)[0];
             const sale = getSaleForProduct(p);
-            const preview = media.type === 'video' ? `<video src="${media.src}" class="video-autoplay-cover w-full h-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${media.src}" alt="${p.title}" class="w-full h-full object-contain">`;
-            return `<article onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 flex flex-col group cursor-pointer">
+            const mediaIsVideo = media.type === 'video';
+            const hasOutroVideo = Boolean(p.isOutro && Array.isArray(p.previewVideos) && p.previewVideos.length && p.previewVideos[0]);
+            const hoverVideoUrl = hasOutroVideo ? p.previewVideos[0] : null;
+            const staticCoverUrl = hasOutroVideo ? (p.outroCover || p.image || media.src) : (media.src || p.image);
+            const preview = hasOutroVideo ? `<div class="outro-hover-media"><img src="${escapeHtml(staticCoverUrl)}" alt="${escapeHtml(p.title)}" class="outro-static-image w-full h-full object-cover"><video data-outro-video-player src="${escapeHtml(hoverVideoUrl)}" class="outro-hover-video w-full h-full object-cover" muted loop playsinline preload="auto"></video></div>` : (mediaIsVideo ? `<video src="${media.src}" class="video-autoplay-cover w-full h-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${media.src || p.image}" alt="${p.title}" class="w-full h-full object-contain">`);
+            return `<article data-outro-video="${hasOutroVideo ? 'true' : 'false'}" onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 flex flex-col group cursor-pointer">
                 <div class="media-frame relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
                 <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${p.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div></div>
             </article>`;

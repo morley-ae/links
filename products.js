@@ -24,6 +24,35 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
+        "id": 1788038780295,
+        "title": "test outro",
+        "desc": "Personal outro",
+        "price": "4,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1%20preview.jpg",
+        "outroCover": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1%20preview.jpg",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1%20preview.jpg"
+            }
+        ],
+        "isColoring": false,
+        "isOutro": true,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [
+            "Outros"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1.mp4"
+        ],
+        "details": "ddd",
+        "type": "preset",
+        "payhip": "sdsds"
+    },
+    {
         "id": 1788037307074,
         "title": "EDITING PACK V1 (Copy)",
         "desc": "My first editing pack",

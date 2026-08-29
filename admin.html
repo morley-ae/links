@@ -422,6 +422,10 @@
                             <div class="grid"><label>Price / label<input id="price" placeholder="4,99€" required></label><label>Payhip ID<input id="payhip" type="text" required placeholder="e.g. Vt5WC"></label></div>
                             <label>Preview URLs<textarea id="media" required placeholder="One GitHub raw URL per line"></textarea></label>
                             <label class="checkbox-label"><input id="isColoring" type="checkbox"> This product is a coloring (CC)</label>
+                            <label class="checkbox-label"><input id="isOutro" type="checkbox"> This product is an outro</label>
+                            <div id="outroCoverField" class="hidden stack">
+                                <label>Outro cover image<input id="outroCover" type="url" placeholder="Image URL used when not hovered"></label>
+                            </div>
                             <div id="ccPreviewFields" class="hidden stack">
                                 <p class="muted">Add comparison images for the coloring variant. The first preview stays the standard product preview.</p>
                                 <label>Preview with CC<input id="ccPreviewWith" type="url" placeholder="Image URL with coloring"></label>
@@ -665,6 +669,7 @@
         $('presetCategoryField').classList.toggle('hidden', type !== 'preset');
         $('scenepackCategoryFields').classList.toggle('hidden', type !== 'scenepack');
         $('presetVideoField').classList.toggle('hidden', type !== 'preset');
+        $('outroCoverField').classList.toggle('hidden', type !== 'preset' || !$('isOutro').checked);
         $('ccPreviewFields').classList.toggle('hidden', type !== 'preset' || !$('isColoring').checked);
         setOptions($('presetCategories'), categories.preset, type === 'preset' ? getSelectedValues($('presetCategories')) : []);
         setOptions($('movieShows'), categories.scenepack.movieShow, type === 'scenepack' ? getSelectedValues($('movieShows')) : []);
@@ -703,7 +708,7 @@
 
     function editProduct(id) {
         const product = products.find(item => item.id === id); if (!product) return;
-        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; $('productEditorPanel').open = true; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); $('isOutro').checked = Boolean(product.isOutro); $('outroCover').value = product.outroCover || product.image || ''; renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; $('productEditorPanel').open = true; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function resetForm() { $('productForm').reset(); $('productId').value = ''; $('formTitle').textContent = 'New product'; $('formStatus').textContent = ''; renderCategorySelect(); }
@@ -715,9 +720,11 @@
         const type = $('type').value;
         const previewVideos = type === 'preset' ? $('previewVideos').value.split('\n').map(url => url.trim()).filter(Boolean) : [];
         const isColoring = type === 'preset' && $('isColoring').checked;
+        const isOutro = type === 'preset' && $('isOutro').checked;
+        const outroCover = isOutro ? $('outroCover').value.trim() : '';
         const ccPreview = isColoring ? { withCc: $('ccPreviewWith').value.trim(), withoutCc: $('ccPreviewWithout').value.trim() } : null;
         if (isColoring && (!ccPreview.withCc || !ccPreview.withoutCc)) { $('formStatus').textContent = 'Add both CC comparison image URLs.'; return; }
-        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: media[0].src, media, isColoring, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
+        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: isOutro && outroCover ? outroCover : media[0].src, outroCover: isOutro ? (outroCover || media[0].src) : '', media, isColoring, isOutro, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
         const index = products.findIndex(item => item.id === id); if (index === -1) products.unshift(product); else products[index] = product;
         persistCatalog(); renderList(); resetForm(); updateDashboardStats(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
     }
