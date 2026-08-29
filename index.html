@@ -144,12 +144,12 @@
             100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
         }
         .view-enter {
-            animation: view-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: view-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
             will-change: transform, opacity, filter;
             transform: translate3d(0, 0, 0);
         }
         .view-enter > * {
-            animation: build-item 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            animation: build-item 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
             will-change: transform, opacity;
         }
         @keyframes about-orbit {
@@ -179,9 +179,9 @@
             0% { width: 0%; }
             100% { width: 100%; }
         }
-        .view-enter > *:nth-child(2) { animation-delay: 60ms; }
-        .view-enter > *:nth-child(3) { animation-delay: 120ms; }
-        .view-enter > *:nth-child(4) { animation-delay: 180ms; }
+        .view-enter > *:nth-child(2) { animation-delay: 90ms; }
+        .view-enter > *:nth-child(3) { animation-delay: 180ms; }
+        .view-enter > *:nth-child(4) { animation-delay: 270ms; }
         .initial-build { animation: initial-build 900ms ease-out forwards; }
         .animate-float {
             animation: float 5s ease-in-out infinite;
@@ -212,6 +212,28 @@
         #shopNotice.is-visible {
             opacity: 1;
             transform: translate(-50%, 0);
+        }
+        @keyframes modal-fade-in {
+            0% { opacity: 0; transform: translateY(14px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes modal-fade-out {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(10px) scale(0.985); }
+        }
+        .modal-surface {
+            animation: modal-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            will-change: opacity, transform;
+        }
+        .modal-overlay {
+            transition: opacity 260ms ease;
+        }
+        .modal-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .modal-overlay:not(.hidden) {
+            opacity: 1;
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
@@ -505,8 +527,8 @@
             </div>
         </div>
 
-        <div id="discordLinkModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="discordLinkModalTitle">
-            <div class="glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 shadow-glow-lg">
+        <div id="discordLinkModal" class="modal-overlay hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="discordLinkModalTitle">
+            <div class="modal-surface glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 shadow-glow-lg">
                 <div class="flex items-start justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <img src="https://knobiwan4-prog.github.io/morley.ae/logo.png" alt="EndlessAudios" class="h-12 w-12 rounded-xl border border-neon-blue/40 bg-neon-blue/10 object-cover">
@@ -528,13 +550,13 @@
         <div id="shopNotice" class="fixed left-1/2 top-6 z-[60] w-[min(92vw,36rem)] rounded-xl border border-neon-blue/50 bg-[#0a1628]/95 px-4 py-3 text-center text-sm font-semibold text-white shadow-glow-lg" role="alert" aria-live="polite"></div>
 
         <!-- Simple community gate for Scenepack downloads -->
-        <div id="downloadGate" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/75 px-4" role="dialog" aria-modal="true" aria-labelledby="downloadGateTitle">
-            <div class="glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 sm:p-8 text-center shadow-glow-lg">
+        <div id="downloadGate" class="modal-overlay hidden fixed inset-0 z-40 flex items-center justify-center bg-black/75 px-4" role="dialog" aria-modal="true" aria-labelledby="downloadGateTitle">
+            <div class="modal-surface glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 sm:p-8 text-center shadow-glow-lg">
                 <button type="button" onclick="closeDownloadGate()" class="float-right text-slate-400 hover:text-white" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
                 <i data-lucide="download" class="mx-auto mb-4 h-10 w-10 text-neon-blue"></i>
                 <h2 id="downloadGateTitle" class="text-2xl sm:text-3xl font-extrabold uppercase text-neon-blue">Join EndlessAudios on Discord</h2>
                 <p class="mt-4 text-sm leading-relaxed text-white">You need to join the EndlessAudios Discord server to get the download password.</p>
-                <a href="https://discord.gg/ehVMQtUacr" target="_blank" class="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-neon-blue px-5 py-3 text-sm font-bold text-black transition-opacity hover:opacity-90"><i data-lucide="message-circle" class="h-4 w-4"></i>Join Discord</a>
+                <button type="button" onclick="closeDownloadGate(); openDiscordLinkModal();" class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-neon-blue px-5 py-3 text-sm font-bold text-black transition-opacity hover:opacity-90"><i data-lucide="message-circle" class="h-4 w-4"></i>Join Discord</button>
                 <form onsubmit="unlockScenepack(event)" class="mt-6 space-y-3 text-left">
                     <label for="downloadPassword" class="block text-xs font-semibold text-slate-300">Discord password</label>
                     <input id="downloadPassword" type="password" required autocomplete="off" class="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2.5 text-white focus:border-neon-blue focus:outline-none" placeholder="Enter password">
@@ -772,21 +794,45 @@
 
         const DISCORD_LINK = 'https://discord.gg/ehVMQtUacr';
 
+        function syncBodyOverflow() {
+            const hasOpenModal = [
+                document.getElementById('discordLinkModal'),
+                document.getElementById('downloadGate'),
+                document.getElementById('cartView'),
+                document.getElementById('previewVideoModal')
+            ].some(modal => modal && !modal.classList.contains('hidden'));
+            document.body.classList.toggle('overflow-hidden', hasOpenModal);
+        }
+
         function openDiscordLinkModal() {
             const modal = document.getElementById('discordLinkModal');
             const input = document.getElementById('discordInviteLink');
             if (!modal || !input) return;
-            input.value = DISCORD_LINK;
+            closeDownloadGate(true);
             modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
+            input.value = DISCORD_LINK;
+            requestAnimationFrame(() => {
+                const surface = modal.querySelector('.modal-surface');
+                if (surface) {
+                    surface.style.animation = 'modal-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both';
+                }
+            });
+            syncBodyOverflow();
             lucide.createIcons();
         }
 
         function closeDiscordLinkModal() {
             const modal = document.getElementById('discordLinkModal');
             if (!modal) return;
-            modal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
+            const surface = modal.querySelector('.modal-surface');
+            if (surface) {
+                surface.style.animation = 'modal-fade-out 220ms ease-in both';
+            }
+            window.setTimeout(() => {
+                modal.classList.add('hidden');
+                if (surface) surface.style.animation = '';
+                syncBodyOverflow();
+            }, 180);
         }
 
         async function copyDiscordLink() {
@@ -947,9 +993,15 @@
                 window.pendingDownloadProducts = products;
                 document.getElementById('downloadPassword').value = '';
                 document.getElementById('downloadGateStatus').classList.add('hidden');
-                document.getElementById('downloadGate').classList.remove('hidden');
+                const gate = document.getElementById('downloadGate');
+                gate.classList.remove('hidden');
+                const surface = gate.querySelector('.modal-surface');
+                if (surface) {
+                    surface.style.animation = 'modal-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both';
+                }
+                syncBodyOverflow();
                 lucide.createIcons();
-                document.getElementById('downloadPassword').focus();
+                requestAnimationFrame(() => document.getElementById('downloadPassword').focus());
         }
 
         function buyProduct(productId) {
@@ -1184,10 +1236,29 @@
             switchView(product && product.type === 'scenepack' ? 'scenepacks' : 'presets');
         }
 
-        function closeDownloadGate() {
-            document.getElementById('downloadGate').classList.add('hidden');
-            window.pendingDownloadProduct = null;
-            window.pendingDownloadProducts = null;
+        function closeDownloadGate(immediate = false) {
+            const gate = document.getElementById('downloadGate');
+            if (!gate) return;
+            if (immediate) {
+                gate.classList.add('hidden');
+                const surface = gate.querySelector('.modal-surface');
+                if (surface) surface.style.animation = '';
+                window.pendingDownloadProduct = null;
+                window.pendingDownloadProducts = null;
+                syncBodyOverflow();
+                return;
+            }
+            const surface = gate.querySelector('.modal-surface');
+            if (surface) {
+                surface.style.animation = 'modal-fade-out 220ms ease-in both';
+            }
+            window.setTimeout(() => {
+                gate.classList.add('hidden');
+                if (surface) surface.style.animation = '';
+                window.pendingDownloadProduct = null;
+                window.pendingDownloadProducts = null;
+                syncBodyOverflow();
+            }, 180);
         }
 
         function unlockScenepack(event) {
