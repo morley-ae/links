@@ -5,94 +5,444 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Morley.ae Admin</title>
     <style>
-        :root { color-scheme: dark; --bg: #050b14; --panel: #0a1628; --line: #1e3a60; --blue: #00f2fe; --text: #f8fafc; --muted: #94a3b8; --danger: #fb7185; }
+        :root {
+            color-scheme: dark;
+            --bg: #040b13;
+            --bg-2: #091827;
+            --panel: rgba(9, 21, 35, 0.95);
+            --panel-strong: #0d1f2f;
+            --line: #214160;
+            --blue: #00f2fe;
+            --blue-soft: rgba(0, 242, 254, 0.12);
+            --text: #ebf5ff;
+            --muted: #9fb2c8;
+            --danger: #fb7185;
+            --success: #86efac;
+            --shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+        }
         * { box-sizing: border-box; }
-        body { margin: 0; min-width: 320px; background: radial-gradient(circle at 50% 0%, #0b2944, var(--bg) 48%); color: var(--text); font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-        main { width: min(1100px, calc(100% - 32px)); margin: 0 auto; padding: 40px 0 64px; }
-        h1, h2, h3, p { margin-top: 0; } h1 { margin-bottom: 6px; } h2 { font-size: 18px; } h3 { font-size: 15px; }
-        .muted { color: var(--muted); font-size: 13px; } .hidden { display: none !important; }
-        .panel { background: rgba(10, 22, 40, .9); border: 1px solid var(--line); border-radius: 14px; padding: 22px; box-shadow: 0 14px 50px rgba(0,0,0,.2); }
-        .stack { display: grid; gap: 16px; } .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-        label { display: grid; gap: 6px; color: #cbd5e1; font-size: 13px; font-weight: 600; } .checkbox-label { display: flex; grid-template-columns: auto 1fr; align-items: center; gap: 8px; } .checkbox-label input { width: auto; }
-        input, textarea, select { width: 100%; border: 1px solid #334155; border-radius: 9px; padding: 11px 12px; background: #07101e; color: var(--text); font: inherit; }
-        textarea { resize: vertical; min-height: 90px; } input:focus, textarea:focus, select:focus { outline: 2px solid rgba(0,242,254,.3); border-color: var(--blue); }
-        button { border: 0; border-radius: 9px; padding: 11px 15px; cursor: pointer; font: inherit; font-weight: 700; }
-        button.primary { background: var(--blue); color: #031018; } button.secondary { background: #123050; color: var(--text); } button.danger { background: rgba(251,113,133,.15); color: var(--danger); }
-        button:disabled { cursor: not-allowed; opacity: .5; } .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-        header { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 26px; } .product-list { display: grid; gap: 10px; }
-        .product-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 13px; border: 1px solid #1e293b; border-radius: 10px; background: rgba(7,16,30,.8); }
-        .product-row strong { display: block; } .product-row small { color: var(--muted); } .status { min-height: 22px; color: var(--blue); font-size: 13px; }
-        details.panel { padding: 0; } details.panel > summary { display: flex; justify-content: space-between; align-items: center; gap: 16px; cursor: pointer; list-style: none; padding: 22px; font-size: 18px; font-weight: 700; } details.panel > summary::-webkit-details-marker { display: none; } details.panel[open] > summary { border-bottom: 1px solid var(--line); } .panel-content { padding: 22px; } .order-controls { display: flex; gap: 6px; } .order-controls button { padding: 7px 10px; }
-        .sale-row { border-color: rgba(190,242,100,.35); } .sale-row small { color: #d9f99d; }
-        .warning { margin: 0 0 22px; padding: 13px 15px; border-left: 3px solid var(--blue); background: rgba(0,242,254,.07); color: #cbd5e1; font-size: 13px; }
-        @media (max-width: 700px) { main { width: min(100% - 20px, 600px); padding-top: 22px; } header, .product-row { align-items: stretch; flex-direction: column; } .grid { grid-template-columns: 1fr; } }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            min-width: 320px;
+            background: radial-gradient(circle at top, #102d4c, var(--bg) 45%);
+            color: var(--text);
+            font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+        main {
+            width: min(1500px, calc(100% - 24px));
+            margin: 0 auto;
+            padding: 28px 0 60px;
+        }
+        h1, h2, h3, p { margin-top: 0; }
+        h1 { font-size: clamp(2rem, 3.2vw, 2.7rem); margin-bottom: 6px; }
+        h2 { font-size: 1.05rem; }
+        h3 { font-size: 0.95rem; }
+        .muted { color: var(--muted); font-size: 13px; }
+        .hidden { display: none !important; }
+        .eyebrow {
+            margin-bottom: 8px;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--blue);
+            font-weight: 700;
+        }
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+        .stack { display: grid; gap: 18px; }
+        .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .header-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+        .stat-card {
+            background: rgba(12, 25, 41, .92);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px 16px;
+            min-height: 94px;
+        }
+        .stat-card small {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+        .stat-card strong {
+            display: block;
+            margin-top: 10px;
+            font-size: clamp(1.3rem, 2vw, 2rem);
+            line-height: 1.1;
+        }
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        .sidebar,
+        .editor-column {
+            padding: 18px;
+            position: static;
+        }
+        .editor-column {
+            padding: 0;
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .editor-panel-shell {
+            position: static;
+            display: grid;
+            gap: 18px;
+        }
+        .search-box { margin-bottom: 16px; }
+        label {
+            display: grid;
+            gap: 7px;
+            color: #d9e8f7;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .checkbox-label input { width: auto; }
+        input, textarea, select {
+            width: 100%;
+            border: 1px solid #2d4669;
+            border-radius: 10px;
+            padding: 11px 12px;
+            background: #07121d;
+            color: var(--text);
+            font: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+        input::placeholder, textarea::placeholder { color: #7d90a9; }
+        textarea { resize: vertical; min-height: 110px; }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(0, 242, 254, 0.15);
+        }
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 11px 14px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        button:hover { transform: translateY(-1px); }
+        button.primary { background: linear-gradient(135deg, var(--blue), #7ef7ff); color: #031018; }
+        button.secondary { background: #152c45; color: var(--text); }
+        button.ghost { background: rgba(148, 163, 184, 0.08); color: var(--text); border: 1px solid rgba(148,163,184,.25); }
+        button.danger { background: rgba(251,113,133,.12); color: var(--danger); border: 1px solid rgba(251,113,133,.3); }
+        button:disabled { cursor: not-allowed; opacity: .5; transform: none; }
+        .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .product-list { display: grid; gap: 10px; }
+        .product-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 12px;
+            border: 1px solid #24354b;
+            border-radius: 12px;
+            background: rgba(8, 17, 28, 0.85);
+        }
+        .product-row strong { display: block; margin-bottom: 2px; }
+        .product-row small { color: var(--muted); }
+        .product-card-meta {
+            min-width: 0;
+            display: block;
+            flex: 1 1 auto;
+        }
+        .row-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .mini-button {
+            padding: 8px 9px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .order-controls { display: flex; gap: 5px; }
+        .order-controls button { padding: 7px 9px; }
+        .status { min-height: 24px; color: var(--blue); font-size: 13px; }
+        details.panel { padding: 0; overflow: hidden; }
+        details.panel > summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            list-style: none;
+            padding: 18px 20px;
+            font-size: 1rem;
+            font-weight: 700;
+            background: rgba(11, 23, 38, .7);
+        }
+        .summary-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .summary-arrow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            color: var(--blue);
+            font-size: 12px;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+        .summary-arrow::before {
+            content: "▸";
+        }
+        details.panel > summary::-webkit-details-marker { display: none; }
+        details.panel[open] > summary { border-bottom: 1px solid var(--line); }
+        details.panel[open] > summary .summary-arrow { transform: rotate(90deg); }
+        .panel-content { padding: 20px; }
+        .sale-row { border-color: rgba(134, 239, 172, 0.35); }
+        .sale-row small { color: #d9f99d; }
+        .warning {
+            margin: 0 0 18px;
+            padding: 13px 16px;
+            border-left: 3px solid var(--blue);
+            background: rgba(0,242,254,.08);
+            border-radius: 12px;
+            color: #dceaf8;
+            font-size: 13px;
+        }
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .pill {
+            border-radius: 999px;
+            padding: 8px 12px;
+            background: rgba(148,163,184,.08);
+            border: 1px solid rgba(148,163,184,.26);
+            color: var(--text);
+            font-size: 12px;
+        }
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            background: rgba(0,242,254,.08);
+            border: 1px solid rgba(0,242,254,.28);
+            color: var(--blue);
+            font-size: 12px;
+        }
+        .tag button {
+            padding: 0;
+            background: transparent;
+            color: inherit;
+            font-size: 18px;
+            line-height: 1;
+        }
+        @media (max-width: 980px) {
+            .workspace { grid-template-columns: 1fr; }
+            .sidebar, .editor-column { position: static; }
+            .stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (max-width: 700px) {
+            main { width: min(100% - 18px, 600px); padding-top: 20px; }
+            .topbar, .product-row { flex-direction: column; align-items: stretch; }
+            .header-actions { justify-content: flex-start; }
+            .stats-row, .grid { grid-template-columns: 1fr; }
+            .row-actions { justify-content: flex-start; }
+        }
     </style>
 </head>
 <body>
 <main>
     <section id="adminPanel">
-        <header><div><h1>Morley.ae Admin</h1><p class="muted">Local editor for the versioned <strong>products.js</strong> catalog.</p></div></header>
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Admin</p>
+                <h1>Morley.ae Admin</h1>
+                <p class="muted">Quick catalog editor for the permanent <strong>products.js</strong> file.</p>
+            </div>
+            <div class="header-actions">
+                <button id="quickNewPreset" class="secondary" type="button">+ New preset</button>
+                <button id="quickNewScenepack" class="ghost" type="button">+ New scenepack</button>
+                <button id="copyButton" class="primary" type="button">Copy file</button>
+                <button id="downloadButton" class="secondary" type="button">Download file</button>
+            </div>
+        </header>
+
+        <div class="stats-row">
+            <div class="stat-card">
+                <small>Presets</small>
+                <strong id="presetCount">0</strong>
+            </div>
+            <div class="stat-card">
+                <small>Scenepacks</small>
+                <strong id="scenepackCount">0</strong>
+            </div>
+            <div class="stat-card">
+                <small>Categories</small>
+                <strong id="categoryCount">0</strong>
+            </div>
+            <div class="stat-card">
+                <small>Active sales</small>
+                <strong id="saleCount">0</strong>
+            </div>
+        </div>
+
         <p class="warning"><strong>Workflow:</strong> edit here, download the generated <strong>products.js</strong>, replace the repository file with it, then commit/push it to GitHub. Only that upload makes changes permanent for every visitor.</p>
-        <div class="stack">
-            <details class="panel"><summary><span>Products and Scenepacks</span><button id="newButton" class="secondary" type="button">New product</button></summary><div class="panel-content"><p class="muted">Use the arrows to set the display order for each type.</p><div id="productList" class="product-list"></div></div></details>
-            <details class="panel">
-                <summary>Manage categories</summary><div class="panel-content">
-                <p class="muted">Preset and Scenepack categories are separate. Add or remove them here.</p>
-                <div class="grid">
-                    <label>Category type<select id="categoryType"><option value="preset">Preset category</option><option value="movieShow">Movie / Show category</option><option value="characterActor">Character / Actor category</option></select></label>
-                    <label>New category<input id="categoryName" placeholder="e.g. Transitions"></label>
-                </div>
-                <div class="actions" style="margin-top:12px"><button id="addCategoryButton" class="primary" type="button">Add category</button></div>
-                <p id="categoryStatus" class="status"></p>
-                <div id="categoryList" class="product-list"></div>
-            </div></details>
-            <details class="panel">
-                <summary><span>Manage product sales</span><button id="newSaleButton" class="secondary" type="button">New sale</button></summary><div class="panel-content"><p class="muted">Create and edit your automatic Payhip sales.</p>
-                <p class="muted">Sales apply to presets only and are handled automatically by Payhip. Scenepacks are always free and cannot be selected.</p>
-                <div id="saleList" class="product-list"></div>
-                <form id="saleForm" class="stack hidden" style="margin-top:16px">
-                    <input id="saleId" type="hidden">
-                    <label>Sale name<input id="saleName" required placeholder="Summer sale"></label>
-                    <div class="grid"><label>Discount type<select id="discountType"><option value="percent">Percentage</option><option value="amount">Fixed amount</option></select></label><label>Discount value<input id="discountValue" type="number" min="0.01" step="0.01" required placeholder="25"></label></div>
-                    <div class="grid"><label>Starts<input id="startsAt" type="datetime-local" required></label><label>Ends<input id="endsAt" type="datetime-local" required></label></div>
-                    <label>Products affected<select id="saleProducts" multiple size="5"></select></label>
-                    <div class="actions"><button class="primary" type="submit">Save sale</button><button id="cancelSaleButton" class="secondary" type="button">Clear</button></div>
-                    <p id="saleStatus" class="status"></p>
-                </form>
-            </div></details>
-            <details class="panel">
-                <summary><span id="formTitle">New product</span></summary><div class="panel-content">
-                <form id="productForm" class="stack">
-                    <input id="productId" type="hidden">
-                    <div class="grid">
-                        <label>Type<select id="type"><option value="preset">Editing Preset</option><option value="scenepack">Scenepack</option></select></label>
-                        <label>Title<input id="title" required></label>
+
+        <div class="workspace">
+            <div class="stack">
+                <details class="panel">
+                    <summary><span class="summary-title"><span class="summary-arrow"></span><span>Products</span></span><button id="newButton" class="secondary" type="button">New</button></summary>
+                    <div class="panel-content">
+                        <label class="search-box">
+                            Search
+                            <input id="productSearch" type="search" placeholder="Search title, price or payhip...">
+                        </label>
+                        <div id="productList" class="product-list"></div>
                     </div>
-                    <div id="presetCategoryField">
-                        <label>Preset categories<select id="presetCategories" multiple size="4"></select></label>
+                </details>
+
+                <details class="panel">
+                    <summary><span class="summary-title"><span class="summary-arrow"></span><span>Manage categories</span></span></summary>
+                    <div class="panel-content">
+                        <p class="muted">Preset and Scenepack categories are grouped separately. This keeps filtering clearer and faster.</p>
+                        <div class="grid">
+                            <label>Category type<select id="categoryType"><option value="preset">Preset category</option><option value="movieShow">Movie / Show category</option><option value="characterActor">Character / Actor category</option></select></label>
+                            <label>New category<input id="categoryName" placeholder="e.g. Transitions"></label>
+                        </div>
+                        <div class="actions" style="margin-top:12px">
+                            <button id="addCategoryButton" class="primary" type="button">Add category</button>
+                        </div>
+                        <p id="categoryStatus" class="status"></p>
+                        <div id="categoryList" class="product-list"></div>
                     </div>
-                    <div id="scenepackCategoryFields" class="hidden grid">
-                        <label>Movie / Show<select id="movieShows" multiple size="4"></select></label>
-                        <label>Character / Actor<select id="characters" multiple size="4"></select></label>
+                </details>
+
+                <details class="panel">
+                    <summary><span class="summary-title"><span class="summary-arrow"></span><span>Manage product sales</span></span><button id="newSaleButton" class="secondary" type="button">New sale</button></summary>
+                    <div class="panel-content">
+                        <p class="muted">Create and edit automatic Payhip sales. Sales apply to presets only and Scenepacks stay free.</p>
+                        <div id="saleList" class="product-list"></div>
+                        <form id="saleForm" class="stack hidden" style="margin-top:16px">
+                            <input id="saleId" type="hidden">
+                            <label>Sale name<input id="saleName" required placeholder="Summer sale"></label>
+                            <div class="grid"><label>Discount type<select id="discountType"><option value="percent">Percentage</option><option value="amount">Fixed amount</option></select></label><label>Discount value<input id="discountValue" type="number" min="0.01" step="0.01" required placeholder="25"></label></div>
+                            <div class="grid"><label>Starts<input id="startsAt" type="datetime-local" required></label><label>Ends<input id="endsAt" type="datetime-local" required></label></div>
+                            <label>Products affected<select id="saleProducts" multiple size="5"></select></label>
+                            <div class="actions"><button class="primary" type="submit">Save sale</button><button id="cancelSaleButton" class="secondary" type="button">Clear</button></div>
+                            <p id="saleStatus" class="status"></p>
+                        </form>
                     </div>
-                    <label>Description<textarea id="desc" required></textarea></label>
-                    <div class="grid"><label>Price / label<input id="price" placeholder="$9.99" required></label><label>Payhip ID<input id="payhip" type="text" required placeholder="e.g. Vt5WC" ></label></div>
-                    <label>Preview URLs<textarea id="media" required placeholder="One GitHub raw URL per line"></textarea></label>
-                    <label class="checkbox-label"><input id="isColoring" type="checkbox"> This product is a coloring (CC)</label>
-                    <div id="ccPreviewFields" class="hidden stack">
-                        <p class="muted">For the second preview, add matching images with the coloring and without the coloring. The first preview above stays the normal product preview.</p>
-                        <label>Preview with CC<input id="ccPreviewWith" type="url" placeholder="Image URL with coloring"></label>
-                        <label>Preview without CC<input id="ccPreviewWithout" type="url" placeholder="Image URL without coloring"></label>
+                </details>
+
+                <details class="panel" id="productEditorPanel">
+                    <summary><span class="summary-title"><span class="summary-arrow"></span><span id="formTitle">New product</span></span></summary>
+                    <div class="panel-content">
+                        <form id="productForm" class="stack">
+                            <input id="productId" type="hidden">
+                            <div class="grid">
+                                <label>Type<select id="type"><option value="preset">Editing Preset</option><option value="scenepack">Scenepack</option></select></label>
+                                <label>Title<input id="title" required placeholder="e.g. Classic Edit Pack"></label>
+                            </div>
+                            <div id="presetCategoryField">
+                                <label>Preset categories<select id="presetCategories" multiple size="4"></select></label>
+                            </div>
+                            <div id="scenepackCategoryFields" class="hidden grid">
+                                <label>Movie / Show<select id="movieShows" multiple size="4"></select></label>
+                                <label>Character / Actor<select id="characters" multiple size="4"></select></label>
+                            </div>
+                            <label>Description<textarea id="desc" required placeholder="Short sales text for the storefront."></textarea></label>
+                            <div class="grid"><label>Price / label<input id="price" placeholder="4,99€" required></label><label>Payhip ID<input id="payhip" type="text" required placeholder="e.g. Vt5WC"></label></div>
+                            <label>Preview URLs<textarea id="media" required placeholder="One GitHub raw URL per line"></textarea></label>
+                            <label class="checkbox-label"><input id="isColoring" type="checkbox"> This product is a coloring (CC)</label>
+                            <div id="ccPreviewFields" class="hidden stack">
+                                <p class="muted">Add comparison images for the coloring variant. The first preview stays the standard product preview.</p>
+                                <label>Preview with CC<input id="ccPreviewWith" type="url" placeholder="Image URL with coloring"></label>
+                                <label>Preview without CC<input id="ccPreviewWithout" type="url" placeholder="Image URL without coloring"></label>
+                            </div>
+                            <div id="presetVideoField">
+                                <label>Preview video URLs <span class="muted">Presets only · GitHub blob/raw links supported</span><textarea id="previewVideos" placeholder="One GitHub video file link per line"></textarea></label>
+                            </div>
+                            <label>Product details<textarea id="details" placeholder="Use **bold**, *italic* and --- for a separator..."></textarea></label>
+                            <div class="actions">
+                                <button class="primary" type="submit">Save product</button>
+                                <button id="cancelButton" class="secondary" type="button">Clear</button>
+                                <button id="duplicateButton" class="ghost" type="button">Duplicate</button>
+                            </div>
+                            <p id="formStatus" class="status"></p>
+                        </form>
                     </div>
-                    <div id="presetVideoField">
-                        <label>Preview video URLs <span class="muted">Presets only · GitHub blob/raw links supported</span><textarea id="previewVideos" placeholder="One GitHub video file link per line"></textarea></label>
+                </details>
+
+                <details class="panel" id="downloadPanel">
+                    <summary><span class="summary-title"><span class="summary-arrow"></span><span>Download permanent file</span></span></summary>
+                    <div class="panel-content">
+                        <p class="muted">This export contains the complete current catalog and the Scenepack marketing password.</p>
+                        <div class="actions">
+                            <button id="copyButtonSecondary" class="primary" type="button">Copy products.js</button>
+                            <button id="downloadButtonSecondary" class="secondary" type="button">Download products.js</button>
+                            <button id="resetButton" class="danger" type="button">Reset local changes</button>
+                        </div>
+                        <p id="saveStatus" class="status"></p>
                     </div>
-                    <label>Product details<textarea id="details" placeholder="Use **bold**, *italic* and --- for a separator..."></textarea></label>
-                    <div class="actions"><button class="primary" type="submit">Save product</button><button id="cancelButton" class="secondary" type="button">Clear</button></div>
-                    <p id="formStatus" class="status"></p>
-                </form>
-            </div></details>
-            <details class="panel" id="downloadPanel" open><summary>Download permanent file</summary><div class="panel-content"><p class="muted">The download contains the complete current catalog and the Scenepack marketing password.</p><div class="actions"><button id="downloadButton" class="primary" type="button">Download products.js</button><button id="copyButton" class="secondary" type="button">Copy products.js content</button><button id="resetButton" class="danger" type="button">Reset local changes</button></div><p id="saveStatus" class="status"></p></div></details>
+                </details>
+            </div>
         </div>
     </section>
 </main>
@@ -110,6 +460,13 @@
     const clone = value => JSON.parse(JSON.stringify(value));
     const mediaFromText = value => value.split('\n').map(url => url.trim()).filter(Boolean).map(src => ({ type: /\.(mp4|webm|mov)(\?.*)?$/i.test(src) ? 'video' : 'image', src }));
     const textFromMedia = media => (media || []).map(item => item.src).join('\n');
+
+    function updateDashboardStats() {
+        $('presetCount').textContent = String(products.filter(product => (product.type || 'preset') === 'preset').length);
+        $('scenepackCount').textContent = String(products.filter(product => (product.type || 'preset') === 'scenepack').length);
+        $('categoryCount').textContent = String((categories.preset || []).length + (categories.scenepack?.movieShow || []).length + (categories.scenepack?.characterActor || []).length);
+        $('saleCount').textContent = String(sales.length);
+    }
 
     function loadCatalog() {
         const fileProducts = clone(window.PRODUCTS_DATA || []);
@@ -162,10 +519,18 @@
 
     function persistSales() { localStorage.setItem(SALES_KEY, JSON.stringify(sales)); }
 
+    function matchesSearch(product, query) {
+        const normalized = query.trim().toLowerCase();
+        if (!normalized) return true;
+        const searchableText = [product.title, product.price, product.payhip, product.desc, ...(product.presetCategories || []), ...(product.movieShows || []), ...(product.characters || [])].join(' ').toLowerCase();
+        return searchableText.includes(normalized);
+    }
+
     function renderList() {
+        const query = $('productSearch')?.value || '';
         const renderType = (type, label) => {
-            const typeProducts = products.filter(product => (product.type || 'preset') === type);
-            return `<div><h3>${label}</h3><div class="product-list">${typeProducts.length ? typeProducts.map((product, index) => `<div class="product-row"><div><strong>${escapeHtml(product.title)}</strong><small>${escapeHtml(product.price)} · ${escapeHtml(getProductCategorySummary(product) || 'No category')}</small></div><div class="actions"><div class="order-controls"><button class="secondary move-product" data-id="${product.id}" data-direction="up" type="button" aria-label="Move ${escapeHtml(product.title)} up"${index === 0 ? ' disabled' : ''}>↑</button><button class="secondary move-product" data-id="${product.id}" data-direction="down" type="button" aria-label="Move ${escapeHtml(product.title)} down"${index === typeProducts.length - 1 ? ' disabled' : ''}>↓</button></div><button class="secondary edit" data-id="${product.id}" type="button">Edit</button><button class="danger delete" data-id="${product.id}" type="button">Delete</button></div></div>`).join('') : '<p class="muted">No products yet.</p>'}</div></div>`;
+            const typeProducts = products.filter(product => (product.type || 'preset') === type && matchesSearch(product, query));
+            return `<div><h3>${label}</h3><div class="product-list">${typeProducts.length ? typeProducts.map((product, index) => `<div class="product-row"><div class="product-card-meta"><strong>${escapeHtml(product.title)}</strong><small>${escapeHtml(product.price)} · ${escapeHtml(getProductCategorySummary(product) || 'No category')}</small></div><div class="row-actions"><div class="order-controls"><button class="secondary move-product mini-button" data-id="${product.id}" data-direction="up" type="button" aria-label="Move ${escapeHtml(product.title)} up"${index === 0 ? ' disabled' : ''}>↑</button><button class="secondary move-product mini-button" data-id="${product.id}" data-direction="down" type="button" aria-label="Move ${escapeHtml(product.title)} down"${index === typeProducts.length - 1 ? ' disabled' : ''}>↓</button></div><button class="secondary edit mini-button" data-id="${product.id}" type="button">Edit</button><button class="danger delete mini-button" data-id="${product.id}" type="button">Delete</button></div></div>`).join('') : '<p class="muted">No products yet.</p>'}</div></div>`;
         };
         $('productList').innerHTML = renderType('preset', 'Presets') + renderType('scenepack', 'Scenepacks');
         document.querySelectorAll('.edit').forEach(button => button.onclick = () => editProduct(Number(button.dataset.id)));
@@ -174,6 +539,7 @@
         renderCategoryList();
         renderCategorySelect();
         renderSales();
+        updateDashboardStats();
     }
 
     function moveProduct(id, direction) {
@@ -195,7 +561,7 @@
         $('saleList').innerHTML = sales.length ? sales.map(sale => {
             const active = new Date(sale.startsAt).getTime() <= now && new Date(sale.endsAt).getTime() >= now;
             const productCount = sale.productIds.length;
-            return `<div class="product-row sale-row"><div><strong>${escapeHtml(sale.name)}</strong><small>${sale.discountType === 'percent' ? `${sale.discountValue}%` : `${sale.discountValue} fixed amount`} · automatic Payhip sale · ${productCount} preset${productCount === 1 ? '' : 's'} · ${active ? 'Active now' : 'Scheduled or expired'}</small></div><div class="actions"><button class="secondary edit-sale" data-id="${escapeHtml(sale.id)}" type="button">Edit</button><button class="danger delete-sale" data-id="${escapeHtml(sale.id)}" type="button">Delete</button></div></div>`;
+            return `<div class="product-row sale-row"><div class="product-card-meta"><strong>${escapeHtml(sale.name)}</strong><small>${sale.discountType === 'percent' ? `${sale.discountValue}%` : `${sale.discountValue} fixed amount`} · automatic Payhip sale · ${productCount} preset${productCount === 1 ? '' : 's'} · ${active ? 'Active now' : 'Scheduled or expired'}</small></div><div class="row-actions"><button class="secondary edit-sale mini-button" data-id="${escapeHtml(sale.id)}" type="button">Edit</button><button class="danger delete-sale mini-button" data-id="${escapeHtml(sale.id)}" type="button">Delete</button></div></div>`;
         }).join('') : '<p class="muted">No sales yet.</p>';
         document.querySelectorAll('.edit-sale').forEach(button => button.onclick = () => editSale(button.dataset.id));
         document.querySelectorAll('.delete-sale').forEach(button => button.onclick = () => deleteSale(button.dataset.id));
@@ -225,13 +591,13 @@
         const id = $('saleId').value || `sale-${Date.now()}`;
         const sale = { id, name: $('saleName').value.trim(), discountType: $('discountType').value, discountValue: Number($('discountValue').value), startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString(), productIds };
         const index = sales.findIndex(item => String(item.id) === String(id)); if (index === -1) sales.push(sale); else sales[index] = sale;
-        persistSales(); renderSales(); resetSaleForm(); $('saleStatus').textContent = 'Sale saved locally. Download products.js to publish it.';
+        persistSales(); renderSales(); resetSaleForm(); updateDashboardStats(); $('saleStatus').textContent = 'Sale saved locally. Download products.js to publish it.';
     }
 
-    function deleteSale(id) { if (!confirm('Delete this sale?')) return; sales = sales.filter(sale => String(sale.id) !== String(id)); persistSales(); renderSales(); resetSaleForm(); }
+    function deleteSale(id) { if (!confirm('Delete this sale?')) return; sales = sales.filter(sale => String(sale.id) !== String(id)); persistSales(); renderSales(); resetSaleForm(); updateDashboardStats(); }
 
     function renderCategoryList() {
-        $('categoryList').innerHTML = [['preset', 'Preset categories'], ['movieShow', 'Movie / Show categories'], ['characterActor', 'Character / Actor categories']].map(([type, label]) => `<div><h3>${label}</h3><div class="actions">${getCategoryValues(type).map(category => `<span class="product-row" style="padding:7px 10px"><small>${escapeHtml(category)}</small><button class="danger remove-category" data-type="${type}" data-category="${escapeHtml(category)}" type="button">Remove</button></span>`).join('') || '<small class="muted">None yet.</small>'}</div></div>`).join('');
+        $('categoryList').innerHTML = [['preset', 'Preset categories'], ['movieShow', 'Movie / Show categories'], ['characterActor', 'Character / Actor categories']].map(([type, label]) => `<div><h3>${label}</h3><div class="tag-list">${getCategoryValues(type).map(category => `<span class="tag"><span>${escapeHtml(category)}</span><button class="remove-category" data-type="${type}" data-category="${escapeHtml(category)}" type="button" aria-label="Remove ${escapeHtml(category)}">×</button></span>`).join('') || '<small class="muted">None yet.</small>'}</div></div>`).join('');
         document.querySelectorAll('.remove-category').forEach(button => button.onclick = () => removeCategory(button.dataset.type, button.dataset.category));
     }
 
@@ -285,7 +651,7 @@
 
     function editProduct(id) {
         const product = products.find(item => item.id === id); if (!product) return;
-        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; renderCategorySelect(); $('productForm').closest('details').open = true; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; $('productEditorPanel').open = true; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function resetForm() { $('productForm').reset(); $('productId').value = ''; $('formTitle').textContent = 'New product'; $('formStatus').textContent = ''; renderCategorySelect(); }
@@ -301,7 +667,7 @@
         if (isColoring && (!ccPreview.withCc || !ccPreview.withoutCc)) { $('formStatus').textContent = 'Add both CC comparison image URLs.'; return; }
         const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: media[0].src, media, isColoring, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
         const index = products.findIndex(item => item.id === id); if (index === -1) products.unshift(product); else products[index] = product;
-        persistCatalog(); renderList(); resetForm(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
+        persistCatalog(); renderList(); resetForm(); updateDashboardStats(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
     }
 
     function deleteProduct(id) { if (!confirm('Delete this product?')) return; products = products.filter(product => product.id !== id); persistCatalog(); renderList(); resetForm(); }
@@ -333,17 +699,48 @@
         $('saveStatus').textContent = 'products.js content copied to the clipboard.';
     }
 
-    document.querySelectorAll('details.panel').forEach(panel => panel.addEventListener('toggle', () => {
-        if (panel.id === 'downloadPanel') {
-            panel.open = true;
-            return;
-        }
-        if (!panel.open) return;
-        document.querySelectorAll('details.panel').forEach(otherPanel => {
-            if (otherPanel !== panel && otherPanel.id !== 'downloadPanel') otherPanel.open = false;
-        });
-    }));
-    $('productForm').onsubmit = saveProduct; $('newButton').onclick = event => { event.preventDefault(); event.stopPropagation(); $('productForm').closest('details').open = true; resetForm(); window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }; $('cancelButton').onclick = resetForm; $('downloadButton').onclick = downloadCatalog; $('copyButton').onclick = copyCatalog; $('addCategoryButton').onclick = addCategory; $('type').onchange = renderCategorySelect; $('isColoring').onchange = renderCategorySelect; $('categoryType').onchange = renderCategoryList; $('saleForm').onsubmit = saveSale; $('newSaleButton').onclick = event => { event.preventDefault(); event.stopPropagation(); $('saleForm').closest('details').open = true; resetSaleForm(); $('saleForm').classList.remove('hidden'); }; $('cancelSaleButton').onclick = resetSaleForm;
+    function openNewProduct(type = 'preset') {
+        $('type').value = type;
+        resetForm();
+        $('productEditorPanel').open = true;
+        $('productForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        renderCategorySelect();
+        $('title').focus();
+    }
+
+    $('productForm').onsubmit = saveProduct;
+    $('newButton').onclick = event => { event.preventDefault(); event.stopPropagation(); openNewProduct($('type').value || 'preset'); };
+    $('quickNewPreset').onclick = () => openNewProduct('preset');
+    $('quickNewScenepack').onclick = () => openNewProduct('scenepack');
+    $('cancelButton').onclick = resetForm;
+    $('duplicateButton').onclick = () => {
+        const currentId = $('productId').value;
+        if (!currentId) return;
+        const product = products.find(item => Number(item.id) === Number(currentId));
+        if (!product) return;
+        const duplicate = JSON.parse(JSON.stringify(product));
+        delete duplicate.id;
+        const nextId = Date.now();
+        duplicate.id = nextId;
+        duplicate.title = `${duplicate.title || 'Copy'} (Copy)`;
+        products.unshift(duplicate);
+        persistCatalog();
+        renderList();
+        editProduct(nextId);
+        $('formStatus').textContent = 'Product duplicated. Edit and save when ready.';
+    };
+    $('downloadButton').onclick = downloadCatalog;
+    $('downloadButtonSecondary').onclick = downloadCatalog;
+    $('copyButton').onclick = copyCatalog;
+    $('copyButtonSecondary').onclick = copyCatalog;
+    $('addCategoryButton').onclick = addCategory;
+    $('type').onchange = renderCategorySelect;
+    $('isColoring').onchange = renderCategorySelect;
+    $('categoryType').onchange = renderCategoryList;
+    $('saleForm').onsubmit = saveSale;
+    $('newSaleButton').onclick = event => { event.preventDefault(); event.stopPropagation(); $('saleForm').closest('details').open = true; resetSaleForm(); $('saleForm').classList.remove('hidden'); };
+    $('cancelSaleButton').onclick = resetSaleForm;
+    $('productSearch').oninput = renderList;
     $('resetButton').onclick = () => { if (!confirm('Discard local catalog changes and reload products.js?')) return; localStorage.removeItem(CATALOG_KEY); localStorage.removeItem(CATEGORY_KEY); localStorage.removeItem(SALES_KEY); loadCatalog(); renderList(); resetForm(); resetSaleForm(); $('saveStatus').textContent = 'Local changes reset.'; };
     loadCatalog(); renderList(); resetForm();
 </script>
