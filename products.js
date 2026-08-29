@@ -24,6 +24,33 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
+        "id": 1788037307074,
+        "title": "EDITING PACK V1 (Copy)",
+        "desc": "My first editing pack",
+        "price": "4,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg"
+            }
+        ],
+        "isColoring": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [
+            "Packs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/payhip%20video5.mp4"
+        ],
+        "details": "**Contains:**\n-MAIN CC\n-zoom in (main, fast, reverse)\n-zoom out (main, fast)\n-twixtor (main, fast, reverse)\n-slides (left, right, up-down, left-right)\n-lens blur\n-exposure\n-white/black jaws\n-ripple effect\n-rotation transition\n-muffled audio\n﻿(my outro is not included and only my main cc is included)\n\n**Plugins which are required for some presets:**\nBCC, Sapphire, Magic Bullet Looks, Twixtor\n\n**Important Notes:**\nAll sales are final (no refunds).\nPersonal usage only: Do not share or redistribute the files.\nCredits: Please tag/credit me if you use these presets.\nCompatibility: Built for After Effects 2024, 2025 and 2026. DM me on TikTok or Discord (@morley.ae) for AE 2022/2023 versions (before you purchase!).\n\n**Need help? Send me a message on TikTok or Discord (@morley.ae)!**",
+        "type": "preset",
+        "payhip": "dJVcz"
+    },
+    {
         "id": 1787999011499,
         "title": "KATNISS EVERDEEN - 4K CLIPS",
         "desc": "ALL MOVIES",

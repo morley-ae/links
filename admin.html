@@ -183,6 +183,16 @@
             border: 1px solid #24354b;
             border-radius: 12px;
             background: rgba(8, 17, 28, 0.85);
+            cursor: grab;
+        }
+        .product-row.dragging {
+            opacity: 0.55;
+            border-style: dashed;
+            cursor: grabbing;
+        }
+        .product-row.drag-over {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(0, 242, 254, 0.18);
         }
         .product-row strong { display: block; margin-bottom: 2px; }
         .product-row small { color: var(--muted); }
@@ -319,8 +329,9 @@
             <div class="header-actions">
                 <button id="quickNewPreset" class="secondary" type="button">+ New preset</button>
                 <button id="quickNewScenepack" class="ghost" type="button">+ New scenepack</button>
-                <button id="copyButton" class="primary" type="button">Copy file</button>
-                <button id="downloadButton" class="secondary" type="button">Download file</button>
+                <button id="copyButton" class="secondary" type="button">Copy file</button>
+                <button id="exportButton" class="primary" type="button">Export products.js</button>
+                <button id="downloadButton" class="ghost" type="button">Download file</button>
             </div>
         </header>
 
@@ -435,8 +446,9 @@
                     <div class="panel-content">
                         <p class="muted">This export contains the complete current catalog and the Scenepack marketing password.</p>
                         <div class="actions">
-                            <button id="copyButtonSecondary" class="primary" type="button">Copy products.js</button>
-                            <button id="downloadButtonSecondary" class="secondary" type="button">Download products.js</button>
+                            <button id="copyButtonSecondary" class="secondary" type="button">Copy products.js</button>
+                            <button id="exportButtonSecondary" class="primary" type="button">Export products.js</button>
+                            <button id="downloadButtonSecondary" class="ghost" type="button">Download products.js</button>
                             <button id="resetButton" class="danger" type="button">Reset local changes</button>
                         </div>
                         <p id="saveStatus" class="status"></p>
@@ -530,12 +542,36 @@
         const query = $('productSearch')?.value || '';
         const renderType = (type, label) => {
             const typeProducts = products.filter(product => (product.type || 'preset') === type && matchesSearch(product, query));
-            return `<div><h3>${label}</h3><div class="product-list">${typeProducts.length ? typeProducts.map((product, index) => `<div class="product-row"><div class="product-card-meta"><strong>${escapeHtml(product.title)}</strong><small>${escapeHtml(product.price)} · ${escapeHtml(getProductCategorySummary(product) || 'No category')}</small></div><div class="row-actions"><div class="order-controls"><button class="secondary move-product mini-button" data-id="${product.id}" data-direction="up" type="button" aria-label="Move ${escapeHtml(product.title)} up"${index === 0 ? ' disabled' : ''}>↑</button><button class="secondary move-product mini-button" data-id="${product.id}" data-direction="down" type="button" aria-label="Move ${escapeHtml(product.title)} down"${index === typeProducts.length - 1 ? ' disabled' : ''}>↓</button></div><button class="secondary edit mini-button" data-id="${product.id}" type="button">Edit</button><button class="danger delete mini-button" data-id="${product.id}" type="button">Delete</button></div></div>`).join('') : '<p class="muted">No products yet.</p>'}</div></div>`;
+            return `<div><h3>${label}</h3><div class="product-list">${typeProducts.length ? typeProducts.map((product, index) => `<div class="product-row" data-product-id="${product.id}" draggable="true"><div class="product-card-meta"><strong>${escapeHtml(product.title)}</strong><small>${escapeHtml(product.price)} · ${escapeHtml(getProductCategorySummary(product) || 'No category')}</small></div><div class="row-actions"><div class="order-controls"><button class="secondary move-product mini-button" data-id="${product.id}" data-direction="up" type="button" aria-label="Move ${escapeHtml(product.title)} up"${index === 0 ? ' disabled' : ''}>↑</button><button class="secondary move-product mini-button" data-id="${product.id}" data-direction="down" type="button" aria-label="Move ${escapeHtml(product.title)} down"${index === typeProducts.length - 1 ? ' disabled' : ''}>↓</button></div><button class="secondary edit mini-button" data-id="${product.id}" type="button">Edit</button><button class="secondary duplicate mini-button" data-id="${product.id}" type="button">Duplicate</button><button class="danger delete mini-button" data-id="${product.id}" type="button">Delete</button></div></div>`).join('') : '<p class="muted">No products yet.</p>'}</div></div>`;
         };
         $('productList').innerHTML = renderType('preset', 'Presets') + renderType('scenepack', 'Scenepacks');
         document.querySelectorAll('.edit').forEach(button => button.onclick = () => editProduct(Number(button.dataset.id)));
         document.querySelectorAll('.delete').forEach(button => button.onclick = () => deleteProduct(Number(button.dataset.id)));
+        document.querySelectorAll('.duplicate').forEach(button => button.onclick = () => duplicateProduct(Number(button.dataset.id)));
         document.querySelectorAll('.move-product').forEach(button => button.onclick = () => moveProduct(Number(button.dataset.id), button.dataset.direction));
+        document.querySelectorAll('.product-row[data-product-id]').forEach(row => {
+            row.addEventListener('dragstart', event => {
+                event.dataTransfer.effectAllowed = 'move';
+                event.dataTransfer.setData('text/plain', String(row.dataset.productId));
+                row.classList.add('dragging');
+            });
+            row.addEventListener('dragover', event => {
+                event.preventDefault();
+                row.classList.add('drag-over');
+            });
+            row.addEventListener('dragleave', () => row.classList.remove('drag-over'));
+            row.addEventListener('drop', event => {
+                event.preventDefault();
+                row.classList.remove('drag-over');
+                const sourceId = Number(event.dataTransfer.getData('text/plain'));
+                const targetId = Number(row.dataset.productId);
+                if (sourceId && targetId && sourceId !== targetId) reorderProducts(sourceId, targetId);
+            });
+            row.addEventListener('dragend', () => {
+                row.classList.remove('dragging');
+                document.querySelectorAll('.product-row.drag-over').forEach(item => item.classList.remove('drag-over'));
+            });
+        });
         renderCategoryList();
         renderCategorySelect();
         renderSales();
@@ -552,6 +588,22 @@
         if (targetPosition < 0 || targetPosition >= sameTypeIndexes.length) return;
         const targetIndex = sameTypeIndexes[targetPosition];
         [products[index], products[targetIndex]] = [products[targetIndex], products[index]];
+        persistCatalog();
+        renderList();
+    }
+
+    function reorderProducts(sourceId, targetId) {
+        const sourceIndex = products.findIndex(product => Number(product.id) === Number(sourceId));
+        const targetIndex = products.findIndex(product => Number(product.id) === Number(targetId));
+        if (sourceIndex === -1 || targetIndex === -1) return;
+        const sourceType = products[sourceIndex].type || 'preset';
+        const targetType = products[targetIndex].type || 'preset';
+        if (sourceType !== targetType) return;
+        const reordered = [...products];
+        const [moved] = reordered.splice(sourceIndex, 1);
+        const insertAt = targetIndex > sourceIndex ? targetIndex - 1 : targetIndex;
+        reordered.splice(insertAt, 0, moved);
+        products = reordered;
         persistCatalog();
         renderList();
     }
@@ -670,6 +722,20 @@
         persistCatalog(); renderList(); resetForm(); updateDashboardStats(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
     }
 
+    function duplicateProduct(id) {
+        const product = products.find(item => Number(item.id) === Number(id));
+        if (!product) return;
+        const duplicate = JSON.parse(JSON.stringify(product));
+        const nextId = Date.now() + Math.round(Math.random() * 1000);
+        duplicate.id = nextId;
+        duplicate.title = `${duplicate.title || 'Copy'} (Copy)`;
+        products.unshift(duplicate);
+        persistCatalog();
+        renderList();
+        editProduct(nextId);
+        $('formStatus').textContent = 'Product duplicated. Edit and save when ready.';
+    }
+
     function deleteProduct(id) { if (!confirm('Delete this product?')) return; products = products.filter(product => product.id !== id); persistCatalog(); renderList(); resetForm(); }
 
     function escapeHtml(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char])); }
@@ -731,6 +797,8 @@
     };
     $('downloadButton').onclick = downloadCatalog;
     $('downloadButtonSecondary').onclick = downloadCatalog;
+    $('exportButton').onclick = downloadCatalog;
+    $('exportButtonSecondary').onclick = downloadCatalog;
     $('copyButton').onclick = copyCatalog;
     $('copyButtonSecondary').onclick = copyCatalog;
     $('addCategoryButton').onclick = addCategory;
