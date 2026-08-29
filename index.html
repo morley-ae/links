@@ -140,8 +140,17 @@
             to { opacity: 0; }
         }
         @keyframes view-enter {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            0% { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.985); filter: blur(1px); }
+            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
+        }
+        .view-enter {
+            animation: view-enter 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            will-change: transform, opacity, filter;
+            transform: translate3d(0, 0, 0);
+        }
+        .view-enter > * {
+            animation: build-item 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+            will-change: transform, opacity;
         }
         @keyframes about-orbit {
             0%, 100% { transform: rotate(-4deg) translateY(0); }
@@ -170,11 +179,9 @@
             0% { width: 0%; }
             100% { width: 100%; }
         }
-        .view-enter { animation: view-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .view-enter > * { animation: build-item 800ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .view-enter > *:nth-child(2) { animation-delay: 180ms; }
-        .view-enter > *:nth-child(3) { animation-delay: 360ms; }
-        .view-enter > *:nth-child(4) { animation-delay: 540ms; }
+        .view-enter > *:nth-child(2) { animation-delay: 60ms; }
+        .view-enter > *:nth-child(3) { animation-delay: 120ms; }
+        .view-enter > *:nth-child(4) { animation-delay: 180ms; }
         .initial-build { animation: initial-build 900ms ease-out forwards; }
         .animate-float {
             animation: float 5s ease-in-out infinite;
@@ -600,29 +607,30 @@
             }
             if (activeView) {
                 activeView.classList.remove('view-enter');
+                void activeView.offsetWidth;
                 requestAnimationFrame(() => activeView.classList.add('view-enter'));
             }
             if (view === 'product') {
                 requestAnimationFrame(() => {
                     const detailView = document.getElementById('productDetailView');
                     if (!detailView) return;
-                    const target = Math.max(0, detailView.getBoundingClientRect().top + window.scrollY - 18);
-                    window.scrollTo({ top: target, behavior: 'smooth' });
+                    const target = Math.max(0, detailView.offsetTop - 12);
+                    window.scrollTo({ top: target, behavior: 'auto' });
                 });
             } else if (view === 'presets' || view === 'scenepacks' || view === 'about') {
                 scrollPastProfile(activeView);
             } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                window.scrollTo({ top: 0, behavior: 'auto' });
             }
         }
 
         function scrollPastProfile(viewElement) {
-            window.setTimeout(() => {
+            requestAnimationFrame(() => {
                 const targetView = viewElement || document.getElementById('presetsView');
                 const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                const target = Math.min(maxScroll, Math.max(0, targetView.offsetTop - 20));
-                window.scrollTo({ top: Math.max(0, target), behavior: 'smooth' });
-            }, 80);
+                const target = Math.min(maxScroll, Math.max(0, (targetView?.offsetTop || 0) - 20));
+                window.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
+            });
         }
 
         document.addEventListener('click', event => {
@@ -1174,7 +1182,6 @@
         function goBackToShop() {
             const product = getStoredPresets().find(item => String(item.id) === window.location.hash.split('/')[1]);
             switchView(product && product.type === 'scenepack' ? 'scenepacks' : 'presets');
-            window.setTimeout(() => window.scrollTo({ top: 400, behavior: 'auto' }), 140);
         }
 
         function closeDownloadGate() {
