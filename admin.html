@@ -112,18 +112,48 @@
     const textFromMedia = media => (media || []).map(item => item.src).join('\n');
 
     function loadCatalog() {
+        const fileProducts = clone(window.PRODUCTS_DATA || []);
+        const fileCategories = clone(window.PRODUCT_CATEGORIES || { preset: [], scenepack: { movieShow: [], characterActor: [] } });
+        const fileSales = clone(window.SALES_DATA || []);
+
         const saved = localStorage.getItem(CATALOG_KEY);
-        products = saved ? JSON.parse(saved) : clone(window.PRODUCTS_DATA || []);
         const savedCategories = localStorage.getItem(CATEGORY_KEY);
-        categories = savedCategories ? JSON.parse(savedCategories) : clone(window.PRODUCT_CATEGORIES || { preset: [], scenepack: { movieShow: [], characterActor: [] } });
+        const savedSales = localStorage.getItem(SALES_KEY);
+
+        const parseJson = (value, fallback) => {
+            if (!value) return fallback;
+            try { return JSON.parse(value); } catch (error) { return fallback; }
+        };
+
+        const parsedSaved = parseJson(saved, fileProducts);
+        const parsedSavedCategories = parseJson(savedCategories, fileCategories);
+        const parsedSavedSales = parseJson(savedSales, fileSales);
+
+        const fileDataChanged = JSON.stringify(fileProducts) !== JSON.stringify(parsedSaved)
+            || JSON.stringify(fileCategories) !== JSON.stringify(parsedSavedCategories)
+            || JSON.stringify(fileSales) !== JSON.stringify(parsedSavedSales);
+
+        if (fileDataChanged && Array.isArray(fileProducts)) {
+            products = fileProducts;
+            categories = fileCategories;
+            sales = Array.isArray(fileSales) ? fileSales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale) : [];
+            persistCatalog();
+            persistCategories();
+            persistSales();
+            return;
+        }
+
+        products = Array.isArray(parsedSaved) ? parsedSaved : fileProducts;
+        categories = parsedSavedCategories || fileCategories;
         categories.preset = Array.isArray(categories.preset) ? categories.preset : [];
         if (Array.isArray(categories.scenepack)) categories.scenepack = { movieShow: categories.scenepack, characterActor: [] };
         categories.scenepack = categories.scenepack || { movieShow: [], characterActor: [] };
         categories.scenepack.movieShow = Array.isArray(categories.scenepack.movieShow) ? categories.scenepack.movieShow : [];
         categories.scenepack.characterActor = Array.isArray(categories.scenepack.characterActor) ? categories.scenepack.characterActor : [];
-        const savedSales = localStorage.getItem(SALES_KEY);
-        sales = savedSales ? JSON.parse(savedSales) : clone(window.SALES_DATA || []);
-        sales = Array.isArray(sales) ? sales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale) : [];
+        sales = Array.isArray(parsedSavedSales) ? parsedSavedSales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale) : [];
+        if (!sales.length && Array.isArray(fileSales)) {
+            sales = fileSales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale);
+        }
     }
 
     function persistCatalog() { localStorage.setItem(CATALOG_KEY, JSON.stringify(products)); }

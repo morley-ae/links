@@ -114,8 +114,17 @@
         }
         .cart-pop { animation: cart-pop 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
         .cart-item-enter { animation: cart-item-enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .product-card-enter { opacity: 0; transform: translateY(24px); transition: opacity 620ms cubic-bezier(0.16, 1, 0.3, 1), transform 620ms cubic-bezier(0.16, 1, 0.3, 1); }
-        .product-card-enter.is-visible { opacity: 1; transform: translateY(0); }
+        .product-card-enter { opacity: 0; transition: opacity 620ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 280ms ease, border-color 280ms ease; }
+        .product-card-enter.is-visible { opacity: 1; }
+        .product-card-enter:hover { box-shadow: 0 0 0 1px rgba(0, 242, 254, 0.42), 0 0 38px rgba(0, 242, 254, 0.21), 0 14px 32px rgba(15, 23, 42, 0.52) !important; border-color: rgba(0, 242, 254, 0.5) !important; }
+        .media-frame { position: relative; overflow: hidden; contain: layout paint style; isolation: isolate; backface-visibility: hidden; transform: translateZ(0); }
+        .product-card-enter video,
+        .product-card-enter img,
+        .video-autoplay-cover { display: block; width: 100%; height: 100%; transform: none !important; transition: opacity 240ms ease !important; filter: none !important; will-change: auto !important; backface-visibility: hidden !important; -webkit-backface-visibility: hidden !important; }
+        .product-card-enter video,
+        .product-card-enter img { object-fit: cover; }
+        .product-card-enter .media-frame video,
+        .product-card-enter .media-frame img { opacity: 1; }
         .cart-fade-out { animation: cart-fade-out 260ms ease-in both; }
         .cc-comparison { position: relative; height: 100%; overflow: hidden; }
         .cc-comparison img { display: block; width: 100%; height: 100%; object-fit: contain; }
@@ -123,13 +132,16 @@
         .cc-comparison-with img { max-width: none; }
         .cc-comparison-range { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; }
         .cc-comparison-handle { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; transform: translate(-50%, -50%); border: 2px solid #00f2fe; border-radius: 999px; background: rgba(3, 16, 24, .8); color: #00f2fe; pointer-events: none; }
+        .video-autoplay-cover { pointer-events: none; transform: none !important; transition: none !important; filter: none !important; will-change: auto; backface-visibility: visible; }
+        .product-card-enter img { transition: none !important; transform: none !important; }
+        .product-card-enter:hover img { transform: none !important; filter: none !important; }
         @keyframes cart-fade-out {
             from { opacity: 1; }
             to { opacity: 0; }
         }
         @keyframes view-enter {
-            0% { opacity: 0; transform: translateY(28px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
         @keyframes about-orbit {
             0%, 100% { transform: rotate(-4deg) translateY(0); }
@@ -248,11 +260,11 @@
             <!-- Links List -->
             <div class="space-y-4 max-w-3xl mx-auto" id="linkListContainer">
                 <h2 class="px-1 pt-2 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">Discord Server</h2>
-                <a href="https://discord.gg/ehVMQtUacr" target="_blank" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
+                <button type="button" onclick="openDiscordLinkModal()" class="block w-full text-left glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center space-x-4">
                             <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
-                                <img src="https://cdn.simpleicons.org/discord/00f2fe" alt="Discord" class="w-7 h-7 object-contain">
+                                <img src="https://knobiwan4-prog.github.io/morley.ae/logo.png" alt="EndlessAudios" class="h-full w-full object-cover">
                             </div>
                             <div>
                                 <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">EndlessAudios™ - Discord Server</h3>
@@ -264,7 +276,7 @@
                             </span>
                         </div>
                     </div>
-                </a>
+                </button>
 
                 <h2 class="px-1 pt-5 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">Resources</h2>
                 <div onclick="switchView('presets')" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
@@ -486,6 +498,26 @@
             </div>
         </div>
 
+        <div id="discordLinkModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="discordLinkModalTitle">
+            <div class="glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 shadow-glow-lg">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-center gap-3">
+                        <img src="https://knobiwan4-prog.github.io/morley.ae/logo.png" alt="EndlessAudios" class="h-12 w-12 rounded-xl border border-neon-blue/40 bg-neon-blue/10 object-cover">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-neon-blue">EndlessAudios™</p>
+                            <h2 id="discordLinkModalTitle" class="text-xl font-extrabold text-white">Join the Discord</h2>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeDiscordLinkModal()" class="text-slate-400 hover:text-white" aria-label="Close Discord link popup"><i data-lucide="x" class="h-5 w-5"></i></button>
+                </div>
+                <div class="mt-6 space-y-4">
+                    <input id="discordInviteLink" type="text" readonly value="https://discord.gg/ehVMQtUacr" class="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-3 text-sm text-white focus:border-neon-blue focus:outline-none">
+                    <button type="button" onclick="copyDiscordLink()" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow hover:opacity-90">Copy Link</button>
+                    <p class="text-center text-xs leading-relaxed text-slate-300">Copy this link and paste it into your browser to join EndlessAudios!</p>
+                </div>
+            </div>
+        </div>
+
         <div id="shopNotice" class="fixed left-1/2 top-6 z-[60] w-[min(92vw,36rem)] rounded-xl border border-neon-blue/50 bg-[#0a1628]/95 px-4 py-3 text-center text-sm font-semibold text-white shadow-glow-lg" role="alert" aria-live="polite"></div>
 
         <!-- Simple community gate for Scenepack downloads -->
@@ -571,10 +603,12 @@
                 requestAnimationFrame(() => activeView.classList.add('view-enter'));
             }
             if (view === 'product') {
-                setTimeout(() => {
+                requestAnimationFrame(() => {
                     const detailView = document.getElementById('productDetailView');
-                    window.scrollTo(0, Math.max(0, detailView.offsetTop - 16));
-                }, 120);
+                    if (!detailView) return;
+                    const target = Math.max(0, detailView.getBoundingClientRect().top + window.scrollY - 18);
+                    window.scrollTo({ top: target, behavior: 'smooth' });
+                });
             } else if (view === 'presets' || view === 'scenepacks' || view === 'about') {
                 scrollPastProfile(activeView);
             } else {
@@ -727,6 +761,53 @@
             notice.classList.add('is-visible');
             shopNoticeTimer = window.setTimeout(() => notice.classList.remove('is-visible'), 4200);
         }
+
+        const DISCORD_LINK = 'https://discord.gg/ehVMQtUacr';
+
+        function openDiscordLinkModal() {
+            const modal = document.getElementById('discordLinkModal');
+            const input = document.getElementById('discordInviteLink');
+            if (!modal || !input) return;
+            input.value = DISCORD_LINK;
+            modal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+            lucide.createIcons();
+        }
+
+        function closeDiscordLinkModal() {
+            const modal = document.getElementById('discordLinkModal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        async function copyDiscordLink() {
+            try {
+                await navigator.clipboard.writeText(DISCORD_LINK);
+            } catch (error) {
+                const input = document.getElementById('discordInviteLink');
+                if (input) {
+                    input.focus();
+                    input.select();
+                    try {
+                        document.execCommand('copy');
+                    } catch (copyError) {
+                        // no-op fallback
+                    }
+                }
+            }
+            showShopNotice('Discord link copied to clipboard.');
+        }
+
+        document.getElementById('discordLinkModal').addEventListener('click', event => {
+            if (event.target.id === 'discordLinkModal') closeDiscordLinkModal();
+        });
+
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !document.getElementById('discordLinkModal').classList.contains('hidden')) {
+                closeDiscordLinkModal();
+            }
+        });
 
         function getProductShareUrl(productId) {
             const url = new URL(window.location.href);
@@ -1073,9 +1154,9 @@
         function productCard(p, index = 0) {
             const media = getProductMedia(p)[0];
             const sale = getSaleForProduct(p);
-            const preview = media.type === 'video' ? `<video src="${media.src}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700" muted></video>` : `<img src="${media.src}" alt="${p.title}" class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700">`;
-            return `<article onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 hover:border-neon-blue/60 hover:shadow-glow transition-all duration-300 flex flex-col group cursor-pointer">
-                <div class="relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
+            const preview = media.type === 'video' ? `<video src="${media.src}" class="video-autoplay-cover w-full h-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${media.src}" alt="${p.title}" class="w-full h-full object-contain">`;
+            return `<article onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 flex flex-col group cursor-pointer">
+                <div class="media-frame relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
                 <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${p.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div></div>
             </article>`;
         }
@@ -1125,7 +1206,7 @@
             const sale = getSaleForProduct(product);
             const productMedia = getProductMedia(product);
             const previewControls = productMedia.length > 1 ? `<button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(-1)" aria-label="Previous preview" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-left" class="h-5 w-5"></i></button><button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(1)" aria-label="Next preview" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>` : '';
-            const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div>${previewControls}</div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" controls class="w-full aspect-square object-contain rounded-xl bg-black"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
+            const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div>${previewControls}</div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" class="video-autoplay-cover w-full aspect-square object-cover rounded-xl bg-black" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
             const saleHint = sale ? '<p class="mt-3 rounded-lg border border-lime-300/30 bg-lime-300/10 px-3 py-2 text-xs font-semibold text-lime-200">This sale is applied automatically at Payhip checkout.</p>' : '';
             const action = `<div class="mt-5 max-w-md space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(product, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${product.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div>${saleHint}`;
             const previewVideos = product.type === 'preset' && Array.isArray(product.previewVideos) ? product.previewVideos : [];
@@ -1161,7 +1242,7 @@
                 lucide.createIcons();
                 return;
             }
-            container.innerHTML = image.type === 'video' ? `<video src="${image.src}" controls class="h-full w-full object-contain"></video>` : `<img src="${image.src}" alt="Preset preview ${(window.presetPreviewIndex || 0) + 1}" class="h-full w-full object-contain">`;
+            container.innerHTML = image.type === 'video' ? `<video src="${image.src}" class="video-autoplay-cover h-full w-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${image.src}" alt="Preset preview ${(window.presetPreviewIndex || 0) + 1}" class="h-full w-full object-contain">`;
         }
 
         function changePresetPreview(direction) {
