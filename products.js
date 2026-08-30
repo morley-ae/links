@@ -24,16 +24,200 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
-        "id": 1788038780295,
-        "title": "test outro",
-        "desc": "Personal outro",
-        "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1%20preview.jpg",
-        "outroCover": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1%20preview.jpg",
+        "id": 1788105933771,
+        "title": "EDITING PACK V3",
+        "desc": "BRAND NEW PACK",
+        "price": "13,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg",
+        "outroCover": "",
+        "outroVideo": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1%20preview.jpg"
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg"
+            }
+        ],
+        "isColoring": false,
+        "isOutro": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [
+            "Packs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/baby%20preview.mp4"
+        ],
+        "details": "Describtion",
+        "type": "preset",
+        "payhip": "mq2n4"
+    },
+    {
+        "id": 1788106654694,
+        "title": "EXPOSURE CC",
+        "desc": "MY MAIN CC",
+        "price": "4,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview1.jpg",
+        "outroCover": "",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview1.jpg"
+            }
+        ],
+        "isColoring": true,
+        "isOutro": false,
+        "ccPreview": {
+            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview2.jpg",
+            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview3.jpg"
+        },
+        "categories": [],
+        "presetCategories": [
+            "CCs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/baby%20preview.mp4"
+        ],
+        "details": "dddd",
+        "type": "preset",
+        "payhip": "43JCR"
+    },
+    {
+        "id": 1788107467370,
+        "title": "HARD STYLE PACK",
+        "desc": "HARD STYLE PRESETS",
+        "price": "10,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20style%20pack/hard%20style%20pack%20preview1.jpg",
+        "outroCover": "",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20style%20pack/hard%20style%20pack%20preview1.jpg"
+            }
+        ],
+        "isColoring": false,
+        "isOutro": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [
+            "Packs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20cc/raya%20katniss%20hard%20cc2.mp4"
+        ],
+        "details": "ddd",
+        "type": "preset",
+        "payhip": "416bD"
+    },
+    {
+        "id": 1788107182350,
+        "title": "QUALITY SETTINGS",
+        "desc": "MY MAIN CC",
+        "price": "7,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview1.jpg",
+        "outroCover": "",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview1.jpg"
+            }
+        ],
+        "isColoring": true,
+        "isOutro": false,
+        "ccPreview": {
+            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview2.jpg",
+            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview3.jpg"
+        },
+        "categories": [],
+        "presetCategories": [
+            "CCs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [],
+        "details": "dddd",
+        "type": "preset",
+        "payhip": "8IkZi"
+    },
+    {
+        "id": 1788109631759,
+        "title": "TEXT PACK",
+        "desc": "TEXT ANIMATIONS",
+        "price": "5,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/text%20pack/text%20pack%20preview1.jpg",
+        "outroCover": "",
+        "outroVideo": "",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/text%20pack/text%20pack%20preview1.jpg"
+            }
+        ],
+        "isColoring": false,
+        "isOutro": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [
+            "Packs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/baby%20preview.mp4"
+        ],
+        "details": "ddd",
+        "type": "preset",
+        "payhip": "TtpiO"
+    },
+    {
+        "id": 1788106768897,
+        "title": "HARD CC",
+        "desc": "HARD STYLE CC",
+        "price": "4,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview1.jpg",
+        "outroCover": "",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview1.jpg"
+            }
+        ],
+        "isColoring": true,
+        "isOutro": false,
+        "ccPreview": {
+            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview2.jpg",
+            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview3.jpg"
+        },
+        "categories": [],
+        "presetCategories": [
+            "CCs"
+        ],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20cc/raya%20katniss%20hard%20cc2.mp4"
+        ],
+        "details": "dddd",
+        "type": "preset",
+        "payhip": "kWmzs"
+    },
+    {
+        "id": 1788108550205,
+        "title": "SPARKLE OUTRO",
+        "desc": "PERSONAL OUTRO",
+        "price": "4,99€",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg",
+        "outroCover": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg",
+        "outroVideo": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1.mp4",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg"
             }
         ],
         "isColoring": false,
@@ -46,38 +230,45 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/outros/outro%20v6.1.mp4"
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview%20edit.mp4"
         ],
         "details": "ddd",
         "type": "preset",
-        "payhip": "sdsds"
+        "payhip": "LORMz"
     },
     {
-        "id": 1788037307074,
-        "title": "EDITING PACK V1 (Copy)",
-        "desc": "My first editing pack",
+        "id": 1788110339582,
+        "title": "SLIME OUTRO",
+        "desc": "PERSONAL OUTRO",
         "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg",
+        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.jpg",
+        "outroCover": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.jpg",
+        "outroVideo": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.mp4",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg"
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.jpg"
+            },
+            {
+                "type": "video",
+                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.mp4"
             }
         ],
         "isColoring": false,
+        "isOutro": true,
         "ccPreview": null,
         "categories": [],
         "presetCategories": [
-            "Packs"
+            "Outros"
         ],
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/payhip%20video5.mp4"
+            "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1%20preview%20edit.mp4"
         ],
-        "details": "**Contains:**\n-MAIN CC\n-zoom in (main, fast, reverse)\n-zoom out (main, fast)\n-twixtor (main, fast, reverse)\n-slides (left, right, up-down, left-right)\n-lens blur\n-exposure\n-white/black jaws\n-ripple effect\n-rotation transition\n-muffled audio\n﻿(my outro is not included and only my main cc is included)\n\n**Plugins which are required for some presets:**\nBCC, Sapphire, Magic Bullet Looks, Twixtor\n\n**Important Notes:**\nAll sales are final (no refunds).\nPersonal usage only: Do not share or redistribute the files.\nCredits: Please tag/credit me if you use these presets.\nCompatibility: Built for After Effects 2024, 2025 and 2026. DM me on TikTok or Discord (@morley.ae) for AE 2022/2023 versions (before you purchase!).\n\n**Need help? Send me a message on TikTok or Discord (@morley.ae)!**",
+        "details": "ddd",
         "type": "preset",
-        "payhip": "dJVcz"
+        "payhip": "Q6kXb"
     },
     {
         "id": 1787999011499,
@@ -105,61 +296,6 @@ window.PRODUCTS_DATA = [
         "details": "ddd",
         "type": "scenepack",
         "payhip": "1MJST"
-    },
-    {
-        "id": 1787689956846,
-        "title": "TEST CC",
-        "desc": "COLORING",
-        "price": "2,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview1.jpg",
-        "media": [
-            {
-                "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview1.jpg"
-            }
-        ],
-        "isColoring": true,
-        "ccPreview": {
-            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview3.jpg",
-            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/ccs/grey%20cc%20preview2.jpg"
-        },
-        "categories": [],
-        "presetCategories": [
-            "CCs"
-        ],
-        "movieShows": [],
-        "characters": [],
-        "previewVideos": [],
-        "details": "dddddd",
-        "type": "preset",
-        "payhip": "ff899"
-    },
-    {
-        "id": 1787687307732,
-        "title": "EDITING PACK V1",
-        "desc": "My first editing pack",
-        "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg",
-        "media": [
-            {
-                "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/editing%20pack%20preview.jpg"
-            }
-        ],
-        "isColoring": false,
-        "ccPreview": null,
-        "categories": [],
-        "presetCategories": [
-            "Packs"
-        ],
-        "movieShows": [],
-        "characters": [],
-        "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/editing%20pack%20v1/payhip%20video5.mp4"
-        ],
-        "details": "**Contains:**\n-MAIN CC\n-zoom in (main, fast, reverse)\n-zoom out (main, fast)\n-twixtor (main, fast, reverse)\n-slides (left, right, up-down, left-right)\n-lens blur\n-exposure\n-white/black jaws\n-ripple effect\n-rotation transition\n-muffled audio\n﻿(my outro is not included and only my main cc is included)\n\n**Plugins which are required for some presets:**\nBCC, Sapphire, Magic Bullet Looks, Twixtor\n\n**Important Notes:**\nAll sales are final (no refunds).\nPersonal usage only: Do not share or redistribute the files.\nCredits: Please tag/credit me if you use these presets.\nCompatibility: Built for After Effects 2024, 2025 and 2026. DM me on TikTok or Discord (@morley.ae) for AE 2022/2023 versions (before you purchase!).\n\n**Need help? Send me a message on TikTok or Discord (@morley.ae)!**",
-        "type": "preset",
-        "payhip": "dJVcz"
     },
     {
         "id": 1787680489101,

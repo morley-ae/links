@@ -1204,18 +1204,7 @@
 
         function observeProductCards(grid) {
             const cards = grid.querySelectorAll('.product-card-enter');
-            if (!('IntersectionObserver' in window)) {
-                cards.forEach(card => card.classList.add('is-visible'));
-                return;
-            }
-            const observer = new IntersectionObserver(entries => {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) return;
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                });
-            }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-            cards.forEach(card => observer.observe(card));
+            cards.forEach(card => card.classList.add('is-visible'));
             bindOutroHoverVideos(grid);
         }
 
@@ -1244,10 +1233,13 @@
             const media = getProductMedia(p)[0];
             const sale = getSaleForProduct(p);
             const mediaIsVideo = media.type === 'video';
-            const hasOutroVideo = Boolean(p.isOutro && Array.isArray(p.previewVideos) && p.previewVideos.length && p.previewVideos[0]);
-            const hoverVideoUrl = hasOutroVideo ? p.previewVideos[0] : null;
+            const explicitOutroVideo = typeof p.outroVideo === 'string' ? p.outroVideo.trim() : '';
+            const fallbackOutroVideo = Array.isArray(p.previewVideos) ? p.previewVideos.find((url, idx) => idx > 0 && typeof url === 'string' && url.trim()) || null : null;
+            const hasOutroVideo = Boolean(p.isOutro && (explicitOutroVideo || fallbackOutroVideo));
+            const hoverVideoUrl = hasOutroVideo ? (explicitOutroVideo || fallbackOutroVideo) : null;
             const staticCoverUrl = hasOutroVideo ? (p.outroCover || p.image || media.src) : (media.src || p.image);
-            const preview = hasOutroVideo ? `<div class="outro-hover-media"><img src="${escapeHtml(staticCoverUrl)}" alt="${escapeHtml(p.title)}" class="outro-static-image w-full h-full object-cover"><video data-outro-video-player src="${escapeHtml(hoverVideoUrl)}" class="outro-hover-video w-full h-full object-cover" muted loop playsinline preload="auto"></video></div>` : (mediaIsVideo ? `<video src="${media.src}" class="video-autoplay-cover w-full h-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${media.src || p.image}" alt="${p.title}" class="w-full h-full object-contain">`);
+            const previewVideoPoster = typeof p.previewImage === 'string' && p.previewImage.trim() ? p.previewImage.trim() : '';
+            const preview = hasOutroVideo ? `<div class="outro-hover-media"><img src="${escapeHtml(staticCoverUrl)}" alt="${escapeHtml(p.title)}" class="outro-static-image w-full h-full object-cover"><video data-outro-video-player src="${escapeHtml(hoverVideoUrl)}" class="outro-hover-video w-full h-full object-cover" muted loop playsinline preload="auto"></video></div>` : (mediaIsVideo ? `<video src="${media.src}" poster="${previewVideoPoster ? escapeHtml(previewVideoPoster) : ''}" class="video-autoplay-cover w-full h-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${media.src || p.image}" alt="${p.title}" class="w-full h-full object-contain">`);
             return `<article data-outro-video="${hasOutroVideo ? 'true' : 'false'}" onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 flex flex-col group cursor-pointer">
                 <div class="media-frame relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
                 <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${p.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div></div>
@@ -1317,7 +1309,7 @@
             const sale = getSaleForProduct(product);
             const productMedia = getProductMedia(product);
             const previewControls = productMedia.length > 1 ? `<button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(-1)" aria-label="Previous preview" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-left" class="h-5 w-5"></i></button><button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(1)" aria-label="Next preview" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>` : '';
-            const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div>${previewControls}</div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" class="video-autoplay-cover w-full aspect-square object-cover rounded-xl bg-black" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
+            const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div>${previewControls}</div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" poster="${escapeHtml(typeof product.previewImage === 'string' ? product.previewImage.trim() : '')}" class="video-autoplay-cover w-full aspect-square object-cover rounded-xl bg-black" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
             const saleHint = sale ? '<p class="mt-3 rounded-lg border border-lime-300/30 bg-lime-300/10 px-3 py-2 text-xs font-semibold text-lime-200">This sale is applied automatically at Payhip checkout.</p>' : '';
             const action = `<div class="mt-5 max-w-md space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(product, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${product.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div>${saleHint}`;
             const previewVideos = product.type === 'preset' && Array.isArray(product.previewVideos) ? product.previewVideos : [];
@@ -1353,7 +1345,9 @@
                 lucide.createIcons();
                 return;
             }
-            container.innerHTML = image.type === 'video' ? `<video src="${image.src}" class="video-autoplay-cover h-full w-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${image.src}" alt="Preset preview ${(window.presetPreviewIndex || 0) + 1}" class="h-full w-full object-contain">`;
+            const product = getStoredPresets().find(item => String(item.id) === String(window.location.hash.split('/')[1]));
+            const previewPoster = product && typeof product.previewImage === 'string' ? product.previewImage.trim() : '';
+            container.innerHTML = image.type === 'video' ? `<video src="${image.src}" poster="${escapeHtml(previewPoster)}" class="video-autoplay-cover h-full w-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${image.src}" alt="Preset preview ${(window.presetPreviewIndex || 0) + 1}" class="h-full w-full object-contain">`;
         }
 
         function changePresetPreview(direction) {
