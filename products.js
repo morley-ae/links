@@ -28,13 +28,13 @@ window.PRODUCTS_DATA = [
         "title": "EDITING PACK V3",
         "desc": "BRAND NEW PACK",
         "price": "13,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg",
+        "image": "./previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg",
         "outroCover": "",
         "outroVideo": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg"
+                "src": "./previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg"
             }
         ],
         "isColoring": false,
@@ -47,7 +47,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/baby%20preview.mp4"
+            "./previews/products/edting%20pack%20v3/baby%20preview.mp4"
         ],
         "details": "Describtion",
         "type": "preset",
@@ -58,19 +58,19 @@ window.PRODUCTS_DATA = [
         "title": "EXPOSURE CC",
         "desc": "MY MAIN CC",
         "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview1.jpg",
+        "image": "./previews/products/exposure%20cc/exposure%20cc%20preview1.jpg",
         "outroCover": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview1.jpg"
+                "src": "./previews/products/exposure%20cc/exposure%20cc%20preview1.jpg"
             }
         ],
         "isColoring": true,
         "isOutro": false,
         "ccPreview": {
-            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview2.jpg",
-            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/exposure%20cc/exposure%20cc%20preview3.jpg"
+            "withCc": "./previews/products/exposure%20cc/exposure%20cc%20preview2.jpg",
+            "withoutCc": "./previews/products/exposure%20cc/exposure%20cc%20preview3.jpg"
         },
         "categories": [],
         "presetCategories": [
@@ -79,7 +79,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/baby%20preview.mp4"
+            "./previews/products/edting%20pack%20v3/baby%20preview.mp4"
         ],
         "details": "dddd",
         "type": "preset",
@@ -90,12 +90,12 @@ window.PRODUCTS_DATA = [
         "title": "HARD STYLE PACK",
         "desc": "HARD STYLE PRESETS",
         "price": "10,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20style%20pack/hard%20style%20pack%20preview1.jpg",
+        "image": "./previews/products/hard%20style%20pack/hard%20style%20pack%20preview1.jpg",
         "outroCover": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20style%20pack/hard%20style%20pack%20preview1.jpg"
+                "src": "./previews/products/hard%20style%20pack/hard%20style%20pack%20preview1.jpg"
             }
         ],
         "isColoring": false,
@@ -108,7 +108,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20cc/raya%20katniss%20hard%20cc2.mp4"
+            "./previews/products/hard%20cc/raya%20katniss%20hard%20cc2.mp4"
         ],
         "details": "ddd",
         "type": "preset",
@@ -117,21 +117,23 @@ window.PRODUCTS_DATA = [
     {
         "id": 1788107182350,
         "title": "QUALITY SETTINGS",
-        "desc": "MY MAIN CC",
+        "desc": "MY QUALITY",
         "price": "7,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview1.jpg",
+        "image": "./previews/products/quality%20settings/quality%20settings%20preview1.jpg",
         "outroCover": "",
+        "previewImage": "",
+        "outroVideo": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview1.jpg"
+                "src": "./previews/products/quality%20settings/quality%20settings%20preview1.jpg"
             }
         ],
         "isColoring": true,
         "isOutro": false,
         "ccPreview": {
-            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview2.jpg",
-            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/quality%20settings/quality%20settings%20preview3.jpg"
+            "withCc": "./previews/products/quality%20settings/quality%20settings%20preview2.jpg",
+            "withoutCc": "./previews/products/quality%20settings/quality%20settings%20preview3.jpg"
         },
         "categories": [],
         "presetCategories": [
@@ -149,13 +151,13 @@ window.PRODUCTS_DATA = [
         "title": "TEXT PACK",
         "desc": "TEXT ANIMATIONS",
         "price": "5,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/text%20pack/text%20pack%20preview1.jpg",
+        "image": "./previews/products/text%20pack/text%20pack%20preview1.jpg",
         "outroCover": "",
         "outroVideo": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/text%20pack/text%20pack%20preview1.jpg"
+                "src": "./previews/products/text%20pack/text%20pack%20preview1.jpg"
             }
         ],
         "isColoring": false,
@@ -168,7 +170,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/edting%20pack%20v3/baby%20preview.mp4"
+            "./previews/products/edting%20pack%20v3/baby%20preview.mp4"
         ],
         "details": "ddd",
         "type": "preset",
@@ -179,19 +181,19 @@ window.PRODUCTS_DATA = [
         "title": "HARD CC",
         "desc": "HARD STYLE CC",
         "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview1.jpg",
+        "image": "./previews/products/hard cc/hard cc preview1.jpg",
         "outroCover": "",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview1.jpg"
+                "src": "./previews/products/hard cc/hard cc preview1.jpg"
             }
         ],
         "isColoring": true,
         "isOutro": false,
         "ccPreview": {
-            "withCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview2.jpg",
-            "withoutCc": "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard cc/hard cc preview3.jpg"
+            "withCc": "./previews/products/hard cc/hard cc preview2.jpg",
+            "withoutCc": "./previews/products/hard cc/hard cc preview3.jpg"
         },
         "categories": [],
         "presetCategories": [
@@ -200,7 +202,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/hard%20cc/raya%20katniss%20hard%20cc2.mp4"
+            "./previews/products/hard%20cc/raya%20katniss%20hard%20cc2.mp4"
         ],
         "details": "dddd",
         "type": "preset",
@@ -211,13 +213,13 @@ window.PRODUCTS_DATA = [
         "title": "SPARKLE OUTRO",
         "desc": "PERSONAL OUTRO",
         "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg",
-        "outroCover": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg",
-        "outroVideo": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1.mp4",
+        "image": "./previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg",
+        "outroCover": "./previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg",
+        "outroVideo": "./previews/products/outro%20v6.1/outro%20v6.1.mp4",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg"
+                "src": "./previews/products/outro%20v6.1/outro%20v6.1%20preview.jpg"
             }
         ],
         "isColoring": false,
@@ -230,7 +232,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v6.1/outro%20v6.1%20preview%20edit.mp4"
+            "./previews/products/outro%20v6.1/outro%20v6.1%20preview%20edit.mp4"
         ],
         "details": "ddd",
         "type": "preset",
@@ -241,17 +243,17 @@ window.PRODUCTS_DATA = [
         "title": "SLIME OUTRO",
         "desc": "PERSONAL OUTRO",
         "price": "4,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.jpg",
-        "outroCover": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.jpg",
-        "outroVideo": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.mp4",
+        "image": "./previews/products/outro%20v7.1/outro%20v7.1.jpg",
+        "outroCover": "./previews/products/outro%20v7.1/outro%20v7.1.jpg",
+        "outroVideo": "./previews/products/outro%20v7.1/outro%20v7.1.mp4",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.jpg"
+                "src": "./previews/products/outro%20v7.1/outro%20v7.1.jpg"
             },
             {
                 "type": "video",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1.mp4"
+                "src": "./previews/products/outro%20v7.1/outro%20v7.1.mp4"
             }
         ],
         "isColoring": false,
@@ -264,7 +266,7 @@ window.PRODUCTS_DATA = [
         "movieShows": [],
         "characters": [],
         "previewVideos": [
-            "https://knobiwan4-prog.github.io/morley.ae/previews/products/outro%20v7.1/outro%20v7.1%20preview%20edit.mp4"
+            "./previews/products/outro%20v7.1/outro%20v7.1%20preview%20edit.mp4"
         ],
         "details": "ddd",
         "type": "preset",
@@ -275,11 +277,11 @@ window.PRODUCTS_DATA = [
         "title": "KATNISS EVERDEEN - 4K CLIPS",
         "desc": "ALL MOVIES",
         "price": "3,99€",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/hunger%20games/Katniss%20Everdeen%20-%204K%20Clips%20preview%20video4.mp4",
+        "image": "./previews/scenepacks/hunger%20games/Katniss%20Everdeen%20-%204K%20Clips%20preview%20video4.mp4",
         "media": [
             {
                 "type": "video",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/hunger%20games/Katniss%20Everdeen%20-%204K%20Clips%20preview%20video4.mp4"
+                "src": "./previews/scenepacks/hunger%20games/Katniss%20Everdeen%20-%204K%20Clips%20preview%20video4.mp4"
             }
         ],
         "isColoring": false,
@@ -302,11 +304,11 @@ window.PRODUCTS_DATA = [
         "title": "HUNGER GAMES SOTR - TRAILER & TEASER",
         "desc": "TRAILER & TEASER & ISOLATED VOCALS",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/hunger%20games/SOTR%20Trailer%20+%20Teaser%20cover.png",
+        "image": "./previews/scenepacks/hunger%20games/SOTR%20Trailer%20+%20Teaser%20cover.png",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/hunger%20games/SOTR%20Trailer%20+%20Teaser%20cover.png"
+                "src": "./previews/scenepacks/hunger%20games/SOTR%20Trailer%20+%20Teaser%20cover.png"
             }
         ],
         "isColoring": false,
@@ -327,11 +329,11 @@ window.PRODUCTS_DATA = [
         "title": "BELLAMY BLAKE - SEASON 1",
         "desc": "BEST SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20best%20scenes.jpg",
+        "image": "./previews/scenepacks/bellamy/bellamy%20s1%20best%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20best%20scenes.jpg"
+                "src": "./previews/scenepacks/bellamy/bellamy%20s1%20best%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -354,11 +356,11 @@ window.PRODUCTS_DATA = [
         "title": "BELLAMY BLAKE - SEASON 1",
         "desc": "ALL SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20all%20scenes.jpg",
+        "image": "./previews/scenepacks/bellamy/bellamy%20s1%20all%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20all%20scenes.jpg"
+                "src": "./previews/scenepacks/bellamy/bellamy%20s1%20all%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -381,11 +383,11 @@ window.PRODUCTS_DATA = [
         "title": "BELLAMY BLAKE - SEASON 1",
         "desc": "SAD SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20sad%20scenes.jpg",
+        "image": "./previews/scenepacks/bellamy/bellamy%20s1%20sad%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20sad%20scenes.jpg"
+                "src": "./previews/scenepacks/bellamy/bellamy%20s1%20sad%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -408,11 +410,11 @@ window.PRODUCTS_DATA = [
         "title": "BELLAMY BLAKE - SEASON 1",
         "desc": "SOFT SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20soft%20scenes.jpg",
+        "image": "./previews/scenepacks/bellamy/bellamy%20s1%20soft%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20soft%20scenes.jpg"
+                "src": "./previews/scenepacks/bellamy/bellamy%20s1%20soft%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -435,11 +437,11 @@ window.PRODUCTS_DATA = [
         "title": "BELLAMY BLAKE - SEASON 1",
         "desc": "SLICKED BACK HAIR SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20slicked%20back%20hair%20scenes.jpg",
+        "image": "./previews/scenepacks/bellamy/bellamy%20s1%20slicked%20back%20hair%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bellamy/bellamy%20s1%20slicked%20back%20hair%20scenes.jpg"
+                "src": "./previews/scenepacks/bellamy/bellamy%20s1%20slicked%20back%20hair%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -462,11 +464,11 @@ window.PRODUCTS_DATA = [
         "title": "CLARKE GRIFFIN - SEASON 1",
         "desc": "BEST SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/clarke/clarke%20s1%20best%20scenes.jpg",
+        "image": "./previews/scenepacks/clarke/clarke%20s1%20best%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/clarke/clarke%20s1%20best%20scenes.jpg"
+                "src": "./previews/scenepacks/clarke/clarke%20s1%20best%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -489,11 +491,11 @@ window.PRODUCTS_DATA = [
         "title": "CLARKE GRIFFIN - SEASON 1",
         "desc": "ALL SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/clarke/clarke%20s1%20all%20scenes.jpg",
+        "image": "./previews/scenepacks/clarke/clarke%20s1%20all%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/clarke/clarke%20s1%20all%20scenes.jpg"
+                "src": "./previews/scenepacks/clarke/clarke%20s1%20all%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -516,11 +518,11 @@ window.PRODUCTS_DATA = [
         "title": "OCTAVIA BLAKE - SEASON 1",
         "desc": "ALL SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/octavia/octavia%20s1%20all%20scenes.jpg",
+        "image": "./previews/scenepacks/octavia/octavia%20s1%20all%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/octavia/octavia%20s1%20all%20scenes.jpg"
+                "src": "./previews/scenepacks/octavia/octavia%20s1%20all%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -543,11 +545,11 @@ window.PRODUCTS_DATA = [
         "title": "JOHN MURPHY - SEASON 1",
         "desc": "ALL SCENES",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/murphy/murphy%20s1%20all%20scenes.jpg",
+        "image": "./previews/scenepacks/murphy/murphy%20s1%20all%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/murphy/murphy%20s1%20all%20scenes.jpg"
+                "src": "./previews/scenepacks/murphy/murphy%20s1%20all%20scenes.jpg"
             }
         ],
         "isColoring": false,
@@ -570,11 +572,11 @@ window.PRODUCTS_DATA = [
         "title": "BOB MORLEY - THE ROOKIE",
         "desc": "BOB MORLEY IN EP 3X14",
         "price": "FREE",
-        "image": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bob%20morley/bob%20morley%20the%20rookie%20s03e14%20all%20scenes.jpg",
+        "image": "./previews/scenepacks/bob%20morley/bob%20morley%20the%20rookie%20s03e14%20all%20scenes.jpg",
         "media": [
             {
                 "type": "image",
-                "src": "https://knobiwan4-prog.github.io/morley.ae/previews/scenepacks/bob%20morley/bob%20morley%20the%20rookie%20s03e14%20all%20scenes.jpg"
+                "src": "./previews/scenepacks/bob%20morley/bob%20morley%20the%20rookie%20s03e14%20all%20scenes.jpg"
             }
         ],
         "isColoring": false,
