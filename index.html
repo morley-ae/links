@@ -586,6 +586,21 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
+        function getRouteProductId() {
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            if (pathParts[0] === 'product' && pathParts[1]) return pathParts[1];
+            const hash = window.location.hash || '';
+            if (hash.startsWith('#product/')) return hash.split('/')[1];
+            return null;
+        }
+
+        function getRoutePath() {
+            const routeFromQuery = new URLSearchParams(window.location.search).get('route');
+            const rawRoute = routeFromQuery || window.location.pathname || '/';
+            const normalized = rawRoute === '/' ? '/' : rawRoute.replace(/\/+$/, '');
+            return normalized || '/';
+        }
+
         // Router function for switching views
         function switchView(view) {
             const homeView = document.getElementById('homeView');
@@ -612,27 +627,31 @@
                 homeView.classList.remove('hidden');
                 activeView = homeView;
                 navHomeBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow";
-                window.history.pushState({}, '', '#home');
+                window.history.pushState({}, '', '/');
             } else if (view === 'presets') {
                 presetsView.classList.remove('hidden');
                 activeView = presetsView;
                 navPresetsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow";
-                window.history.pushState({}, '', '#presets');
+                window.history.pushState({}, '', '/presets');
                 renderPresets();
             } else if (view === 'scenepacks') {
                 scenepacksView.classList.remove('hidden');
                 activeView = scenepacksView;
                 navScenepacksBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow";
-                window.history.pushState({}, '', '#scenepacks');
+                window.history.pushState({}, '', '/scenepacks');
                 renderProducts('scenepack');
             } else if (view === 'product') {
                 productDetailView.classList.remove('hidden');
                 activeView = productDetailView;
-                renderProductDetail(window.location.hash.split('/')[1]);
+                const productId = getRouteProductId();
+                if (productId) {
+                    window.history.pushState({}, '', `/product/${productId}`);
+                }
+                renderProductDetail(productId);
             } else if (view === 'about') {
                 aboutView.classList.remove('hidden');
                 activeView = aboutView;
-                window.history.pushState({}, '', '#about');
+                window.history.pushState({}, '', '/about');
             }
             if (activeView) {
                 activeView.classList.remove('view-enter');
@@ -672,14 +691,16 @@
 
         // URL Routing Handling
         function handleUrlRoute() {
-            const hash = window.location.hash;
-            if (hash.startsWith('#product/')) {
-                switchView('product');
-            } else if (hash === '#presets') {
+            const route = getRoutePath();
+            const productId = getRouteProductId();
+            if (route.startsWith('/product/')) {
+                if (productId) switchView('product');
+                else switchView('home');
+            } else if (route === '/presets') {
                 switchView('presets');
-            } else if (hash === '#scenepacks') {
+            } else if (route === '/scenepacks') {
                 switchView('scenepacks');
-            } else if (hash === '#about') {
+            } else if (route === '/about') {
                 switchView('about');
             } else {
                 switchView('home');
@@ -872,7 +893,9 @@
 
         function getProductShareUrl(productId) {
             const url = new URL(window.location.href);
-            url.hash = `product/${productId}`;
+            url.pathname = `/product/${productId}`;
+            url.hash = '';
+            url.search = '';
             return url.href;
         }
 
@@ -1172,13 +1195,15 @@
                 window.activeProductCategory.scenepack = window.activeProductCategory.scenepack || { movieShow: 'all', characterActor: 'all' };
                 window.activeProductCategory.scenepack[group] = category;
                 renderProducts('scenepack');
-                const sceneProduct = getStoredPresets().find(item => String(item.id) === window.location.hash.split('/')[1]);
+                const productId = getRouteProductId();
+                const sceneProduct = getStoredPresets().find(item => String(item.id) === productId);
                 if (sceneProduct && sceneProduct.type === 'scenepack') renderCategoryFilters('scenepack', window.activeProductCategory.scenepack, 'productDetailCategories');
                 return;
             }
             window.activeProductCategory[type] = category;
             renderProducts(type);
-            const product = getStoredPresets().find(item => String(item.id) === window.location.hash.split('/')[1]);
+            const productId = getRouteProductId();
+            const product = getStoredPresets().find(item => String(item.id) === productId);
             if (product && product.type === type) renderCategoryFilters(type, category, 'productDetailCategories');
         }
 
@@ -1252,12 +1277,13 @@
 
         function openProduct(id) {
             window.presetPreviewIndex = 0;
-            window.history.pushState({}, '', `#product/${id}`);
+            window.history.pushState({}, '', `/product/${id}`);
             switchView('product');
         }
 
         function goBackToShop() {
-            const product = getStoredPresets().find(item => String(item.id) === window.location.hash.split('/')[1]);
+            const productId = getRouteProductId();
+            const product = getStoredPresets().find(item => String(item.id) === productId);
             switchView(product && product.type === 'scenepack' ? 'scenepacks' : 'presets');
         }
 
@@ -1345,13 +1371,15 @@
                 lucide.createIcons();
                 return;
             }
-            const product = getStoredPresets().find(item => String(item.id) === String(window.location.hash.split('/')[1]));
+            const productId = getRouteProductId();
+            const product = getStoredPresets().find(item => String(item.id) === String(productId));
             const previewPoster = product && typeof product.previewImage === 'string' ? product.previewImage.trim() : '';
             container.innerHTML = image.type === 'video' ? `<video src="${image.src}" poster="${escapeHtml(previewPoster)}" class="video-autoplay-cover h-full w-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${image.src}" alt="Preset preview ${(window.presetPreviewIndex || 0) + 1}" class="h-full w-full object-contain">`;
         }
 
         function changePresetPreview(direction) {
-            const product = getStoredPresets().find(item => String(item.id) === window.location.hash.split('/')[1]);
+            const productId = getRouteProductId();
+            const product = getStoredPresets().find(item => String(item.id) === productId);
             if (!product || product.type !== 'preset') return;
             const media = getProductMedia(product);
             window.presetPreviewIndex = ((window.presetPreviewIndex || 0) + direction + media.length) % media.length;
