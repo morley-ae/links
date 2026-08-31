@@ -420,7 +420,7 @@
                             </div>
                             <label>Description<textarea id="desc" required placeholder="Short sales text for the storefront."></textarea></label>
                             <div class="grid"><label>Price / label<input id="price" placeholder="4,99€" required></label><label>Payhip ID<input id="payhip" type="text" required placeholder="e.g. Vt5WC"></label></div>
-                            <label>Preview URLs<textarea id="media" required placeholder="One GitHub raw URL per line"></textarea></label>
+                            <label>Preview URLs<textarea id="media" placeholder="One GitHub raw URL per line"></textarea></label>
                             <label>Video preview image (optional)<input id="videoPreviewImage" type="url" placeholder="Image shown until the video loads"></label>
                             <label class="checkbox-label"><input id="isColoring" type="checkbox"> This product is a coloring (CC)</label>
                             <label class="checkbox-label"><input id="isOutro" type="checkbox"> This product is an outro</label>
@@ -715,7 +715,7 @@
 
     function saveProduct(event) {
         event.preventDefault();
-        const media = mediaFromText($('media').value); if (!media.length) { $('formStatus').textContent = 'Add at least one preview URL.'; return; }
+        const media = mediaFromText($('media').value);
         const id = $('productId').value ? Number($('productId').value) : Date.now();
         const type = $('type').value;
         const previewVideos = type === 'preset' ? $('previewVideos').value.split('\n').map(url => url.trim()).filter(Boolean) : [];
@@ -726,7 +726,8 @@
         const outroVideo = isOutro ? $('outroVideo').value.trim() : '';
         const ccPreview = isColoring ? { withCc: $('ccPreviewWith').value.trim(), withoutCc: $('ccPreviewWithout').value.trim() } : null;
         if (isColoring && (!ccPreview.withCc || !ccPreview.withoutCc)) { $('formStatus').textContent = 'Add both CC comparison image URLs.'; return; }
-        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: isOutro && outroCover ? outroCover : media[0].src, outroCover: isOutro ? (outroCover || media[0].src) : '', previewImage: previewImage || '', outroVideo, media, isColoring, isOutro, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
+        const fallbackImage = media[0]?.src || previewImage || outroCover || '';
+        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: isOutro && outroCover ? outroCover : fallbackImage, outroCover: isOutro ? (outroCover || fallbackImage) : '', previewImage: previewImage || '', outroVideo, media, isColoring, isOutro, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
         const index = products.findIndex(item => item.id === id); if (index === -1) products.unshift(product); else products[index] = product;
         persistCatalog(); renderList(); resetForm(); updateDashboardStats(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
     }
