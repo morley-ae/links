@@ -24,6 +24,37 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
+        "id": 1788197808883,
+        "title": "Test Product",
+        "desc": "Desc",
+        "price": "9,99€",
+        "image": "https://example.com/1.jpg",
+        "outroCover": "",
+        "previewImage": "",
+        "outroVideo": "",
+        "media": [
+            {
+                "type": "image",
+                "src": "https://example.com/1.jpg"
+            },
+            {
+                "type": "image",
+                "src": "https://example.com/2.jpg"
+            }
+        ],
+        "isColoring": false,
+        "isOutro": false,
+        "ccPreview": null,
+        "categories": [],
+        "presetCategories": [],
+        "movieShows": [],
+        "characters": [],
+        "previewVideos": [],
+        "details": "",
+        "type": "preset",
+        "payhip": "abc123"
+    },
+    {
         "id": 1788105933771,
         "title": "EDITING PACK V3",
         "desc": "BRAND NEW PACK",
