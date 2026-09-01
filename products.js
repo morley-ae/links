@@ -1,4 +1,5 @@
 /* Permanent product catalog. Edit with admin.html, then commit this file to GitHub. */
+window.SCENEPACK_PASSWORD_REQUIRED = false;
 window.SCENEPACK_DOWNLOAD_PASSWORD = "ENDLESSAUDIOS";
 window.PRODUCT_CATEGORIES = {
     "preset": [
@@ -24,43 +25,13 @@ window.PRODUCT_CATEGORIES = {
 };
 window.PRODUCTS_DATA = [
     {
-        "id": 1788197808883,
-        "title": "Test Product",
-        "desc": "Desc",
-        "price": "9,99€",
-        "image": "https://example.com/1.jpg",
-        "outroCover": "",
-        "previewImage": "",
-        "outroVideo": "",
-        "media": [
-            {
-                "type": "image",
-                "src": "https://example.com/1.jpg"
-            },
-            {
-                "type": "image",
-                "src": "https://example.com/2.jpg"
-            }
-        ],
-        "isColoring": false,
-        "isOutro": false,
-        "ccPreview": null,
-        "categories": [],
-        "presetCategories": [],
-        "movieShows": [],
-        "characters": [],
-        "previewVideos": [],
-        "details": "",
-        "type": "preset",
-        "payhip": "abc123"
-    },
-    {
         "id": 1788105933771,
         "title": "EDITING PACK V3",
-        "desc": "BRAND NEW PACK",
+        "desc": "d",
         "price": "13,99€",
         "image": "https://morleyae.com/previews/products/edting%20pack%20v3/editing%20pack%20preview1.jpg",
         "outroCover": "",
+        "previewImage": "",
         "outroVideo": "",
         "media": [
             {
@@ -80,9 +51,10 @@ window.PRODUCTS_DATA = [
         "previewVideos": [
             "https://morleyae.com/previews/products/edting%20pack%20v3/baby%20preview.mp4"
         ],
-        "details": "Describtion",
+        "details": "dd",
         "type": "preset",
-        "payhip": "mq2n4"
+        "payhip": "mq2n4",
+        "requirePassword": false
     },
     {
         "id": 1788106654694,
@@ -114,7 +86,8 @@ window.PRODUCTS_DATA = [
         ],
         "details": "dddd",
         "type": "preset",
-        "payhip": "43JCR"
+        "payhip": "43JCR",
+        "requirePassword": false
     },
     {
         "id": 1788107467370,
@@ -143,7 +116,8 @@ window.PRODUCTS_DATA = [
         ],
         "details": "ddd",
         "type": "preset",
-        "payhip": "416bD"
+        "payhip": "416bD",
+        "requirePassword": false
     },
     {
         "id": 1788107182350,
@@ -175,7 +149,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "dddd",
         "type": "preset",
-        "payhip": "8IkZi"
+        "payhip": "8IkZi",
+        "requirePassword": false
     },
     {
         "id": 1788109631759,
@@ -205,7 +180,8 @@ window.PRODUCTS_DATA = [
         ],
         "details": "ddd",
         "type": "preset",
-        "payhip": "TtpiO"
+        "payhip": "TtpiO",
+        "requirePassword": false
     },
     {
         "id": 1788106768897,
@@ -237,7 +213,8 @@ window.PRODUCTS_DATA = [
         ],
         "details": "dddd",
         "type": "preset",
-        "payhip": "kWmzs"
+        "payhip": "kWmzs",
+        "requirePassword": false
     },
     {
         "id": 1788108550205,
@@ -267,7 +244,8 @@ window.PRODUCTS_DATA = [
         ],
         "details": "ddd",
         "type": "preset",
-        "payhip": "LORMz"
+        "payhip": "LORMz",
+        "requirePassword": false
     },
     {
         "id": 1788110339582,
@@ -301,7 +279,8 @@ window.PRODUCTS_DATA = [
         ],
         "details": "ddd",
         "type": "preset",
-        "payhip": "Q6kXb"
+        "payhip": "Q6kXb",
+        "requirePassword": false
     },
     {
         "id": 1787999011499,
@@ -309,6 +288,9 @@ window.PRODUCTS_DATA = [
         "desc": "ALL MOVIES",
         "price": "3,99€",
         "image": "https://morleyae.com/previews/scenepacks/hunger%20games/Katniss%20Everdeen%20-%204K%20Clips%20preview%20video4.mp4",
+        "outroCover": "",
+        "previewImage": "",
+        "outroVideo": "",
         "media": [
             {
                 "type": "video",
@@ -316,7 +298,9 @@ window.PRODUCTS_DATA = [
             }
         ],
         "isColoring": false,
+        "isOutro": false,
         "ccPreview": null,
+        "requirePassword": false,
         "categories": [],
         "presetCategories": [],
         "movieShows": [
@@ -353,7 +337,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Scenes: Trailer + Teaser + Isolated Vocals\nMade by: morley.ae\nQuality: 1080p\nDuration: 4 min\nSize: 84 mb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "05SvN"
+        "payhip": "05SvN",
+        "requirePassword": true
     },
     {
         "id": 1787680178117,
@@ -380,7 +365,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: Best Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 69 min\nSize: 4,74 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "g6143"
+        "payhip": "g6143",
+        "requirePassword": true
     },
     {
         "id": 1787679963456,
@@ -407,7 +393,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 117 min\nSize: 9,15 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "REIUS"
+        "payhip": "REIUS",
+        "requirePassword": true
     },
     {
         "id": 1787679733537,
@@ -434,7 +421,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: Sad Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 21 min\nSize: 1,62 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "RsVnB"
+        "payhip": "RsVnB",
+        "requirePassword": true
     },
     {
         "id": 1787679554980,
@@ -461,7 +449,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: Soft Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 14 min\nSize: 1,09 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "zebit"
+        "payhip": "zebit",
+        "requirePassword": true
     },
     {
         "id": 1787679353182,
@@ -488,7 +477,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: Slicked Back Hair Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 16 min\nSize: 1,25 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "QhigI"
+        "payhip": "QhigI",
+        "requirePassword": true
     },
     {
         "id": 1787678968449,
@@ -515,7 +505,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: Best Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 79 min\nSize: 6,26 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "Vt5WC"
+        "payhip": "Vt5WC",
+        "requirePassword": true
     },
     {
         "id": 1787678833535,
@@ -542,7 +533,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 177 min\nSize: 13,4 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "ANXMu"
+        "payhip": "ANXMu",
+        "requirePassword": true
     },
     {
         "id": 1787678716989,
@@ -569,7 +561,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 83 min\nSize: 6,37 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "ai4j2"
+        "payhip": "ai4j2",
+        "requirePassword": true
     },
     {
         "id": 1787677924984,
@@ -596,7 +589,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Season: 1\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 35 min\nSize: 2,17 gb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "97QaS"
+        "payhip": "97QaS",
+        "requirePassword": true
     },
     {
         "id": 1787680768491,
@@ -625,7 +619,8 @@ window.PRODUCTS_DATA = [
         "previewVideos": [],
         "details": "Episode: 3x14\nScenes: All Scenes\nMade by: morley.ae\nQuality: 1080p\nDuration: 3:45 min\nSize: 308 mb\n\nPlease give credits if you use this!",
         "type": "scenepack",
-        "payhip": "F02r6"
+        "payhip": "F02r6",
+        "requirePassword": true
     }
 ];
 window.SALES_DATA = [

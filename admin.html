@@ -418,6 +418,7 @@
                                 <label>Movie / Show<select id="movieShows" multiple size="4"></select></label>
                                 <label>Character / Actor<select id="characters" multiple size="4"></select></label>
                             </div>
+                            <label id="scenepackPasswordField" class="checkbox-label hidden"><input id="scenepackPasswordRequired" type="checkbox"> Require password for this scenepack</label>
                             <label>Description<textarea id="desc" required placeholder="Short sales text for the storefront."></textarea></label>
                             <div class="grid"><label>Price / label<input id="price" placeholder="4,99€" required></label><label>Payhip ID<input id="payhip" type="text" required placeholder="e.g. Vt5WC"></label></div>
                             <label>Preview URLs<textarea id="media" placeholder="One GitHub raw URL per line"></textarea></label>
@@ -472,9 +473,11 @@
     const CATEGORY_KEY = 'morley_admin_categories';
     const SALES_KEY = 'morley_admin_sales';
     const PASSWORD_KEY = 'morley_download_password';
+    const PASSWORD_REQUIRED_KEY = 'morley_scenepack_password_required';
     let products = [];
     let categories = { preset: [], scenepack: { movieShow: [], characterActor: [] } };
     let sales = [];
+    let scenepackPasswordRequired = window.SCENEPACK_PASSWORD_REQUIRED !== false;
 
     const $ = id => document.getElementById(id);
     const clone = value => JSON.parse(JSON.stringify(value));
@@ -488,44 +491,59 @@
         $('saleCount').textContent = String(sales.length);
     }
 
+    function normalizeScenepackPasswordRequirements() {
+        products = products.map(product => {
+            if ((product.type || 'preset') !== 'scenepack') {
+                return { ...product, requirePassword: false };
+            }
+            return { ...product, requirePassword: product.requirePassword !== false };
+        });
+    }
+
     function loadCatalog() {
         const fileProducts = clone(window.PRODUCTS_DATA || []);
         const fileCategories = clone(window.PRODUCT_CATEGORIES || { preset: [], scenepack: { movieShow: [], characterActor: [] } });
         const fileSales = clone(window.SALES_DATA || []);
-
-        const saved = localStorage.getItem(CATALOG_KEY);
-        const savedCategories = localStorage.getItem(CATEGORY_KEY);
-        const savedSales = localStorage.getItem(SALES_KEY);
 
         const parseJson = (value, fallback) => {
             if (!value) return fallback;
             try { return JSON.parse(value); } catch (error) { return fallback; }
         };
 
-        const parsedSaved = parseJson(saved, fileProducts);
-        const parsedSavedCategories = parseJson(savedCategories, fileCategories);
-        const parsedSavedSales = parseJson(savedSales, fileSales);
+        const saved = localStorage.getItem(CATALOG_KEY);
+        const savedCategories = localStorage.getItem(CATEGORY_KEY);
+        const savedSales = localStorage.getItem(SALES_KEY);
+        const savedPasswordRequired = localStorage.getItem(PASSWORD_REQUIRED_KEY);
 
-        const hasSavedCatalog = Array.isArray(parsedSaved) && parsedSaved.length >= 0;
-        const hasSavedCategories = parsedSavedCategories && typeof parsedSavedCategories === 'object';
-        const hasSavedSales = Array.isArray(parsedSavedSales);
-
-        products = hasSavedCatalog ? parsedSaved : fileProducts;
-        categories = hasSavedCategories ? parsedSavedCategories : fileCategories;
+        // Always refresh from the current products.js state when the page is loaded again.
+        // Local draft values are ignored here so stale browser data cannot hide the real catalog.
+        products = clone(fileProducts);
+        normalizeScenepackPasswordRequirements();
+        categories = clone(fileCategories);
         categories.preset = Array.isArray(categories.preset) ? categories.preset : [];
         if (Array.isArray(categories.scenepack)) categories.scenepack = { movieShow: categories.scenepack, characterActor: [] };
         categories.scenepack = categories.scenepack || { movieShow: [], characterActor: [] };
         categories.scenepack.movieShow = Array.isArray(categories.scenepack.movieShow) ? categories.scenepack.movieShow : [];
         categories.scenepack.characterActor = Array.isArray(categories.scenepack.characterActor) ? categories.scenepack.characterActor : [];
+        scenepackPasswordRequired = window.SCENEPACK_PASSWORD_REQUIRED !== false;
 
-        sales = hasSavedSales ? parsedSavedSales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale) : [];
-        if (!sales.length && Array.isArray(fileSales)) {
-            sales = fileSales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale);
+        sales = Array.isArray(fileSales) ? fileSales.filter(sale => Array.isArray(sale.productIds)).map(({ code, ...sale }) => sale) : [];
+
+        if (saved || savedCategories || savedSales || savedPasswordRequired) {
+            localStorage.removeItem(CATALOG_KEY);
+            localStorage.removeItem(CATEGORY_KEY);
+            localStorage.removeItem(SALES_KEY);
+            localStorage.removeItem(PASSWORD_REQUIRED_KEY);
         }
 
-        if (!saved) persistCatalog();
-        if (!savedCategories) persistCategories();
-        if (!savedSales) persistSales();
+        const initialPasswordRequired = parseJson(savedPasswordRequired, scenepackPasswordRequired);
+        scenepackPasswordRequired = Boolean(initialPasswordRequired) || window.SCENEPACK_PASSWORD_REQUIRED !== false;
+
+        // Sync the browser state back to the file-based values so reloads stay aligned with products.js.
+        persistCatalog();
+        persistCategories();
+        persistSales();
+        localStorage.setItem(PASSWORD_REQUIRED_KEY, JSON.stringify(scenepackPasswordRequired));
     }
 
     function persistCatalog() { localStorage.setItem(CATALOG_KEY, JSON.stringify(products)); }
@@ -667,6 +685,7 @@
         const type = $('type').value;
         $('presetCategoryField').classList.toggle('hidden', type !== 'preset');
         $('scenepackCategoryFields').classList.toggle('hidden', type !== 'scenepack');
+        $('scenepackPasswordField').classList.toggle('hidden', type !== 'scenepack');
         $('presetVideoField').classList.toggle('hidden', type !== 'preset');
         $('outroCoverField').classList.toggle('hidden', type !== 'preset' || !$('isOutro').checked);
         $('outroVideoField').classList.toggle('hidden', type !== 'preset' || !$('isOutro').checked);
@@ -708,10 +727,10 @@
 
     function editProduct(id) {
         const product = products.find(item => item.id === id); if (!product) return;
-        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); $('isOutro').checked = Boolean(product.isOutro); $('outroCover').value = product.outroCover || product.image || ''; $('outroVideo').value = product.outroVideo || ''; renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; $('productEditorPanel').open = true; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        $('productId').value = product.id; $('type').value = product.type || 'preset'; $('isColoring').checked = Boolean(product.isColoring); $('isOutro').checked = Boolean(product.isOutro); $('scenepackPasswordRequired').checked = (product.type || 'preset') === 'scenepack' ? product.requirePassword !== false : false; $('outroCover').value = product.outroCover || product.image || ''; $('outroVideo').value = product.outroVideo || ''; renderCategorySelect(); setOptions($('presetCategories'), categories.preset, product.presetCategories || product.categories || []); setOptions($('movieShows'), categories.scenepack.movieShow, product.movieShows || product.categories || []); setOptions($('characters'), categories.scenepack.characterActor, product.characters || product.categories || []); $('title').value = product.title; $('desc').value = product.desc; $('price').value = product.price; $('payhip').value = product.payhip; $('media').value = textFromMedia(product.media || [{ src: product.image }]); $('ccPreviewWith').value = product.ccPreview?.withCc || ''; $('ccPreviewWithout').value = product.ccPreview?.withoutCc || ''; $('previewVideos').value = (product.previewVideos || []).join('\n'); $('details').value = product.details || ''; $('formTitle').textContent = 'Edit product'; $('productEditorPanel').open = true; window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
-    function resetForm() { $('productForm').reset(); $('productId').value = ''; $('formTitle').textContent = 'New product'; $('formStatus').textContent = ''; renderCategorySelect(); }
+    function resetForm() { $('productForm').reset(); $('productId').value = ''; $('scenepackPasswordRequired').checked = $('type').value === 'scenepack'; $('formTitle').textContent = 'New product'; $('formStatus').textContent = ''; renderCategorySelect(); }
 
     function saveProduct(event) {
         event.preventDefault();
@@ -726,8 +745,9 @@
         const outroVideo = isOutro ? $('outroVideo').value.trim() : '';
         const ccPreview = isColoring ? { withCc: $('ccPreviewWith').value.trim(), withoutCc: $('ccPreviewWithout').value.trim() } : null;
         if (isColoring && (!ccPreview.withCc || !ccPreview.withoutCc)) { $('formStatus').textContent = 'Add both CC comparison image URLs.'; return; }
+        const requirePassword = type === 'scenepack' ? $('scenepackPasswordRequired').checked : false;
         const fallbackImage = media[0]?.src || previewImage || outroCover || '';
-        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: isOutro && outroCover ? outroCover : fallbackImage, outroCover: isOutro ? (outroCover || fallbackImage) : '', previewImage: previewImage || '', outroVideo, media, isColoring, isOutro, ccPreview, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
+        const product = { id, title: $('title').value.trim(), desc: $('desc').value.trim(), price: $('price').value.trim(), image: isOutro && outroCover ? outroCover : fallbackImage, outroCover: isOutro ? (outroCover || fallbackImage) : '', previewImage: previewImage || '', outroVideo, media, isColoring, isOutro, ccPreview, requirePassword, categories: [], presetCategories: type === 'preset' ? getSelectedValues($('presetCategories')) : [], movieShows: type === 'scenepack' ? getSelectedValues($('movieShows')) : [], characters: type === 'scenepack' ? getSelectedValues($('characters')) : [], previewVideos, details: $('details').value.trim(), type, payhip: $('payhip').value.trim() };
         const index = products.findIndex(item => item.id === id); if (index === -1) products.unshift(product); else products[index] = product;
         persistCatalog(); renderList(); resetForm(); updateDashboardStats(); $('formStatus').textContent = 'Saved locally. Download products.js to publish it.';
     }
@@ -750,9 +770,18 @@
 
     function escapeHtml(value) { return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char])); }
 
+    function syncScenepackPasswordSettings() {
+        const checkbox = $('scenepackPasswordRequired');
+        if (!checkbox) return;
+        checkbox.checked = Boolean(scenepackPasswordRequired);
+    }
+
     function getCatalogSource() {
         const password = localStorage.getItem(PASSWORD_KEY) || window.SCENEPACK_DOWNLOAD_PASSWORD || 'CHANGE_THIS_PASSWORD';
-        return `/* Permanent product catalog. Edit with admin.html, then commit this file to GitHub. */\nwindow.SCENEPACK_DOWNLOAD_PASSWORD = ${JSON.stringify(password)};\nwindow.PRODUCT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\nwindow.PRODUCTS_DATA = ${JSON.stringify(products, null, 4)};\nwindow.SALES_DATA = ${JSON.stringify(sales, null, 4)};\n`;
+        const required = $('scenepackPasswordRequired') ? $('scenepackPasswordRequired').checked : scenepackPasswordRequired;
+        localStorage.setItem(PASSWORD_REQUIRED_KEY, JSON.stringify(required));
+        scenepackPasswordRequired = required;
+        return `/* Permanent product catalog. Edit with admin.html, then commit this file to GitHub. */\nwindow.SCENEPACK_PASSWORD_REQUIRED = ${JSON.stringify(required)};\nwindow.SCENEPACK_DOWNLOAD_PASSWORD = ${JSON.stringify(password)};\nwindow.PRODUCT_CATEGORIES = ${JSON.stringify(categories, null, 4)};\nwindow.PRODUCTS_DATA = ${JSON.stringify(products, null, 4)};\nwindow.SALES_DATA = ${JSON.stringify(sales, null, 4)};\n`;
     }
 
     function downloadCatalog() {
@@ -812,6 +841,17 @@
     $('copyButton').onclick = copyCatalog;
     $('copyButtonSecondary').onclick = copyCatalog;
     $('addCategoryButton').onclick = addCategory;
+    const scenepackPasswordCheckbox = $('scenepackPasswordRequired');
+    if (scenepackPasswordCheckbox) {
+        scenepackPasswordCheckbox.onchange = () => {
+            scenepackPasswordRequired = scenepackPasswordCheckbox.checked;
+            localStorage.setItem(PASSWORD_REQUIRED_KEY, JSON.stringify(scenepackPasswordRequired));
+            if (!scenepackPasswordRequired) {
+                localStorage.setItem(PASSWORD_KEY, '');
+            }
+            syncScenepackPasswordSettings();
+        };
+    }
     $('type').onchange = renderCategorySelect;
     $('isColoring').onchange = renderCategorySelect;
     $('isOutro').onchange = renderCategorySelect;
@@ -821,7 +861,12 @@
     $('cancelSaleButton').onclick = resetSaleForm;
     $('productSearch').oninput = renderList;
     $('resetButton').onclick = () => { if (!confirm('Discard local catalog changes and reload products.js?')) return; localStorage.removeItem(CATALOG_KEY); localStorage.removeItem(CATEGORY_KEY); localStorage.removeItem(SALES_KEY); loadCatalog(); renderList(); resetForm(); resetSaleForm(); $('saveStatus').textContent = 'Local changes reset.'; };
-    loadCatalog(); renderList(); resetForm();
+    syncScenepackPasswordSettings();
+    loadCatalog();
+    syncScenepackPasswordSettings();
+    renderList();
+    resetForm();
 </script>
 </body>
 </html>
+ 

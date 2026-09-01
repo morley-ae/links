@@ -1021,6 +1021,16 @@
 
         function openScenepackCheckout(products) {
                 window.pendingDownloadProducts = products;
+                const requirePassword = products.some(product => product.requirePassword === true)
+                    || (products.some(product => product.requirePassword === undefined) && window.SCENEPACK_PASSWORD_REQUIRED !== false);
+                if (!requirePassword) {
+                    const checkoutUrl = buildCheckoutUrl(products);
+                    if (checkoutUrl) {
+                        window.open(checkoutUrl, '_blank', 'noopener');
+                    }
+                    window.pendingDownloadProducts = null;
+                    return;
+                }
                 document.getElementById('downloadPassword').value = '';
                 document.getElementById('downloadGateStatus').classList.add('hidden');
                 const gate = document.getElementById('downloadGate');
