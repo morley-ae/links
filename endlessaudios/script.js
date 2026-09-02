@@ -313,6 +313,7 @@ function setActiveNavLink(pathname) {
 }
 
 function handleRouting(pathname, pushHistory = true) {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     const cleanPath = pathname.replace(/\/$/, "");
     
     if (cleanPath.startsWith('/audio/')) {
@@ -1432,7 +1433,7 @@ function renderTermsView() {
         <div class="library-box" style="margin-top: 30px;">
             <section class="page-hero" style="padding: 24px 20px 12px 20px;">
                 <h1>Terms of Service</h1>
-                <p>Last updated: August 14, 2026</p>
+                <p>Last updated: September 2, 2026</p>
             </section>
             <div class="legal-content">
                 <div class="legal-section">
