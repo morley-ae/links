@@ -167,12 +167,28 @@ function showBeatMarkedInfo(event) {
 
 function shareTrack(event, track) {
     if (event) event.stopPropagation();
-    const url = window.location.origin + '/audio/' + encodeURIComponent(track.filename);
-    navigator.clipboard.writeText(url).then(() => {
-        showToast("Link copied to clipboard!");
-    }).catch(err => {
-        console.error("Failed to copy:", err);
-    });
+    if (!track?.filename) return;
+    const url = `${window.location.origin}${APP_BASE_PATH}/audio/${encodeURIComponent(track.filename)}`;
+    const copyPromise = navigator.clipboard?.writeText(url);
+    if (copyPromise) {
+        copyPromise.then(() => showToast("Link copied to clipboard!"))
+            .catch(() => copyShareUrlFallback(url));
+        return;
+    }
+    copyShareUrlFallback(url);
+}
+
+function copyShareUrlFallback(url) {
+    const input = document.createElement('textarea');
+    input.value = url;
+    input.setAttribute('readonly', '');
+    input.style.position = 'fixed';
+    input.style.opacity = '0';
+    document.body.appendChild(input);
+    input.select();
+    const copied = document.execCommand('copy');
+    input.remove();
+    showToast(copied ? "Link copied to clipboard!" : "Copy the link from your browser address bar.");
 }
 
 function decodeId3Text(value) {
@@ -316,8 +332,8 @@ function handleRouting(pathname, pushHistory = true) {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     const cleanPath = pathname.replace(/\/$/, "");
     
-    if (cleanPath.startsWith('/audio/')) {
-        const filename = decodeURIComponent(cleanPath.split('/audio/')[1]);
+    if (cleanPath.startsWith(`${APP_BASE_PATH}/audio/`)) {
+        const filename = decodeURIComponent(cleanPath.split(`${APP_BASE_PATH}/audio/`)[1]);
         const track = audioFiles.find(a => a.filename === filename);
         if (pushHistory) history.pushState({ view: 'detail', filename: filename }, '', pathname);
         if (track) {
