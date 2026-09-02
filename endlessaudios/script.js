@@ -1472,7 +1472,7 @@ function renderTermsView() {
 
                 <div class="legal-section">
                     <h2>5. Copyright infringement notices</h2>
-                    <p>If you believe your intellectual property has been infringed, please reach out to us on Discord (<a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>) or email <a href="mailto:endlessaudios@gmail.com">endlessaudios@gmail.com</a> with specific references to the content in question. We will investigate and remove flagged material as appropriate.</p>
+                    <p>If you believe your intellectual property has been infringed, please reach out to us on Discord (<a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>) with specific references to the content in question. We will investigate and remove flagged material as appropriate.</p>
                 </div>
 
                 <div class="legal-section">
@@ -1492,7 +1492,7 @@ function renderTermsView() {
 
                 <div class="legal-section">
                     <h2>9. Questions & support</h2>
-                    <p>For account issues, takedown requests, or questions about these terms, contact us via Discord: <a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a> — or email: <a href="mailto:endlessaudios@gmail.com">endlessaudios@gmail.com</a></p>
+                    <p>For account issues, takedown requests, or questions about these terms, contact us via Discord: <a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>.</p>
                 </div>
 
                 <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color);">
@@ -1557,7 +1557,7 @@ function renderPrivacyView() {
 
                 <div class="legal-section">
                     <h2>6. Your data rights</h2>
-                    <p>You can request information about what data we hold, download your uploads, delete uploads, remove your profile, or fully delete your account. Contact us via Discord (<a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>) or email (<a href="mailto:endlessaudios@gmail.com">endlessaudios@gmail.com</a>). Account deletion removes your profile, uploads, and all active sessions.</p>
+                    <p>You can request information about what data we hold, download your uploads, delete uploads, remove your profile, or fully delete your account. Contact us via Discord (<a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>). Account deletion removes your profile, uploads, and all active sessions.</p>
                 </div>
 
                 <div class="legal-section">
