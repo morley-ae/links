@@ -594,10 +594,10 @@ h1 {
     align-items: center;
     gap: 10px;
     margin-bottom: 24px;
-    overflow-x: auto;
-    overflow-y: visible;
-    padding-bottom: 12px;
-    padding-top: 4px;
+    overflow: visible;
+    padding: 12px;
+    margin-left: -12px;
+    margin-right: -12px;
 }
 
 .filter-divider {

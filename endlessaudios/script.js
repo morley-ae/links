@@ -32,6 +32,7 @@ const beatMetadataCache = new Map();
 // Gemerkte zufällige Reihenfolge für die Home-Seite (bleibt während der Session stabil)
 let homeRandomOrderCache = null;
 
+const APP_BASE_PATH = "/endlessaudios";
 const ASSET_BASE_URL = "https://audios-4mx.pages.dev";
 const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
 
@@ -1010,7 +1011,7 @@ seekBar.addEventListener("touchend", () => {
 });
 
 function showExplore() {
-    handleRouting('/explore', true);
+    handleRouting(`${APP_BASE_PATH}/explore`, true);
 }
 
 function renderExploreView() {
@@ -1205,25 +1206,25 @@ function renderDetailView(track) {
 }
 
 function showHome() {
-    handleRouting('/', true);
+    handleRouting(`${APP_BASE_PATH}/`, true);
 }
 
 
 
 function showCreatorsList() {
-    handleRouting('/creators', true);
+    handleRouting(`${APP_BASE_PATH}/creators`, true);
 }
 
 function showTerms() {
-    handleRouting('/terms', true);
+    handleRouting(`${APP_BASE_PATH}/terms`, true);
 }
 
 function showPrivacy() {
-    handleRouting('/privacy', true);
+    handleRouting(`${APP_BASE_PATH}/privacy`, true);
 }
 
 function showUploaderProfile(uploaderName) {
-    handleRouting(`/creators/${encodeURIComponent(uploaderName)}`, true);
+    handleRouting(`${APP_BASE_PATH}/creators/${encodeURIComponent(uploaderName)}`, true);
 }
 
 function renderHomeView() {
