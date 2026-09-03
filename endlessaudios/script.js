@@ -38,7 +38,6 @@ const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
 const COUNTER_WORKSPACE = "endlessaudios";
 const COUNTER_API_KEY = "ut_WkHJV7oNtC3MJl52ubvQcoW6Qhzq85UoJSOpO4Bo";
 const TOTAL_COUNTER_NAME = "all-downloads";
-const DAILY_COUNTER_NAME = "daily-downloads";
 
 // Global volume setting (persists across all tracks)
 let globalVolume = parseFloat(localStorage.getItem('globalVolume') || '0.8');
@@ -407,27 +406,15 @@ function getTrackDownloads(track) {
     return Number(track?.downloads || 0);
 }
 
-function getTrackDailyDownloads(track) {
-    return Number(track?.dailyDownloads || 0);
-}
-
-function getCounterKey(track) {
-    return String(track?.filename || "")
-        .replace(/[^a-z0-9]/gi, "-")
-        .toLowerCase();
-}
-
 function getCounterRequestOptions() {
     const headers = {};
     if (COUNTER_API_KEY) headers.Authorization = `Bearer ${COUNTER_API_KEY}`;
     return { cache: "no-store", headers };
 }
 
-function updateGlobalDownloadStats(total, daily) {
+function updateGlobalDownloadStats(total) {
     const totalElement = document.getElementById("totalDownloadCount");
-    const dailyElement = document.getElementById("dailyDownloadCount");
     if (totalElement) totalElement.textContent = total;
-    if (dailyElement) dailyElement.textContent = daily;
 }
 
 function updateSearchPlaceholder() {
@@ -439,20 +426,18 @@ function updateSearchPlaceholder() {
 async function loadDownloadCounts(tracks) {
     tracks.forEach(track => {
         track.downloads = 0;
-        track.dailyDownloads = 0;
     });
 
     try {
-        const [totalResponse, dailyResponse] = await Promise.all([
-            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}`, getCounterRequestOptions()),
-            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${DAILY_COUNTER_NAME}`, getCounterRequestOptions())
-        ]);
-        if (!totalResponse.ok || !dailyResponse.ok) throw new Error("Global counter request failed");
+        const totalResponse = await fetch(
+            `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}`,
+            getCounterRequestOptions()
+        );
+        if (!totalResponse.ok) throw new Error("Global counter request failed");
         const totalResult = await totalResponse.json();
-        const dailyResult = await dailyResponse.json();
-        updateGlobalDownloadStats(Number(totalResult.count || 0), Number(dailyResult.count || 0));
+        updateGlobalDownloadStats(Number(totalResult.count || 0));
     } catch (error) {
-        updateGlobalDownloadStats(0, 0);
+        updateGlobalDownloadStats(0);
     }
 }
 
@@ -507,18 +492,15 @@ async function incrementDownload(track, counterElementId) {
     if (!track?.filename) return;
 
     try {
-        const [totalResponse, dailyResponse] = await Promise.all([
-            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}/up`, getCounterRequestOptions()),
-            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${DAILY_COUNTER_NAME}/up`, getCounterRequestOptions())
-        ]);
-
-        if (!totalResponse.ok || !dailyResponse.ok) throw new Error("Global counter request failed");
+        const totalResponse = await fetch(
+            `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}/up`,
+            getCounterRequestOptions()
+        );
+        if (!totalResponse.ok) throw new Error("Global counter request failed");
 
         const totalResult = await totalResponse.json();
-        const dailyResult = await dailyResponse.json();
         const totalCount = Number(totalResult.count || 0);
-        const dailyCount = Number(dailyResult.count || 0);
-        updateGlobalDownloadStats(totalCount, dailyCount);
+        updateGlobalDownloadStats(totalCount);
         track.downloads = totalCount;
 
         if (counterElementId) {
@@ -1080,8 +1062,6 @@ function renderExploreView() {
     exploreContainer.style.display = "block";
 
     let allTimeList = [...audioFiles].sort((a, b) => getTrackDownloads(b) - getTrackDownloads(a)).slice(0, 5);
-    let dailyList = [...audioFiles].sort((a, b) => getTrackDailyDownloads(b) - getTrackDailyDownloads(a)).slice(0, 5);
-
     exploreContainer.innerHTML = `
         <div class="library-box" style="margin-top: 30px;">
             <section class="hero" style="padding: 40px 20px 20px 20px;">
@@ -1099,19 +1079,12 @@ function renderExploreView() {
                 <div id="inspoResultsContainer" style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; text-align: left;"></div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+            <div>
                 <div>
                     <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
                         🔥 Most Downloaded (All Time)
                     </h3>
                     <div id="allTimeChartList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                </div>
-
-                <div>
-                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                        ⚡ Trending (Last 24 Hours)
-                    </h3>
-                    <div id="dailyChartList" style="display: flex; flex-direction: column; gap: 8px;"></div>
                 </div>
             </div>
 
@@ -1122,7 +1095,6 @@ function renderExploreView() {
     `;
 
     renderChartList("allTimeChartList", allTimeList);
-    renderChartList("dailyChartList", dailyList);
 }
 
 function renderChartList(containerId, list) {
@@ -1153,7 +1125,7 @@ function renderChartList(containerId, list) {
         item.onmouseout = () => item.style.background = "rgba(255, 255, 255, 0.02)";
         item.onclick = () => playTrack(track, fullPreviewUrl);
 
-        const count = containerId.includes('allTime') ? getTrackDownloads(track) : getTrackDailyDownloads(track);
+        const count = getTrackDownloads(track);
 
         item.innerHTML = `
             <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
