@@ -132,6 +132,42 @@ header {
     min-width: 96px;
 }
 
+#audioSortSelect,
+#profileSortSelect {
+    appearance: none;
+    -webkit-appearance: none;
+    min-width: 142px;
+    padding: 7px 28px 7px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-muted);
+    background-color: rgba(255, 255, 255, 0.035);
+    background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+    background-position: calc(100% - 13px) 50%, calc(100% - 9px) 50%;
+    background-size: 4px 4px, 4px 4px;
+    background-repeat: no-repeat;
+    font: inherit;
+    font-size: 11px;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+#audioSortSelect:hover,
+#profileSortSelect:hover,
+#audioSortSelect:focus,
+#profileSortSelect:focus {
+    border-color: var(--border-hover);
+    color: var(--text-main);
+    background-color: rgba(255, 255, 255, 0.06);
+    outline: none;
+}
+
+#audioSortSelect option,
+#profileSortSelect option {
+    color: var(--text-main);
+    background: #121218;
+}
+
 .nav-link-home:hover,
 .nav-link-home:focus-visible {
     background: rgba(255,255,255,0.04);
