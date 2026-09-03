@@ -35,8 +35,7 @@ let homeRandomOrderCache = null;
 const APP_BASE_PATH = "/endlessaudios";
 const ASSET_BASE_URL = "https://audios-4mx.pages.dev";
 const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
-const COUNTER_WORKSPACE = "endlessaudios";
-const TOTAL_COUNTER_NAME = "all-downloads";
+const DOWNLOAD_STATS_URL = "https://endlessaudios-counter.knobiwan13.workers.dev/downloads";
 let globalDownloadCount = 0;
 let globalDownloadAnimation = null;
 let totalAudioCount = 0;
@@ -461,20 +460,19 @@ function updateSearchPlaceholder() {
 }
 
 async function loadDownloadCounts(tracks) {
-    tracks.forEach(track => {
-        delete track.downloads;
-    });
-
     try {
-        const totalResponse = await fetch(
-            `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}`,
-            getCounterRequestOptions()
-        );
-        if (!totalResponse.ok) throw new Error("Global counter request failed");
-        const totalResult = await totalResponse.json();
-        updateGlobalDownloadStats(Number(totalResult.data?.up_count || 0));
+        const response = await fetch(DOWNLOAD_STATS_URL, getCounterRequestOptions());
+        if (!response.ok) throw new Error("Download stats request failed");
+        const result = await response.json();
+        const counts = result.counts || {};
+        tracks.forEach(track => {
+            track.downloads = Number(counts[track.filename] || 0);
+        });
+        updateGlobalDownloadStats(Number(result.total || 0));
+        renderApp();
     } catch (error) {
-        updateGlobalDownloadStats(0);
+        tracks.forEach(track => { track.downloads = 0; });
+        console.warn("Download stats unavailable:", error);
     }
 }
 
@@ -529,15 +527,17 @@ async function incrementDownload(track) {
     if (!track?.filename) return;
 
     try {
-        const totalResponse = await fetch(
-            `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}/up`,
-            getCounterRequestOptions()
-        );
-        if (!totalResponse.ok) throw new Error("Global counter request failed");
+        const response = await fetch(DOWNLOAD_STATS_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ filename: track.filename })
+        });
+        if (!response.ok) throw new Error("Download stats request failed");
 
-        const totalResult = await totalResponse.json();
-        const apiCount = Number(totalResult.data?.up_count || 0);
-        updateGlobalDownloadStats(Math.max(globalDownloadCount + 1, apiCount));
+        const result = await response.json();
+        track.downloads = Number(result.downloads || 0);
+        updateGlobalDownloadStats(Number(result.total || globalDownloadCount + 1));
+        renderApp();
     } catch (error) {
         console.warn("Download counter unavailable:", error);
     }
@@ -770,6 +770,7 @@ function renderApp() {
                 ${beatTagMarkup}
             </div>
             <div class="download-info-group" style="display: flex; align-items: center; gap: 10px;">
+                <span title="Downloads" style="color: var(--text-muted); font-size: 11px; white-space: nowrap;">${Number(audioData.downloads || 0)} downloads</span>
                 <button title="Share" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${audioData.filename}'))" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px; transition: all 0.2s;">
                     <svg width="15" height="15" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                 </button>
