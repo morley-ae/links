@@ -403,7 +403,7 @@ function getPreviewAndDownloadUrls(audioData) {
 }
 
 function getTrackDownloads(track) {
-    return Number(track?.downloads || 0);
+    return track.downloads || 0;
 }
 
 function getCounterRequestOptions() {
@@ -414,18 +414,32 @@ function getCounterRequestOptions() {
 
 function updateGlobalDownloadStats(total) {
     const totalElement = document.getElementById("totalDownloadCount");
-    if (totalElement) totalElement.textContent = total;
+    if (!totalElement) return;
+
+    const start = Number(totalElement.textContent) || 0;
+    const end = Number(total) || 0;
+    const duration = 700;
+    const startedAt = performance.now();
+
+    const animate = now => {
+        const progress = Math.min((now - startedAt) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        totalElement.textContent = Math.round(start + (end - start) * eased);
+        if (progress < 1) requestAnimationFrame(animate);
+    };
+
+    requestAnimationFrame(animate);
 }
 
 function updateSearchPlaceholder() {
     if (searchInput) {
-        searchInput.placeholder = `Search ${audioFiles.length} by title, category or uploader...`;
+        searchInput.placeholder = `Search ${audioFiles.length} audios by title, category or uploader...`;
     }
 }
 
 async function loadDownloadCounts(tracks) {
     tracks.forEach(track => {
-        track.downloads = 0;
+        delete track.downloads;
     });
 
     try {
@@ -488,7 +502,7 @@ function showDownloadModal(track) {
     });
 }
 
-async function incrementDownload(track, counterElementId) {
+async function incrementDownload(track) {
     if (!track?.filename) return;
 
     try {
@@ -501,26 +515,17 @@ async function incrementDownload(track, counterElementId) {
         const totalResult = await totalResponse.json();
         const totalCount = Number(totalResult.count || 0);
         updateGlobalDownloadStats(totalCount);
-        track.downloads = totalCount;
-
-        if (counterElementId) {
-            document.querySelectorAll(`[id="${counterElementId}"]`).forEach(el => {
-                el.textContent = `${totalCount} downloads`;
-            });
-        }
     } catch (error) {
         console.warn("Download counter unavailable:", error);
     }
 }
 
-async function downloadTrack(event, url, track, counterId) {
+async function downloadTrack(event, url, track) {
     if (event) event.stopPropagation();
     
     showDownloadModal(track);
 
     const filename = track.filename ? track.filename.split('/').pop() : 'download.mp3';
-    let alreadyIncremented = false;
-
     try {
         const response = await fetch(url, { mode: 'cors' });
         const blob = await response.blob();
@@ -541,10 +546,7 @@ async function downloadTrack(event, url, track, counterId) {
             a.remove();
         }, 100);
         
-        if (counterId) {
-            await incrementDownload(track, counterId);
-            alreadyIncremented = true;
-        }
+        await incrementDownload(track);
     } catch (err) {
         console.warn("CORS fetch blocked, using invisible iframe download method...", err);
         
@@ -558,9 +560,7 @@ async function downloadTrack(event, url, track, counterId) {
         
         hiddenIframe.src = url;
 
-        if (counterId && !alreadyIncremented) {
-            await incrementDownload(track, counterId);
-        }
+        await incrementDownload(track);
     }
 }
 
@@ -722,8 +722,6 @@ function renderApp() {
         row.className = "audio-row";
         const { fullPreviewUrl, fullDownloadUrl } = getPreviewAndDownloadUrls(audioData);
         const fileExtension = audioData.filename ? audioData.filename.split('.').pop().toLowerCase() : 'mp3';
-        const downloadCount = getTrackDownloads(audioData);
-        const counterId = `dl-count-main-${index}`;
         const safeTitle = (audioData.title || "").replace(/'/g, "\\'");
         const beatMarked = getTrackBeatMarked(audioData);
         
@@ -753,8 +751,7 @@ function renderApp() {
                 <button title="Share" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${audioData.filename}'))" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px; transition: all 0.2s;">
                     <svg width="15" height="15" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                 </button>
-                <span class="download-counter" id="${counterId}">${downloadCount} downloads</span>
-                <button class="download-action" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${audioData.filename}' || x.title === '${safeTitle}'), '${counterId}')">
+                <button class="download-action" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${audioData.filename}' || x.title === '${safeTitle}'))">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download
                 </button>
@@ -863,15 +860,13 @@ function updateBottomPlayerExtraButtons(track) {
     }
     
     const { fullDownloadUrl } = getPreviewAndDownloadUrls(track);
-    const playerCounterId = `dl-count-player-${track.filename.replace(/[^a-z0-9]/gi, '_')}`;
     extraContainer.innerHTML = `
         <button title="Share" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${track.filename}'))" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px; transition: all 0.2s;">
             <svg width="15" height="15" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
         </button>
-        <button title="Download" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'), '${playerCounterId}')" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px; transition: all 0.2s;">
+        <button title="Download" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px; transition: all 0.2s;">
             <svg width="15" height="15" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </button>
-        <span id="${playerCounterId}" style="display:none">${getTrackDownloads(track)} downloads</span>
     `;
     
     let volContainer = document.getElementById("volumeContainer");
@@ -1061,7 +1056,7 @@ function renderExploreView() {
     if (typeof legalContainer !== 'undefined') legalContainer.style.display = "none";
     exploreContainer.style.display = "block";
 
-    let allTimeList = [...audioFiles].sort((a, b) => getTrackDownloads(b) - getTrackDownloads(a)).slice(0, 5);
+    let allTimeList = [...audioFiles].sort((a, b) => (b.downloads || 0) - (a.downloads || 0)).slice(0, 5);
     exploreContainer.innerHTML = `
         <div class="library-box" style="margin-top: 30px;">
             <section class="hero" style="padding: 40px 20px 20px 20px;">
@@ -1079,22 +1074,12 @@ function renderExploreView() {
                 <div id="inspoResultsContainer" style="margin-top: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; text-align: left;"></div>
             </div>
 
-            <div>
-                <div>
-                    <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                        🔥 Most Downloaded (All Time)
-                    </h3>
-                    <div id="allTimeChartList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-                </div>
-            </div>
-
             <div style="margin-top: 35px;">
                 <button onclick="showHome()" style="background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-cyan)'" onmouseout="this.style.color='var(--text-muted)'">← Back to library</button>
             </div>
         </div>
     `;
 
-    renderChartList("allTimeChartList", allTimeList);
 }
 
 function renderChartList(containerId, list) {
@@ -1151,7 +1136,6 @@ function triggerInspoRandomizer() {
     container.innerHTML = "";
     selected.forEach(track => {
         const { fullPreviewUrl, fullDownloadUrl } = getPreviewAndDownloadUrls(track);
-        const counterId = `dl-count-inspo-${track.filename.replace(/[^a-z0-9]/gi, '_')}`;
         const card = document.createElement("div");
         card.style.cssText = `
             background: rgba(18, 18, 24, 0.8);
@@ -1167,12 +1151,11 @@ function triggerInspoRandomizer() {
             <div>
                 <div style="font-size: 10px; color: var(--accent-cyan); font-weight: 700; text-transform: uppercase; margin-bottom: 4px;">${track.category || 'Audio'}</div>
                 <div style="font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 2px;">${track.title}</div>
-                <div id="${counterId}" style="font-size: 11px; color: var(--text-muted); margin-bottom: 5px;">${getTrackDownloads(track)} downloads</div>
                 <div style="font-size: 11px; color: var(--text-muted);">by @${track.uploader}</div>
             </div>
             <div style="display: flex; gap: 8px;">
                 <button onclick="playTrack(audioFiles.find(x => x.filename === '${track.filename}'), '${fullPreviewUrl}')" style="flex: 1; background: var(--accent-glow); color: #fff; border: none; padding: 6px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Play</button>
-                <button onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'), '${counterId}')" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 11px; cursor: pointer;">↓</button>
+                <button onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 11px; cursor: pointer;">↓</button>
             </div>
         `;
         container.appendChild(card);
@@ -1204,11 +1187,10 @@ function renderDetailView(track) {
                     <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">by <span style="color: var(--accent-cyan); cursor: pointer;" onclick="showUploaderProfile('${track.uploader}')">@${track.uploader}</span></div>
                     
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <button class="download-action" style="background: linear-gradient(135deg, var(--accent-glow), var(--accent-cyan)); color: #fff; border-color: transparent;" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'), 'dl-count-detail')">
+                        <button class="download-action" style="background: linear-gradient(135deg, var(--accent-glow), var(--accent-cyan)); color: #fff; border-color: transparent;" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             Download
                         </button>
-                        <span class="download-counter" id="dl-count-detail">${getTrackDownloads(track)} downloads</span>
                         <button class="download-action" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${track.filename}'))">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                             Share
@@ -1291,11 +1273,10 @@ function renderCreatorsListView() {
     });
 
     sortedUploaders.forEach(u => {
-        const totalDl = uploaders[u].tracks.reduce((sum, t) => sum + getTrackDownloads(t), 0);
         const card = document.createElement("div");
         card.className = "creator-card";
         card.onclick = () => showUploaderProfile(u);
-        card.innerHTML = `<div class="creator-banner"><div class="creator-avatar-container">${uploaders[u].avatar ? `<img src="${uploaders[u].avatar}">` : `<div class="avatar-fallback">${u[0]}</div>`}</div></div><div class="creator-info"><div class="creator-card-name">${u}</div><div class="creator-card-stats">${uploaders[u].tracks.length} audios · ${totalDl} downloads</div></div>`;
+        card.innerHTML = `<div class="creator-banner"><div class="creator-avatar-container">${uploaders[u].avatar ? `<img src="${uploaders[u].avatar}">` : `<div class="avatar-fallback">${u[0]}</div>`}</div></div><div class="creator-info"><div class="creator-card-name">${u}</div><div class="creator-card-stats">${uploaders[u].tracks.length} audios</div></div>`;
         grid.appendChild(card);
     });
 }
@@ -1325,7 +1306,6 @@ function renderProfileView(uploaderName) {
     uploaderTracks.sort((a, b) => getTrackDownloads(b) - getTrackDownloads(a));
 
     const totalUploads = uploaderTracks.length;
-    const totalDownloads = uploaderTracks.reduce((sum, t) => sum + getTrackDownloads(t), 0);
     
     const categoryCounts = {};
     uploaderTracks.forEach(t => {
@@ -1364,7 +1344,6 @@ function renderProfileView(uploaderName) {
     }
 
     document.getElementById("statUploads").textContent = totalUploads;
-    document.getElementById("statDownloads").textContent = totalDownloads;
     document.getElementById("statCategory").textContent = mainCategory;
 
     const list = document.getElementById("profileAudioList");
@@ -1387,8 +1366,6 @@ function renderProfileView(uploaderName) {
         row.className = "audio-row";
         const { fullPreviewUrl, fullDownloadUrl } = getPreviewAndDownloadUrls(audioData);
         const fileExtension = audioData.filename ? audioData.filename.split('.').pop().toLowerCase() : 'mp3';
-        const downloadCount = getTrackDownloads(audioData);
-        const counterId = `dl-count-profile-${start + index}`;
         const safeTitle = (audioData.title || "").replace(/'/g, "\\'");
         
         let displayCategory = audioData.category || "";
@@ -1412,8 +1389,7 @@ function renderProfileView(uploaderName) {
                 <button title="Share" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${audioData.filename}'))" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px;">
                     <svg width="15" height="15" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                 </button>
-                <span class="download-counter" id="${counterId}">${downloadCount} downloads</span>
-                <button class="download-action" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${audioData.filename}' || x.title === '${safeTitle}'), '${counterId}')">
+                <button class="download-action" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${audioData.filename}' || x.title === '${safeTitle}'))">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     Download
                 </button>
