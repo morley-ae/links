@@ -46,7 +46,9 @@ export default {
             return new Response(null, { status: 204, headers: corsHeaders(request) });
         }
 
-        if (!ALLOWED_ORIGINS.has(request.headers.get("Origin"))) {
+        const origin = request.headers.get("Origin");
+        const isDirectRead = !origin && request.method === "GET" && url.pathname === "/downloads";
+        if (!ALLOWED_ORIGINS.has(origin) && !isDirectRead) {
             return json(request, { error: "Origin not allowed" }, 403);
         }
 
