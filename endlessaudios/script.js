@@ -687,11 +687,13 @@ if (searchInput) {
     searchInput.addEventListener("input", (e) => {
         currentSearchQuery = e.target.value.toLowerCase();
         currentCategoryFilter = "all";
+        currentSort = "downloads";
         document.querySelectorAll('.filter-tab[data-category]').forEach(tab => {
             tab.classList.toggle("active", tab.getAttribute("data-category") === "all");
         });
         currentPage = 1;
         updateSearchClearButton();
+        updateAudioSortToggle();
         renderApp();
     });
 
@@ -699,11 +701,13 @@ if (searchInput) {
         searchInput.value = "";
         currentSearchQuery = "";
         currentCategoryFilter = "all";
+        currentSort = "random";
         document.querySelectorAll('.filter-tab[data-category]').forEach(tab => {
             tab.classList.toggle("active", tab.getAttribute("data-category") === "all");
         });
         currentPage = 1;
         updateSearchClearButton();
+        updateAudioSortToggle();
         renderApp();
         searchInput.focus();
     });
@@ -1111,6 +1115,12 @@ function renderExploreView() {
                     <div style="font-size:11px; color:var(--text-muted);">by @${track.uploader}</div>
                 </div>
                 <span style="font-size:12px; color:var(--text-muted); white-space:nowrap;">${Number(track.downloads || 0)} downloads</span>
+                <button title="Play" onclick="playTrack(audioFiles.find(x => x.filename === '${track.filename}'), '${getPreviewAndDownloadUrls(track).fullPreviewUrl}')" style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; padding:0; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.04); color:var(--text-main); cursor:pointer;">
+                    <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <button title="Download" onclick="downloadTrack(event, '${getPreviewAndDownloadUrls(track).fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; padding:0; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.04); color:var(--text-main); cursor:pointer;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg>
+                </button>
             </div>`).join("")
         : `<div style="color:var(--text-muted); font-size:13px;">No download data yet.</div>`;
     exploreContainer.innerHTML = `
