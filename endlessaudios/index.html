@@ -17,8 +17,8 @@
 
     <header>
         <nav class="nav-links" aria-label="Main navigation">
-            <a class="nav-link nav-link-home" onclick="showHome()">Home</a>
             <a class="nav-link" onclick="showCreatorsList()">Creators</a>
+            <a class="nav-link nav-link-home" onclick="showHome()">Home</a>
             <a class="nav-link" href="/endlessaudios/explore" onclick="event.preventDefault(); showExplore();">Explore</a>
         </nav>
     </header>
@@ -57,15 +57,8 @@
                 <button class="filter-tab" data-beat-filter="yes">Beat-marked</button>
             </div>
 
-            <div style="display:flex; justify-content:flex-end; margin:12px 0 16px;">
-                <label style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:12px;">
-                    Sort by
-                    <select id="audioSortSelect" aria-label="Sort audios">
-                        <option value="newest">New to old</option>
-                        <option value="downloads">Most downloads</option>
-                        <option value="alphabetical">Alphabetical</option>
-                    </select>
-                </label>
+            <div class="sort-control-row">
+                <button type="button" class="sort-toggle" id="audioSortToggle" aria-label="Change audio sorting">Random</button>
             </div>
 
             <div class="library-box">
@@ -88,7 +81,10 @@
             <p>The most important part of EndlessAudios - The Uploaders</p>
         </section>
         <div class="library-box" style="margin-bottom: 60px;">
-            <div class="library-header-title">All Uploaders</div>
+            <div class="library-header-title creator-list-header">
+                <span>All Uploaders</span>
+                <button type="button" class="sort-toggle" id="creatorSortToggle" aria-label="Change creator sorting">Most audios</button>
+            </div>
             <div class="creators-grid" id="creatorsGrid"></div>
         </div>
     </div>
@@ -124,14 +120,7 @@
 
         <div class="library-wrapper" style="padding: 0;">
             <div class="library-box">
-                <div class="library-header-title" id="profileLibraryTitle" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                    <span>Uploads</span>
-                    <select id="profileSortSelect" aria-label="Sort creator audios">
-                        <option value="newest">New to old</option>
-                        <option value="downloads">Most downloads</option>
-                        <option value="alphabetical">Alphabetical</option>
-                    </select>
-                </div>
+                <div class="library-header-title" id="profileLibraryTitle">Uploads</div>
                 <div id="profileAudioList"></div>
                 <div class="pagination profile-pagination" id="profilePagination" style="display: none;">
                     <button class="page-btn" id="profilePrevPageBtn" type="button">Previous</button>

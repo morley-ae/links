@@ -27,7 +27,8 @@ let profileCurrentPage = 1;
 let currentCategoryFilter = "all";
 let currentBeatFilter = "all";
 let currentSearchQuery = "";
-let currentSort = "newest";
+let currentSort = "random";
+let currentCreatorSort = "audios";
 const beatMetadataCache = new Map();
 
 // Gemerkte zufällige Reihenfolge für die Home-Seite (bleibt während der Session stabil)
@@ -649,14 +650,7 @@ function getFilteredItems() {
 
     if (currentSort === "downloads") {
         filtered.sort((a, b) => (Number(b.downloads) || 0) - (Number(a.downloads) || 0));
-    } else if (currentSort === "alphabetical") {
-        filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
-    } else if (currentSort === "newest") {
-        filtered.sort((a, b) => (b._sourceIndex || 0) - (a._sourceIndex || 0));
-    } else if (currentSearchQuery.trim() !== "") {
-        filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
     } else {
-        // Startseite: Zufällige Reihenfolge (stabil während der Session gesichert)
         if (!homeRandomOrderCache) {
             homeRandomOrderCache = [...audioFiles].sort(() => Math.random() - 0.5);
         }
@@ -669,23 +663,17 @@ function getFilteredItems() {
     return filtered;
 }
 
-const audioSortSelect = document.getElementById("audioSortSelect");
-audioSortSelect?.addEventListener("change", event => {
-    currentSort = event.target.value;
+const audioSortToggle = document.getElementById("audioSortToggle");
+function updateAudioSortToggle() {
+    if (audioSortToggle) audioSortToggle.textContent = currentSort === "downloads" ? "Most downloads" : "Random";
+}
+audioSortToggle?.addEventListener("click", () => {
+    currentSort = currentSort === "downloads" ? "random" : "downloads";
     currentPage = 1;
-    const profileSortSelect = document.getElementById("profileSortSelect");
-    if (profileSortSelect) profileSortSelect.value = currentSort;
+    updateAudioSortToggle();
     renderApp();
 });
-
-const profileSortSelect = document.getElementById("profileSortSelect");
-profileSortSelect?.addEventListener("change", event => {
-    currentSort = event.target.value;
-    profileCurrentPage = 1;
-    if (audioSortSelect) audioSortSelect.value = currentSort;
-    const profileName = document.getElementById("profileName")?.textContent;
-    if (profileName) renderProfileView(profileName);
-});
+updateAudioSortToggle();
 
 if (searchInput) {
     const searchClearBtn = document.getElementById("searchClearBtn");
@@ -1298,8 +1286,21 @@ function renderCreatorsListView() {
     });
 
     const sortedUploaders = Object.keys(uploaders).sort((a, b) => {
-        return uploaders[b].tracks.length - uploaders[a].tracks.length;
+        const aDownloads = uploaders[a].tracks.reduce((sum, track) => sum + (Number(track.downloads) || 0), 0);
+        const bDownloads = uploaders[b].tracks.reduce((sum, track) => sum + (Number(track.downloads) || 0), 0);
+        return currentCreatorSort === "downloads"
+            ? bDownloads - aDownloads
+            : uploaders[b].tracks.length - uploaders[a].tracks.length;
     });
+
+    const creatorSortToggle = document.getElementById("creatorSortToggle");
+    if (creatorSortToggle) {
+        creatorSortToggle.textContent = currentCreatorSort === "downloads" ? "Most downloads" : "Most audios";
+        creatorSortToggle.onclick = () => {
+            currentCreatorSort = currentCreatorSort === "downloads" ? "audios" : "downloads";
+            renderCreatorsListView();
+        };
+    }
 
     sortedUploaders.forEach(u => {
         const card = document.createElement("div");
@@ -1335,12 +1336,9 @@ function renderProfileView(uploaderName) {
     let uploaderTracks = audioFiles.filter(a => a.uploader.toLowerCase() === uploaderName.toLowerCase());
     if (currentSort === "downloads") {
         uploaderTracks.sort((a, b) => (Number(b.downloads) || 0) - (Number(a.downloads) || 0));
-    } else if (currentSort === "alphabetical") {
-        uploaderTracks.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
     } else {
         uploaderTracks.sort((a, b) => (b._sourceIndex || 0) - (a._sourceIndex || 0));
     }
-    if (profileSortSelect) profileSortSelect.value = currentSort;
     const totalUploads = uploaderTracks.length;
     const totalDownloads = uploaderTracks.reduce((sum, track) => sum + (Number(track.downloads) || 0), 0);
     
