@@ -281,14 +281,7 @@ async function loadAudios() {
             audioFiles = await response.json();
             if (!Array.isArray(audioFiles)) audioFiles = [];
             await hydrateBeatMarkedFlags(audioFiles);
-
-            if (!localStorage.getItem('once_reset_done_v1')) {
-                audioFiles.forEach(track => {
-                    const key = 'dl_count_' + track.filename;
-                    localStorage.setItem(key, 0);
-                });
-                localStorage.setItem('once_reset_done_v1', 'true');
-            }
+            await loadDownloadCounts(audioFiles);
         } else {
             audioFiles = [];
         }
@@ -404,22 +397,31 @@ function getPreviewAndDownloadUrls(audioData) {
 }
 
 function getTrackDownloads(track) {
-    const key = 'dl_count_' + track.filename;
-    const stored = localStorage.getItem(key);
-    if (stored !== null) return parseInt(stored, 10);
-    
-    localStorage.setItem(key, 0);
-    return 0;
+    return Number(track?.downloads || 0);
 }
 
 function getTrackDailyDownloads(track) {
-    const key = 'dl_daily_' + track.filename;
-    const record = JSON.parse(localStorage.getItem(key) || '{"count": 0, "timestamp": 0}');
-    const now = Date.now();
-    if (now - record.timestamp > 24 * 60 * 60 * 1000) {
-        return 0;
-    }
-    return record.count;
+    return Number(track?.dailyDownloads || 0);
+}
+
+async function loadDownloadCounts(tracks) {
+    await Promise.all(tracks.map(async track => {
+        try {
+            const response = await fetch(
+                `/api/download?file=${encodeURIComponent(track.filename)}`,
+                { cache: "no-store" }
+            );
+
+            if (!response.ok) throw new Error("Counter request failed");
+
+            const result = await response.json();
+            track.downloads = Number(result.count || 0);
+            track.dailyDownloads = Number(result.dailyCount || 0);
+        } catch (error) {
+            track.downloads = 0;
+            track.dailyDownloads = 0;
+        }
+    }));
 }
 
 function showDownloadModal(track) {
@@ -469,26 +471,31 @@ function showDownloadModal(track) {
     });
 }
 
-function incrementDownload(track, counterElementId) {
-    const key = 'dl_count_' + track.filename;
-    let current = getTrackDownloads(track);
-    current++;
-    localStorage.setItem(key, current);
+async function incrementDownload(track, counterElementId) {
+    if (!track?.filename) return;
 
-    const dailyKey = 'dl_daily_' + track.filename;
-    const now = Date.now();
-    let record = JSON.parse(localStorage.getItem(dailyKey) || `{"count": 0, "timestamp": ${now}}`);
-    if (now - record.timestamp > 24 * 60 * 60 * 1000) {
-        record = { count: 1, timestamp: now };
-    } else {
-        record.count++;
-    }
-    localStorage.setItem(dailyKey, JSON.stringify(record));
-    
-    if (counterElementId) {
-        document.querySelectorAll(`[id="${counterElementId}"]`).forEach(el => {
-            el.textContent = `${current} downloads`;
-        });
+    try {
+        const response = await fetch(
+            `/api/download?file=${encodeURIComponent(track.filename)}`,
+            {
+                method: "POST",
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) throw new Error("Counter request failed");
+
+        const result = await response.json();
+        track.downloads = Number(result.count || 0);
+        track.dailyDownloads = Number(result.dailyCount || 0);
+
+        if (counterElementId) {
+            document.querySelectorAll(`[id="${counterElementId}"]`).forEach(el => {
+                el.textContent = `${track.downloads} downloads`;
+            });
+        }
+    } catch (error) {
+        console.warn("Download counter unavailable:", error);
     }
 }
 
@@ -521,7 +528,7 @@ async function downloadTrack(event, url, track, counterId) {
         }, 100);
         
         if (counterId) {
-            incrementDownload(track, counterId);
+            await incrementDownload(track, counterId);
             alreadyIncremented = true;
         }
     } catch (err) {
@@ -538,7 +545,7 @@ async function downloadTrack(event, url, track, counterId) {
         hiddenIframe.src = url;
 
         if (counterId && !alreadyIncremented) {
-            incrementDownload(track, counterId);
+            await incrementDownload(track, counterId);
         }
     }
 }
@@ -1193,10 +1200,11 @@ function renderDetailView(track) {
                     <div style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">by <span style="color: var(--accent-cyan); cursor: pointer;" onclick="showUploaderProfile('${track.uploader}')">@${track.uploader}</span></div>
                     
                     <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                        <button class="download-action" style="background: linear-gradient(135deg, var(--accent-glow), var(--accent-cyan)); color: #fff; border-color: transparent;" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))">
+                        <button class="download-action" style="background: linear-gradient(135deg, var(--accent-glow), var(--accent-cyan)); color: #fff; border-color: transparent;" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'), 'dl-count-detail')">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             Download
                         </button>
+                        <span class="download-counter" id="dl-count-detail">${getTrackDownloads(track)} downloads</span>
                         <button class="download-action" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${track.filename}'))">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                             Share
