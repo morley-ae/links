@@ -27,6 +27,19 @@ body {
     overflow-x: hidden;
 }
 
+body > :not(script) {
+    animation: pageSoftRise 0.9s cubic-bezier(0.22, 0.8, 0.24, 1) both;
+}
+
+@keyframes pageSoftRise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body > :not(script) { animation: none; }
+}
+
 a { text-decoration: none; color: inherit; cursor: pointer; }
 
 header {
@@ -134,13 +147,11 @@ header {
 .hero {
     text-align: center;
     padding: 70px 20px 40px 20px;
-    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .page-hero {
     text-align: center;
     padding: 42px 20px 18px 20px;
-    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .page-hero h1 {
@@ -185,25 +196,6 @@ h1 {
     background: linear-gradient(180deg, #fff 60%, var(--text-muted));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-#mainContentWrapper,
-.creators-wrapper,
-.profile-container,
-#detailContainer,
-#exploreContainer,
-#tutorialContainer {
-    animation: pageTransition 0.8s cubic-bezier(0.18, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes pageTransition {
-    from { opacity: 0; transform: translateY(18px) scale(0.985); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(26px) scale(0.98); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* --- Download Modal Animationen & Styles --- */
@@ -1090,10 +1082,6 @@ h1 {
 }
 
 /* --- Legal Pages Styles --- */
-#legalContainer {
-    animation: pageTransition 0.8s cubic-bezier(0.18, 0.8, 0.2, 1) forwards;
-}
-
 .legal-content {
     padding: 20px 0 40px 0;
 }

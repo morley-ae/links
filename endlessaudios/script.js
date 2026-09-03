@@ -40,6 +40,8 @@ const COUNTER_API_KEY = "ut_WkHJV7oNtC3MJl52ubvQcoW6Qhzq85UoJSOpO4Bo";
 const TOTAL_COUNTER_NAME = "all-downloads";
 let globalDownloadCount = 0;
 let globalDownloadAnimation = null;
+let totalAudioCount = 0;
+let totalAudioAnimation = null;
 
 // Global volume setting (persists across all tracks)
 let globalVolume = parseFloat(localStorage.getItem('globalVolume') || '0.8');
@@ -417,14 +419,14 @@ function updateGlobalDownloadStats(total) {
     const start = globalDownloadCount;
     const end = Number(total) || 0;
     globalDownloadCount = end;
-    const duration = 700;
+    const duration = 1400;
     const startedAt = performance.now();
 
     if (globalDownloadAnimation) cancelAnimationFrame(globalDownloadAnimation);
 
     const animate = now => {
         const progress = Math.min((now - startedAt) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
+        const eased = 1 - Math.pow(1 - progress, 5);
         totalElement.textContent = Math.round(start + (end - start) * eased);
         if (progress < 1) globalDownloadAnimation = requestAnimationFrame(animate);
     };
@@ -432,10 +434,33 @@ function updateGlobalDownloadStats(total) {
     globalDownloadAnimation = requestAnimationFrame(animate);
 }
 
+function updateTotalAudioCount(total) {
+    const totalElement = document.getElementById("totalAudioCount");
+    if (!totalElement) return;
+
+    const start = totalAudioCount;
+    const end = Number(total) || 0;
+    totalAudioCount = end;
+    const duration = 1400;
+    const startedAt = performance.now();
+
+    if (totalAudioAnimation) cancelAnimationFrame(totalAudioAnimation);
+
+    const animate = now => {
+        const progress = Math.min((now - startedAt) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 5);
+        totalElement.textContent = Math.round(start + (end - start) * eased);
+        if (progress < 1) totalAudioAnimation = requestAnimationFrame(animate);
+    };
+
+    totalAudioAnimation = requestAnimationFrame(animate);
+}
+
 function updateSearchPlaceholder() {
     if (searchInput) {
         searchInput.placeholder = `Search ${audioFiles.length} audios by title, category or uploader...`;
     }
+    updateTotalAudioCount(audioFiles.length);
 }
 
 async function loadDownloadCounts(tracks) {
