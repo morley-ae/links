@@ -38,6 +38,8 @@ const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
 const COUNTER_WORKSPACE = "endlessaudios";
 const COUNTER_API_KEY = "ut_WkHJV7oNtC3MJl52ubvQcoW6Qhzq85UoJSOpO4Bo";
 const TOTAL_COUNTER_NAME = "all-downloads";
+let globalDownloadCount = 0;
+let globalDownloadAnimation = null;
 
 // Global volume setting (persists across all tracks)
 let globalVolume = parseFloat(localStorage.getItem('globalVolume') || '0.8');
@@ -402,10 +404,6 @@ function getPreviewAndDownloadUrls(audioData) {
     return { fullPreviewUrl, fullDownloadUrl };
 }
 
-function getTrackDownloads(track) {
-    return track.downloads || 0;
-}
-
 function getCounterRequestOptions() {
     const headers = {};
     if (COUNTER_API_KEY) headers.Authorization = `Bearer ${COUNTER_API_KEY}`;
@@ -416,19 +414,22 @@ function updateGlobalDownloadStats(total) {
     const totalElement = document.getElementById("totalDownloadCount");
     if (!totalElement) return;
 
-    const start = Number(totalElement.textContent) || 0;
+    const start = globalDownloadCount;
     const end = Number(total) || 0;
+    globalDownloadCount = end;
     const duration = 700;
     const startedAt = performance.now();
+
+    if (globalDownloadAnimation) cancelAnimationFrame(globalDownloadAnimation);
 
     const animate = now => {
         const progress = Math.min((now - startedAt) / duration, 1);
         const eased = 1 - Math.pow(1 - progress, 3);
         totalElement.textContent = Math.round(start + (end - start) * eased);
-        if (progress < 1) requestAnimationFrame(animate);
+        if (progress < 1) globalDownloadAnimation = requestAnimationFrame(animate);
     };
 
-    requestAnimationFrame(animate);
+    globalDownloadAnimation = requestAnimationFrame(animate);
 }
 
 function updateSearchPlaceholder() {
@@ -449,7 +450,7 @@ async function loadDownloadCounts(tracks) {
         );
         if (!totalResponse.ok) throw new Error("Global counter request failed");
         const totalResult = await totalResponse.json();
-        updateGlobalDownloadStats(Number(totalResult.count || 0));
+        updateGlobalDownloadStats(Number(totalResult.data?.up_count || 0));
     } catch (error) {
         updateGlobalDownloadStats(0);
     }
@@ -513,8 +514,8 @@ async function incrementDownload(track) {
         if (!totalResponse.ok) throw new Error("Global counter request failed");
 
         const totalResult = await totalResponse.json();
-        const totalCount = Number(totalResult.count || 0);
-        updateGlobalDownloadStats(totalCount);
+        const apiCount = Number(totalResult.data?.up_count || 0);
+        updateGlobalDownloadStats(Math.max(globalDownloadCount + 1, apiCount));
     } catch (error) {
         console.warn("Download counter unavailable:", error);
     }
@@ -617,8 +618,7 @@ function getFilteredItems() {
     });
 
     if (currentSearchQuery.trim() !== "") {
-        // Suchergebnisse bleiben nach Downloads sortiert
-        filtered.sort((a, b) => getTrackDownloads(b) - getTrackDownloads(a));
+        filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
     } else {
         // Startseite: Zufällige Reihenfolge (stabil während der Session gesichert)
         if (!homeRandomOrderCache) {
@@ -1082,50 +1082,6 @@ function renderExploreView() {
 
 }
 
-function renderChartList(containerId, list) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = "";
-
-    if (list.length === 0) {
-        container.innerHTML = `<div style="color: var(--text-muted); font-size: 13px; padding: 15px;">No stats available yet.</div>`;
-        return;
-    }
-
-    list.forEach((track, index) => {
-        const { fullPreviewUrl, fullDownloadUrl } = getPreviewAndDownloadUrls(track);
-        const item = document.createElement("div");
-        item.style.cssText = `
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.2s;
-        `;
-        item.onmouseover = () => item.style.background = "rgba(255, 255, 255, 0.05)";
-        item.onmouseout = () => item.style.background = "rgba(255, 255, 255, 0.02)";
-        item.onclick = () => playTrack(track, fullPreviewUrl);
-
-        const count = getTrackDownloads(track);
-
-        item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
-                <span style="font-size: 13px; font-weight: 700; color: var(--text-muted); width: 14px;">#${index + 1}</span>
-                <div style="overflow: hidden;">
-                    <div style="font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${track.title}</div>
-                    <div style="font-size: 11px; color: var(--text-muted);">@${track.uploader}</div>
-                </div>
-            </div>
-            <div style="font-size: 12px; color: var(--accent-cyan); font-weight: 600; white-space: nowrap; margin-left: 10px;">${count} DLs</div>
-        `;
-        container.appendChild(item);
-    });
-}
-
 function triggerInspoRandomizer() {
     const container = document.getElementById("inspoResultsContainer");
     if (!container || audioFiles.length === 0) return;
@@ -1303,8 +1259,6 @@ function renderProfileView(uploaderName) {
     }
 
     let uploaderTracks = audioFiles.filter(a => a.uploader.toLowerCase() === uploaderName.toLowerCase());
-    uploaderTracks.sort((a, b) => getTrackDownloads(b) - getTrackDownloads(a));
-
     const totalUploads = uploaderTracks.length;
     
     const categoryCounts = {};
