@@ -35,6 +35,8 @@ let homeRandomOrderCache = null;
 const APP_BASE_PATH = "/endlessaudios";
 const ASSET_BASE_URL = "https://audios-4mx.pages.dev";
 const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
+const COUNTER_WORKSPACE = "endlessaudios";
+const COUNTER_API_KEY = "ut_WkHJV7oNtC3MJl52ubvQcoW6Qhzq85UoJSOpO4Bo";
 
 // Global volume setting (persists across all tracks)
 let globalVolume = parseFloat(localStorage.getItem('globalVolume') || '0.8');
@@ -404,19 +406,32 @@ function getTrackDailyDownloads(track) {
     return Number(track?.dailyDownloads || 0);
 }
 
+function getCounterKey(track) {
+    return String(track?.filename || "")
+        .replace(/[^a-z0-9]/gi, "-")
+        .toLowerCase();
+}
+
+function getCounterRequestOptions() {
+    const headers = {};
+    if (COUNTER_API_KEY) headers.Authorization = `Bearer ${COUNTER_API_KEY}`;
+    return { cache: "no-store", headers };
+}
+
 async function loadDownloadCounts(tracks) {
     await Promise.all(tracks.map(async track => {
         try {
+            const counterKey = getCounterKey(track);
             const response = await fetch(
-                `/api/download?file=${encodeURIComponent(track.filename)}`,
-                { cache: "no-store" }
+                `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${encodeURIComponent(counterKey)}`,
+                getCounterRequestOptions()
             );
 
             if (!response.ok) throw new Error("Counter request failed");
 
             const result = await response.json();
             track.downloads = Number(result.count || 0);
-            track.dailyDownloads = Number(result.dailyCount || 0);
+            track.dailyDownloads = 0;
         } catch (error) {
             track.downloads = 0;
             track.dailyDownloads = 0;
@@ -475,19 +490,17 @@ async function incrementDownload(track, counterElementId) {
     if (!track?.filename) return;
 
     try {
+        const counterKey = getCounterKey(track);
         const response = await fetch(
-            `/api/download?file=${encodeURIComponent(track.filename)}`,
-            {
-                method: "POST",
-                cache: "no-store"
-            }
+            `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${encodeURIComponent(counterKey)}/up`,
+            getCounterRequestOptions()
         );
 
         if (!response.ok) throw new Error("Counter request failed");
 
         const result = await response.json();
         track.downloads = Number(result.count || 0);
-        track.dailyDownloads = Number(result.dailyCount || 0);
+        track.dailyDownloads = 0;
 
         if (counterElementId) {
             document.querySelectorAll(`[id="${counterElementId}"]`).forEach(el => {
