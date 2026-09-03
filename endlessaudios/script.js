@@ -37,6 +37,8 @@ const ASSET_BASE_URL = "https://audios-4mx.pages.dev";
 const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
 const COUNTER_WORKSPACE = "endlessaudios";
 const COUNTER_API_KEY = "ut_WkHJV7oNtC3MJl52ubvQcoW6Qhzq85UoJSOpO4Bo";
+const TOTAL_COUNTER_NAME = "all-downloads";
+const DAILY_COUNTER_NAME = "daily-downloads";
 
 // Global volume setting (persists across all tracks)
 let globalVolume = parseFloat(localStorage.getItem('globalVolume') || '0.8');
@@ -282,13 +284,16 @@ async function loadAudios() {
         if (response.ok) {
             audioFiles = await response.json();
             if (!Array.isArray(audioFiles)) audioFiles = [];
+            updateSearchPlaceholder();
             await hydrateBeatMarkedFlags(audioFiles);
             await loadDownloadCounts(audioFiles);
         } else {
             audioFiles = [];
+            updateSearchPlaceholder();
         }
     } catch (e) {
         audioFiles = [];
+        updateSearchPlaceholder();
     }
 
     handleRouting(window.location.pathname, false);
@@ -418,25 +423,37 @@ function getCounterRequestOptions() {
     return { cache: "no-store", headers };
 }
 
+function updateGlobalDownloadStats(total, daily) {
+    const totalElement = document.getElementById("totalDownloadCount");
+    const dailyElement = document.getElementById("dailyDownloadCount");
+    if (totalElement) totalElement.textContent = total;
+    if (dailyElement) dailyElement.textContent = daily;
+}
+
+function updateSearchPlaceholder() {
+    if (searchInput) {
+        searchInput.placeholder = `Search ${audioFiles.length} by title, category or uploader...`;
+    }
+}
+
 async function loadDownloadCounts(tracks) {
-    await Promise.all(tracks.map(async track => {
-        try {
-            const counterKey = getCounterKey(track);
-            const response = await fetch(
-                `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${encodeURIComponent(counterKey)}`,
-                getCounterRequestOptions()
-            );
+    tracks.forEach(track => {
+        track.downloads = 0;
+        track.dailyDownloads = 0;
+    });
 
-            if (!response.ok) throw new Error("Counter request failed");
-
-            const result = await response.json();
-            track.downloads = Number(result.count || 0);
-            track.dailyDownloads = 0;
-        } catch (error) {
-            track.downloads = 0;
-            track.dailyDownloads = 0;
-        }
-    }));
+    try {
+        const [totalResponse, dailyResponse] = await Promise.all([
+            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}`, getCounterRequestOptions()),
+            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${DAILY_COUNTER_NAME}`, getCounterRequestOptions())
+        ]);
+        if (!totalResponse.ok || !dailyResponse.ok) throw new Error("Global counter request failed");
+        const totalResult = await totalResponse.json();
+        const dailyResult = await dailyResponse.json();
+        updateGlobalDownloadStats(Number(totalResult.count || 0), Number(dailyResult.count || 0));
+    } catch (error) {
+        updateGlobalDownloadStats(0, 0);
+    }
 }
 
 function showDownloadModal(track) {
@@ -490,21 +507,23 @@ async function incrementDownload(track, counterElementId) {
     if (!track?.filename) return;
 
     try {
-        const counterKey = getCounterKey(track);
-        const response = await fetch(
-            `https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${encodeURIComponent(counterKey)}/up`,
-            getCounterRequestOptions()
-        );
+        const [totalResponse, dailyResponse] = await Promise.all([
+            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${TOTAL_COUNTER_NAME}/up`, getCounterRequestOptions()),
+            fetch(`https://api.counterapi.dev/v2/${COUNTER_WORKSPACE}/${DAILY_COUNTER_NAME}/up`, getCounterRequestOptions())
+        ]);
 
-        if (!response.ok) throw new Error("Counter request failed");
+        if (!totalResponse.ok || !dailyResponse.ok) throw new Error("Global counter request failed");
 
-        const result = await response.json();
-        track.downloads = Number(result.count || 0);
-        track.dailyDownloads = 0;
+        const totalResult = await totalResponse.json();
+        const dailyResult = await dailyResponse.json();
+        const totalCount = Number(totalResult.count || 0);
+        const dailyCount = Number(dailyResult.count || 0);
+        updateGlobalDownloadStats(totalCount, dailyCount);
+        track.downloads = totalCount;
 
         if (counterElementId) {
             document.querySelectorAll(`[id="${counterElementId}"]`).forEach(el => {
-                el.textContent = `${track.downloads} downloads`;
+                el.textContent = `${totalCount} downloads`;
             });
         }
     } catch (error) {
