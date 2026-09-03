@@ -36,7 +36,6 @@ const APP_BASE_PATH = "/endlessaudios";
 const ASSET_BASE_URL = "https://audios-4mx.pages.dev";
 const BEAT_MARKED_LIST_URL = `${ASSET_BASE_URL}/beatmarked`;
 const COUNTER_WORKSPACE = "endlessaudios";
-const COUNTER_API_KEY = "ut_WkHJV7oNtC3MJl52ubvQcoW6Qhzq85UoJSOpO4Bo";
 const TOTAL_COUNTER_NAME = "all-downloads";
 let globalDownloadCount = 0;
 let globalDownloadAnimation = null;
@@ -407,9 +406,7 @@ function getPreviewAndDownloadUrls(audioData) {
 }
 
 function getCounterRequestOptions() {
-    const headers = {};
-    if (COUNTER_API_KEY) headers.Authorization = `Bearer ${COUNTER_API_KEY}`;
-    return { cache: "no-store", headers };
+    return { cache: "no-store" };
 }
 
 function updateGlobalDownloadStats(total) {
