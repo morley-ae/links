@@ -57,6 +57,17 @@
                 <button class="filter-tab" data-beat-filter="yes">Beat-marked</button>
             </div>
 
+            <div style="display:flex; justify-content:flex-end; margin:12px 0 16px;">
+                <label style="display:flex; align-items:center; gap:8px; color:var(--text-muted); font-size:12px;">
+                    Sort by
+                    <select id="audioSortSelect" aria-label="Sort audios">
+                        <option value="newest">New to old</option>
+                        <option value="downloads">Most downloads</option>
+                        <option value="alphabetical">Alphabetical</option>
+                    </select>
+                </label>
+            </div>
+
             <div class="library-box">
                 <div class="library-header-title" id="libraryTitle">Curated Audio Library</div>
                 <div id="audioList"></div>
@@ -103,13 +114,24 @@
                         <div class="stat-value" id="statCategory">Soft</div>
                         <div class="stat-label">Main Category</div>
                     </div>
+                    <div class="stat-box">
+                        <div class="stat-value" id="statDownloads">0</div>
+                        <div class="stat-label">Downloads</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="library-wrapper" style="padding: 0;">
             <div class="library-box">
-                <div class="library-header-title" id="profileLibraryTitle">Uploads</div>
+                <div class="library-header-title" id="profileLibraryTitle" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                    <span>Uploads</span>
+                    <select id="profileSortSelect" aria-label="Sort creator audios">
+                        <option value="newest">New to old</option>
+                        <option value="downloads">Most downloads</option>
+                        <option value="alphabetical">Alphabetical</option>
+                    </select>
+                </div>
                 <div id="profileAudioList"></div>
                 <div class="pagination profile-pagination" id="profilePagination" style="display: none;">
                     <button class="page-btn" id="profilePrevPageBtn" type="button">Previous</button>

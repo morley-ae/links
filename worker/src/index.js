@@ -47,8 +47,8 @@ export default {
         }
 
         const origin = request.headers.get("Origin");
-        const isDirectRead = !origin && request.method === "GET" && url.pathname === "/downloads";
-        if (!ALLOWED_ORIGINS.has(origin) && !isDirectRead) {
+        const isPublicRead = request.method === "GET" && url.pathname === "/downloads";
+        if (!ALLOWED_ORIGINS.has(origin) && !isPublicRead) {
             return json(request, { error: "Origin not allowed" }, 403);
         }
 

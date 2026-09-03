@@ -27,6 +27,7 @@ let profileCurrentPage = 1;
 let currentCategoryFilter = "all";
 let currentBeatFilter = "all";
 let currentSearchQuery = "";
+let currentSort = "newest";
 const beatMetadataCache = new Map();
 
 // Gemerkte zufällige Reihenfolge für die Home-Seite (bleibt während der Session stabil)
@@ -285,6 +286,7 @@ async function loadAudios() {
         if (response.ok) {
             audioFiles = await response.json();
             if (!Array.isArray(audioFiles)) audioFiles = [];
+            audioFiles.forEach((track, index) => { track._sourceIndex = index; });
             updateSearchPlaceholder();
             await hydrateBeatMarkedFlags(audioFiles);
             await loadDownloadCounts(audioFiles);
@@ -537,7 +539,13 @@ async function incrementDownload(track) {
         const result = await response.json();
         track.downloads = Number(result.downloads || 0);
         updateGlobalDownloadStats(Number(result.total || globalDownloadCount + 1));
-        renderApp();
+        if (profileContainer?.style.display === "block") {
+            renderProfileView(document.getElementById("profileName")?.textContent || "");
+        } else if (exploreContainer?.style.display === "block") {
+            renderExploreView();
+        } else {
+            renderApp();
+        }
     } catch (error) {
         console.warn("Download counter unavailable:", error);
     }
@@ -639,7 +647,13 @@ function getFilteredItems() {
         return matchesSearch && matchesCategory && matchesBeat;
     });
 
-    if (currentSearchQuery.trim() !== "") {
+    if (currentSort === "downloads") {
+        filtered.sort((a, b) => (Number(b.downloads) || 0) - (Number(a.downloads) || 0));
+    } else if (currentSort === "alphabetical") {
+        filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else if (currentSort === "newest") {
+        filtered.sort((a, b) => (b._sourceIndex || 0) - (a._sourceIndex || 0));
+    } else if (currentSearchQuery.trim() !== "") {
         filtered.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
     } else {
         // Startseite: Zufällige Reihenfolge (stabil während der Session gesichert)
@@ -654,6 +668,24 @@ function getFilteredItems() {
 
     return filtered;
 }
+
+const audioSortSelect = document.getElementById("audioSortSelect");
+audioSortSelect?.addEventListener("change", event => {
+    currentSort = event.target.value;
+    currentPage = 1;
+    const profileSortSelect = document.getElementById("profileSortSelect");
+    if (profileSortSelect) profileSortSelect.value = currentSort;
+    renderApp();
+});
+
+const profileSortSelect = document.getElementById("profileSortSelect");
+profileSortSelect?.addEventListener("change", event => {
+    currentSort = event.target.value;
+    profileCurrentPage = 1;
+    if (audioSortSelect) audioSortSelect.value = currentSort;
+    const profileName = document.getElementById("profileName")?.textContent;
+    if (profileName) renderProfileView(profileName);
+});
 
 if (searchInput) {
     const searchClearBtn = document.getElementById("searchClearBtn");
@@ -1079,7 +1111,20 @@ function renderExploreView() {
     if (typeof legalContainer !== 'undefined') legalContainer.style.display = "none";
     exploreContainer.style.display = "block";
 
-    let allTimeList = [...audioFiles].sort((a, b) => (b.downloads || 0) - (a.downloads || 0)).slice(0, 5);
+    const allTimeList = [...audioFiles]
+        .sort((a, b) => (Number(b.downloads) || 0) - (Number(a.downloads) || 0))
+        .slice(0, 5);
+    const popularMarkup = allTimeList.length
+        ? allTimeList.map((track, index) => `
+            <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-color);">
+                <strong style="width:22px; color:var(--accent-cyan);">${index + 1}</strong>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${track.title}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">by @${track.uploader}</div>
+                </div>
+                <span style="font-size:12px; color:var(--text-muted); white-space:nowrap;">${Number(track.downloads || 0)} downloads</span>
+            </div>`).join("")
+        : `<div style="color:var(--text-muted); font-size:13px;">No download data yet.</div>`;
     exploreContainer.innerHTML = `
         <div class="library-box" style="margin-top: 30px;">
             <section class="hero" style="padding: 40px 20px 20px 20px;">
@@ -1087,6 +1132,11 @@ function renderExploreView() {
                 <p style="color: #9898a6; font-size: 1.1rem; margin-top: 10px;">Need some fresh ideas? - Explore the most trending audios right now</p>
             </section>
             <div style="margin-bottom: 35px;">
+
+            <div style="margin:0 0 35px; padding:24px; border:1px solid var(--border-hover); border-radius:16px;">
+                <h2 style="font-size:20px; margin-bottom:14px;">Most downloaded audios</h2>
+                ${popularMarkup}
+            </div>
 
             <div style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(6, 182, 212, 0.08)); border: 1px solid var(--border-hover); border-radius: 20px; padding: 30px; margin-bottom: 40px; text-align: center;">
                 <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--text-main);">Need Editing Inspiration?</h2>
@@ -1255,7 +1305,8 @@ function renderCreatorsListView() {
         const card = document.createElement("div");
         card.className = "creator-card";
         card.onclick = () => showUploaderProfile(u);
-        card.innerHTML = `<div class="creator-banner"><div class="creator-avatar-container">${uploaders[u].avatar ? `<img src="${uploaders[u].avatar}">` : `<div class="avatar-fallback">${u[0]}</div>`}</div></div><div class="creator-info"><div class="creator-card-name">${u}</div><div class="creator-card-stats">${uploaders[u].tracks.length} audios</div></div>`;
+        const creatorDownloads = uploaders[u].tracks.reduce((sum, track) => sum + (Number(track.downloads) || 0), 0);
+        card.innerHTML = `<div class="creator-banner"><div class="creator-avatar-container">${uploaders[u].avatar ? `<img src="${uploaders[u].avatar}">` : `<div class="avatar-fallback">${u[0]}</div>`}</div></div><div class="creator-info"><div class="creator-card-name">${u}</div><div class="creator-card-stats">${uploaders[u].tracks.length} audios · ${creatorDownloads} downloads</div></div>`;
         grid.appendChild(card);
     });
 }
@@ -1282,7 +1333,16 @@ function renderProfileView(uploaderName) {
     }
 
     let uploaderTracks = audioFiles.filter(a => a.uploader.toLowerCase() === uploaderName.toLowerCase());
+    if (currentSort === "downloads") {
+        uploaderTracks.sort((a, b) => (Number(b.downloads) || 0) - (Number(a.downloads) || 0));
+    } else if (currentSort === "alphabetical") {
+        uploaderTracks.sort((a, b) => (a.title || "").localeCompare(b.title || ""));
+    } else {
+        uploaderTracks.sort((a, b) => (b._sourceIndex || 0) - (a._sourceIndex || 0));
+    }
+    if (profileSortSelect) profileSortSelect.value = currentSort;
     const totalUploads = uploaderTracks.length;
+    const totalDownloads = uploaderTracks.reduce((sum, track) => sum + (Number(track.downloads) || 0), 0);
     
     const categoryCounts = {};
     uploaderTracks.forEach(t => {
@@ -1322,6 +1382,7 @@ function renderProfileView(uploaderName) {
 
     document.getElementById("statUploads").textContent = totalUploads;
     document.getElementById("statCategory").textContent = mainCategory;
+    document.getElementById("statDownloads").textContent = totalDownloads;
 
     const list = document.getElementById("profileAudioList");
     const profilePrevBtn = document.getElementById("profilePrevPageBtn");
@@ -1363,6 +1424,7 @@ function renderProfileView(uploaderName) {
                 <span class="tag">${displayCategory}</span>
             </div>
             <div class="download-info-group" style="display: flex; align-items: center; gap: 10px;">
+                <span title="Downloads" style="color: var(--text-muted); font-size: 11px; white-space: nowrap;">${Number(audioData.downloads || 0)} downloads</span>
                 <button title="Share" onclick="shareTrack(event, audioFiles.find(x => x.filename === '${audioData.filename}'))" style="background:rgba(255,255,255,0.03); border:1px solid var(--border-color); cursor:pointer; display:flex; align-items:center; justify-content:center; width: 32px; height: 32px; border-radius: 8px;">
                     <svg width="15" height="15" fill="none" stroke="var(--text-muted)" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
                 </button>
