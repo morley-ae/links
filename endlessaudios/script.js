@@ -1484,12 +1484,12 @@ function renderTermsView() {
         <div class="library-box" style="margin-top: 30px;">
             <section class="page-hero" style="padding: 24px 20px 12px 20px;">
                 <h1>Terms of Service</h1>
-                <p>Last updated: September 2, 2026</p>
+                <p>Last updated: September 11, 2026</p>
             </section>
             <div class="legal-content">
                 <div class="legal-section">
                     <h2>1. Library access & usage rights</h2>
-                    <p>EndlessAudios is a community-driven platform. Access to browse, preview, and download audio assets is free for all users. You may use downloaded audio files in your own projects, whether for personal or commercial purposes. While attribution to creators isn't mandatory, recognizing their work strengthens our community.</p>
+                    <p>EndlessAudios is a community audio library. Access to browse, search, preview, and download the available audio assets is free. You may use downloaded audio files in your own projects, whether for personal or commercial purposes. Attribution is not required, but crediting the creator is appreciated.</p>
                     <h3>Prohibited activities:</h3>
                     <ul>
                         <li>Redistributing, republishing, or commercial reselling of our library or sections of it as a standalone product or service.</li>
@@ -1501,25 +1501,25 @@ function renderTermsView() {
 
                 <div class="legal-section">
                     <h2>2. Content ownership & licensing</h2>
-                    <p>Community members contribute audio content to EndlessAudios. We do not claim ownership of the underlying musical compositions, sound recordings, or intellectual property in these files. <strong>We do not provide music licenses</strong> — you are solely responsible for ensuring your use of any audio complies with copyright laws, platform terms (YouTube, TikTok, etc.), and other applicable regulations. Content is offered on an as-is basis.</p>
+                    <p>Audio files are provided by their respective creators. EndlessAudios does not claim ownership of the underlying musical compositions, sound recordings, or other intellectual property. <strong>EndlessAudios does not provide music licenses</strong> — you are solely responsible for ensuring that your use of any audio complies with copyright law, platform terms (including YouTube and TikTok), and other applicable regulations. Content is provided on an as-is basis.</p>
                 </div>
 
                 <div class="legal-section">
-                    <h2>3. User accounts & conduct</h2>
-                    <p>Accounts are created via Discord login. You are responsible for all activity on your account. Impersonation, credential sharing, or terms violations may result in temporary suspension or permanent account termination, preventing uploads and immediate logout. We reserve the right to enforce this without advance notice.</p>
+                    <h2>3. Acceptable use</h2>
+                    <p>You may not use the platform for illegal activity, abuse the download or statistics services, scrape or mass-collect the library without permission, or misrepresent a creator's work as your own. We may restrict access to the platform or remove content that violates these terms.</p>
                 </div>
 
                 <div class="legal-section">
-                    <h2>4. Uploading content</h2>
-                    <p>When you upload audio to EndlessAudios, you represent that you own or have rights to the content. You retain ownership but grant EndlessAudios a worldwide, royalty-free license to store, host, display, and distribute the file—including generating previews and allowing community downloads. Your profile and uploaded works are publicly visible. <strong>All uploads are permanent and public.</strong></p>
-                    <h3>Upload restrictions:</h3>
+                    <h2>4. Community content</h2>
+                    <p>The library may contain audio supplied by community creators. Creator names and public creator profiles are displayed to identify the source of available files. We do not grant rights to third-party content beyond the use described in these terms.</p>
+                    <h3>Content restrictions:</h3>
                     <ul>
                         <li>Content you don't have legal rights to distribute.</li>
                         <li>Material that infringes copyrights, trademarks, or other intellectual property.</li>
                         <li>Unlawful, defamatory, hateful, misleading, or malicious content.</li>
                         <li>Duplicates or spam (we use automated fingerprinting to detect resubmissions).</li>
                     </ul>
-                    <p>We will remove violating content and may suspend or ban the associated account.</p>
+                    <p>We may remove content that violates these terms or applicable law.</p>
                 </div>
 
                 <div class="legal-section">
@@ -1528,8 +1528,8 @@ function renderTermsView() {
                 </div>
 
                 <div class="legal-section">
-                    <h2>6. Creator recognition & status</h2>
-                    <p>Verifications, badges, and creator titles are cosmetic designations granted at our discretion. These statuses do not imply ownership, financial benefit, or any legal guarantee and may be modified or revoked at any time.</p>
+                    <h2>6. Creator information</h2>
+                    <p>Creator names, avatars, upload counts, and download statistics are displayed for organization and attribution. These details do not imply endorsement, ownership, financial benefit, or any legal guarantee.</p>
                 </div>
 
                 <div class="legal-section">
@@ -1544,7 +1544,7 @@ function renderTermsView() {
 
                 <div class="legal-section">
                     <h2>9. Questions & support</h2>
-                    <p>For account issues, takedown requests, or questions about these terms, contact us via Discord: <a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>.</p>
+                    <p>For copyright notices, content concerns, or questions about these terms, contact us through the EndlessAudios Discord: <a href="https://discord.gg/2kkGbn5fyz" target="_blank" rel="noreferrer">discord.gg/2kkGbn5fyz</a>.</p>
                 </div>
 
                 <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color);">
@@ -1568,48 +1568,48 @@ function renderPrivacyView() {
         <div class="library-box" style="margin-top: 30px;">
             <section class="page-hero" style="padding: 24px 20px 12px 20px;">
                 <h1>Privacy Policy</h1>
-                <p>Last updated: August 14, 2026</p>
+                <p>Last updated: September 11, 2026</p>
             </section>
             <div class="legal-content">
                 <div style="background: rgba(139, 92, 246, 0.08); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; margin-bottom: 30px;">
-                    <p style="color: var(--text-main); font-weight: 600; margin: 0;"><strong>Summary:</strong> Browsing and downloading are anonymous—no account required. We don't track you with ads or sell your data. If you create an account, we store minimal information needed to manage your profile and favorites. No tracking, no ads, no selling.</p>
+                    <p style="color: var(--text-main); font-weight: 600; margin: 0;"><strong>Summary:</strong> The current EndlessAudios website can be browsed and used without an account. It does not ask for account credentials, use advertising trackers, or sell personal data. Contact and support are handled through Discord.</p>
                 </div>
 
                 <div class="legal-section">
-                    <h2>1. Public browsing (no login required)</h2>
-                    <p>Visiting endlessaudios.com and downloading audios don't require registration. Our servers record standard request logs for infrastructure and security purposes: your IP, timestamp, browser type, and requested resource. These logs help us prevent abuse and diagnose issues. Logs are automatically purged after approximately 14 days. We don't use this data for marketing, analytics, or user profiling.</p>
-                    <p>We track <strong>aggregated download counts per audio file</strong>—how many times each track has been downloaded—but these numbers aren't connected to individual users or browsing history.</p>
+                    <h2>1. Public browsing</h2>
+                    <p>Browsing, searching, previewing, and downloading audio from the current website do not require registration. Requests for pages, audio files, images, and scripts are sent to the services that host those resources. Those providers may process technical connection data such as an IP address, timestamp, browser type, and requested resource for delivery, security, and abuse prevention.</p>
+                    <p>The website displays <strong>aggregated download counts per audio file</strong>. These counts are used for library statistics and are not presented as individual user profiles or browsing histories.</p>
                 </div>
 
                 <div class="legal-section">
-                    <h2>2. Discord login & account data</h2>
-                    <p>Logging in is optional and uses Discord's OAuth system. When you authorize EndlessAudios, we receive and retain your Discord user ID, display name, username, profile avatar, and banner color. We do <strong>not</strong> collect your email, password, or any Discord direct messages.</p>
-                    <p>We use a session cookie (<code>ea_sess</code>) to keep you logged in on the current device. This cookie is HTTP-only (inaccessible to scripts) and expires after 30 days of inactivity. You can log out from individual devices or globally, and all sessions terminate when you delete your account.</p>
+                    <h2>2. No account registration on the current site</h2>
+                    <p>The current EndlessAudios website does not provide account registration or Discord login. It does not request or store passwords, Discord direct messages, or account credentials.</p>
+                    <p>The site stores the selected audio-player volume in your browser's local storage. This setting stays on your device and is not used to identify you.</p>
                 </div>
 
                 <div class="legal-section">
                     <h2>3. Creator profiles</h2>
-                    <p>If you upload audios, your public Discord profile (username) appears on your creator page alongside your upload count and download statistics. This is public information from your Discord account. If you wish to remain unlisted, email us and we'll remove your profile from EndlessAudios.</p>
+                    <p>The Creators directory displays creator names, avatars, available audio files, upload counts, and download statistics supplied with the library data. These details are publicly visible as part of the website. For a correction or removal request, contact us through Discord.</p>
                 </div>
 
                 <div class="legal-section">
-                    <h2>4. Uploads & favorites</h2>
-                    <p>Uploaded files are stored on our servers and displayed publicly. We create a SHA-256 fingerprint of each upload to detect and prevent duplicate submissions. If you mark audios as Favorites, that list is saved on your device using browser local storage and synced to your account (if logged in).</p>
+                    <h2>4. Audio files and local settings</h2>
+                    <p>Audio files and their metadata are hosted by the services used to provide the library. The website may request audio metadata, beat-marked metadata, download statistics, and audio files from those services. Your player volume is stored locally in your browser. The current site does not provide an upload or favorites system.</p>
                 </div>
 
                 <div class="legal-section">
                     <h2>5. External services</h2>
                     <ul>
-                        <li><strong>Supabase</strong> – backend database and authentication provider. Your account data, uploads, and session info are stored here.</li>
-                        <li><strong>Discord</strong> – OAuth identity provider. See Discord's privacy policy for how they handle your data.</li>
-                        <li><strong>Google Fonts</strong> – we load typography from Google's CDN, which means your IP is visible to Google when you load a page.</li>
+                        <li><strong>jsDelivr</strong> – delivers the Supabase JavaScript library loaded by the site.</li>
+                        <li><strong>Audio and statistics hosts</strong> – provide audio assets, metadata, beat-marked data, and aggregated download statistics.</li>
+                        <li><strong>Discord</strong> – provides the community invite and the support channel linked from the site. Discord's own privacy policy applies when you visit or use Discord.</li>
                     </ul>
                     <p>We don't sell, trade, or share your data with third-party advertisers or marketing companies.</p>
                 </div>
 
                 <div class="legal-section">
-                    <h2>6. Your data rights</h2>
-                    <p>You can request information about what data we hold, download your uploads, delete uploads, remove your profile, or fully delete your account. Contact us via Discord (<a href="https://discord.gg/2kkGbn5fyz" target="_blank">discord.gg/2kkGbn5fyz</a>). Account deletion removes your profile, uploads, and all active sessions.</p>
+                    <h2>6. Questions and requests</h2>
+                    <p>For privacy questions, correction requests, copyright notices, or content removal requests, contact us through the EndlessAudios Discord: <a href="https://discord.gg/2kkGbn5fyz" target="_blank" rel="noreferrer">discord.gg/2kkGbn5fyz</a>. Please do not share sensitive personal information in a public Discord channel.</p>
                 </div>
 
                 <div class="legal-section">
