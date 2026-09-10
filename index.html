@@ -1,1421 +1,794 @@
-<!DOCTYPE html>
-<html lang="en" class="dark">
+<!doctype html>
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Morley.ae | Presets and Scenepacks</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        neon: {
-                            blue: '#00f2fe',
-                            light: '#4facfe',
-                            dark: '#050b14',
-                            card: '#0a1628',
-                            border: '#1e3a60'
-                        }
-                    },
-                    boxShadow: {
-                        'glow': '0 0 25px rgba(0, 242, 254, 0.25)',
-                        'glow-lg': '0 0 50px rgba(0, 242, 254, 0.4)',
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google Fonts & Lucide Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #050b14;
-            color: #f8fafc;
-            overflow-x: hidden;
-        }
-        body::before,
-        body::after {
-            content: '';
-            position: fixed;
-            inset: -8%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.7;
-            filter: blur(22px);
-            background: radial-gradient(circle at 18% 18%, rgba(0, 242, 254, 0.18), transparent 34%), radial-gradient(circle at 84% 28%, rgba(79, 172, 254, 0.14), transparent 38%), linear-gradient(145deg, #050b14 0%, #071b2b 52%, #062d38 100%);
-        }
-        body::after {
-            opacity: 0.35;
-            background: radial-gradient(circle at 72% 76%, rgba(20, 184, 166, 0.16), transparent 34%), radial-gradient(circle at 28% 86%, rgba(56, 189, 248, 0.1), transparent 36%);
-        }
-        main { position: relative; z-index: 1; padding-bottom: 10rem !important; }
-        footer { position: relative; z-index: 1; }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #050b14;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #1e3a60;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #00f2fe;
-        }
-        .glass-panel {
-            background: rgba(10, 22, 40, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(30, 58, 96, 0.5);
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-        @keyframes ambient-drift {
-            0% { transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1); }
-            50% { transform: translate3d(3%, 4%, 0) rotate(8deg) scale(1.08); }
-            100% { transform: translate3d(-2%, 1%, 0) rotate(-5deg) scale(1.03); }
-        }
-        @keyframes ambient-drift-reverse {
-            0% { transform: translate3d(3%, 2%, 0) scale(1); }
-            50% { transform: translate3d(-3%, -4%, 0) scale(1.08); }
-            100% { transform: translate3d(2%, -1%, 0) scale(1.03); }
-        }
-        @keyframes ambient-gradient {
-            0% { background-position: 0% 50%; transform: rotate(-3deg) scale(1.05); }
-            50% { background-position: 100% 30%; transform: rotate(4deg) scale(1.14); }
-            100% { background-position: 20% 100%; transform: rotate(-1deg) scale(1.08); }
-        }
-        @keyframes ambient-gradient-reverse {
-            0% { background-position: 100% 50%; transform: rotate(4deg) scale(1.08); }
-            50% { background-position: 0% 70%; transform: rotate(-4deg) scale(1.16); }
-            100% { background-position: 70% 0%; transform: rotate(2deg) scale(1.1); }
-        }
-        .click-feedback { animation: click-feedback 360ms ease-out; }
-        @keyframes click-feedback {
-            0% { transform: scale(1); }
-            45% { transform: scale(0.96); }
-            100% { transform: scale(1); }
-        }
-        @keyframes cart-pop {
-            0% { opacity: 0; transform: translateY(-10px) scale(.96); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes cart-item-enter {
-            0% { opacity: 0; transform: translateX(-12px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-        .cart-pop { animation: cart-pop 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .cart-item-enter { animation: cart-item-enter 420ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .product-card-enter { opacity: 0; transition: opacity 620ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 280ms ease, border-color 280ms ease; }
-        .product-card-enter.is-visible { opacity: 1; }
-        .product-card-enter:hover { box-shadow: 0 0 0 1px rgba(0, 242, 254, 0.42), 0 0 38px rgba(0, 242, 254, 0.21), 0 14px 32px rgba(15, 23, 42, 0.52) !important; border-color: rgba(0, 242, 254, 0.5) !important; }
-        .media-frame { position: relative; overflow: hidden; contain: layout paint style; isolation: isolate; backface-visibility: hidden; transform: translateZ(0); }
-        .product-card-enter video,
-        .product-card-enter img,
-        .video-autoplay-cover { display: block; width: 100%; height: 100%; transform: none !important; transition: opacity 240ms ease !important; filter: none !important; will-change: auto !important; backface-visibility: hidden !important; -webkit-backface-visibility: hidden !important; }
-        .product-card-enter video,
-        .product-card-enter img { object-fit: cover; }
-        .outro-hover-media { position: relative; width: 100%; height: 100%; }
-        .outro-hover-media .outro-hover-video,
-        .outro-hover-media .outro-static-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        .outro-hover-media .outro-hover-video { display: none; z-index: 2; }
-        .outro-hover-media.is-hovering .outro-hover-video { display: block; }
-        .outro-hover-media .outro-static-image { display: block; z-index: 1; }
-        .outro-hover-media.is-hovering .outro-static-image { display: none; }
-        .product-card-enter .media-frame video,
-        .product-card-enter .media-frame img { opacity: 1; }
-        .cart-fade-out { animation: cart-fade-out 260ms ease-in both; }
-        .cc-comparison { position: relative; height: 100%; overflow: hidden; }
-        .cc-comparison img { display: block; width: 100%; height: 100%; object-fit: contain; }
-        .cc-comparison-with { position: absolute; inset: 0; width: 50%; overflow: hidden; border-right: 2px solid #00f2fe; }
-        .cc-comparison-with img { max-width: none; }
-        .cc-comparison-range { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; }
-        .cc-comparison-handle { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; transform: translate(-50%, -50%); border: 2px solid #00f2fe; border-radius: 999px; background: rgba(3, 16, 24, .8); color: #00f2fe; pointer-events: none; }
-        .video-autoplay-cover { pointer-events: none; transform: none !important; transition: none !important; filter: none !important; will-change: auto; backface-visibility: visible; }
-        .product-card-enter img { transition: none !important; transform: none !important; }
-        .product-card-enter:hover img { transform: none !important; filter: none !important; }
-        @keyframes cart-fade-out {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-        @keyframes view-enter {
-            0% { opacity: 0; transform: translate3d(0, 10px, 0) scale(0.985); filter: blur(1px); }
-            100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); filter: blur(0); }
-        }
-        .view-enter {
-            animation: view-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
-            will-change: transform, opacity, filter;
-            transform: translate3d(0, 0, 0);
-        }
-        .view-enter > * {
-            animation: build-item 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
-            will-change: transform, opacity;
-        }
-        @keyframes about-orbit {
-            0%, 100% { transform: rotate(-4deg) translateY(0); }
-            50% { transform: rotate(4deg) translateY(-10px); }
-        }
-        @keyframes about-line {
-            0% { transform: scaleX(0); transform-origin: left; opacity: 0; }
-            100% { transform: scaleX(1); transform-origin: left; opacity: 1; }
-        }
-        .about-line { animation: about-line 900ms 320ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .faq-item { animation: build-item 700ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .faq-answer { animation: faq-open 260ms ease-out both; }
-        @keyframes faq-open {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes build-item {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes initial-build {
-            0%, 18% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; pointer-events: none; }
-        }
-        @keyframes loading-progress {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-        .view-enter > *:nth-child(2) { animation-delay: 90ms; }
-        .view-enter > *:nth-child(3) { animation-delay: 180ms; }
-        .view-enter > *:nth-child(4) { animation-delay: 270ms; }
-        .initial-build { animation: initial-build 900ms ease-out forwards; }
-        .animate-float {
-            animation: float 5s ease-in-out infinite;
-        }
-        .font-bold-italic {
-            font-weight: 700;
-            font-style: italic;
-        }
-        .cart-badge {
-            min-width: 1.25rem;
-            height: 1.25rem;
-            padding: 0 .3rem;
-            border-radius: 999px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #00f2fe;
-            color: #031018;
-            font-size: .65rem;
-            line-height: 1;
-        }
-        #shopNotice {
-            opacity: 0;
-            pointer-events: none;
-            transform: translate(-50%, -12px);
-            transition: opacity 260ms ease, transform 260ms ease;
-        }
-        #shopNotice.is-visible {
-            opacity: 1;
-            transform: translate(-50%, 0);
-        }
-        @keyframes modal-fade-in {
-            0% { opacity: 0; transform: translateY(14px) scale(0.97); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes modal-fade-out {
-            0% { opacity: 1; transform: translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateY(10px) scale(0.985); }
-        }
-        .modal-surface {
-            animation: modal-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
-            will-change: opacity, transform;
-        }
-        .modal-overlay {
-            transition: opacity 260ms ease;
-        }
-        .modal-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .modal-overlay:not(.hidden) {
-            opacity: 1;
-        }
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Morley AE</title>
+  <link rel="icon" type="image/png" href="assets/pfp.png">
+  <style>
+    @property --float-y {
+      syntax: "<length>";
+      inherits: false;
+      initial-value: 0px;
+    }
+
+    @property --float-z {
+      syntax: "<angle>";
+      inherits: false;
+      initial-value: 0deg;
+    }
+
+    :root {
+      --ink: #f5f7ff;
+      --muted: #9da5c4;
+      --violet: #8b5cf6;
+      --cyan: #57e6ff;
+      --night: #080a16;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
+
+    body {
+      margin: 0;
+      overflow: hidden;
+      color: var(--ink);
+      background: var(--night);
+      font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
+    }
+
+    .scene {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 44%, rgba(74, 54, 146, .23), transparent 29%),
+        radial-gradient(circle at 17% 18%, rgba(32, 160, 209, .12), transparent 23%),
+        radial-gradient(circle at 85% 80%, rgba(119, 55, 199, .12), transparent 25%),
+        #080a16;
+    }
+
+    .scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      opacity: .3;
+      background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: radial-gradient(ellipse at center, black, transparent 72%);
+    }
+
+    #particles { position: absolute; inset: 0; z-index: -1; }
+
+    .intro {
+      position: absolute;
+      top: clamp(28px, 7vh, 76px);
+      left: 50%;
+      width: min(90vw, 430px);
+      transform: translateX(-50%);
+      text-align: center;
+      animation: rise .9s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--cyan);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .23em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 25px;
+      height: 1px;
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    h1 {
+      margin: 13px 0 7px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(28px, 5vw, 43px);
+      font-weight: 400;
+      letter-spacing: -.045em;
+    }
+
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: .015em;
+    }
+
+    .phone-wrap {
+      position: relative;
+      width: min(90vw, 380px);
+      aspect-ratio: .49;
+      margin-top: 0;
+      transform-style: preserve-3d;
+      perspective: 900px;
+      will-change: transform, opacity;
+      animation: phone-in 1.8s .12s cubic-bezier(.16, 1, .3, 1) both;
+      cursor: pointer;
+    }
+
+    .phone-wrap::after {
+      content: "";
+      position: absolute;
+      left: 12%;
+      right: 12%;
+      bottom: -9%;
+      height: 15%;
+      border-radius: 50%;
+      background: #5a38cf;
+      filter: blur(30px);
+      opacity: .42;
+      z-index: -1;
+    }
+
+    .phone {
+      position: absolute;
+      inset: 0;
+      padding: 9px;
+      border: 1px solid rgba(255,255,255,.52);
+      border-radius: 47px;
+      background: linear-gradient(136deg, #d8dce5 0%, #535967 21%, #121521 48%, #737989 79%, #dfe3ed 100%);
+      box-shadow: -12px 20px 55px rgba(0,0,0,.65), 0 0 38px rgba(87,230,255,.17), inset 1px 1px 1px rgba(255,255,255,.8);
+      --tilt-x: 0deg;
+      --tilt-y: 0deg;
+      --float-y: 0px;
+      --float-z: 0deg;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transform: translateY(var(--float-y)) rotateZ(var(--float-z)) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+      animation: phone-float 5s 1.57s ease-in-out infinite;
+      scale: 1;
+      transition: filter .35s ease, box-shadow .35s ease, scale .35s ease;
+    }
+
+    .phone.phone-pulse {
+      filter: brightness(1.1) saturate(1.06);
+    }
+
+    .phone.phone-pulse .screen {
+      animation: screen-pulse .55s ease-out;
+    }
+
+    .click-ripple {
+      position: fixed;
+      z-index: 2;
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      pointer-events: none;
+      border: 1px solid rgba(87,230,255,.55);
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(87,230,255,.3), inset 0 0 8px rgba(167,123,255,.25);
+      animation: click-ripple 1s ease-out forwards;
+    }
+
+    .screen {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      border-radius: 39px;
+      background:
+        radial-gradient(circle at 65% 33%, rgba(91, 224, 255, .18), transparent 31%),
+        radial-gradient(circle at 33% 75%, rgba(154, 74, 255, .2), transparent 32%),
+        linear-gradient(155deg, #121b38, #080b1a 65%, #17102d);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.1), inset 0 0 28px rgba(0,0,0,.6);
+      transition: box-shadow .35s ease, background .35s ease;
+    }
+
+    @media (hover: hover) {
+      .phone-wrap:hover .phone {
+        filter: brightness(1.08) saturate(1.12);
+        scale: 1.035;
+        box-shadow: -12px 20px 55px rgba(0,0,0,.65), 0 0 58px rgba(87,230,255,.34), inset 1px 1px 1px rgba(255,255,255,.8);
+      }
+
+      .phone-wrap:hover::after {
+        opacity: .65;
+        transform: scale(1.08);
+        transition: opacity .35s ease, transform .35s ease;
+      }
+
+      .phone-wrap:hover .screen {
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), inset 0 0 28px rgba(0,0,0,.6), 0 0 22px rgba(87,230,255,.16);
+      }
+    }
+
+    .screen::before {
+      display: none;
+    }
+
+    .dynamic-island {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      width: 91px;
+      height: 27px;
+      transform: translateX(-50%);
+      border-radius: 20px;
+      background: #020307;
+      box-shadow: inset 0 0 3px rgba(255,255,255,.17);
+      z-index: 3;
+    }
+
+    .status {
+      position: absolute;
+      top: 18px;
+      left: 27px;
+      right: 27px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 700;
+      z-index: 2;
+    }
+
+    .status-right { display: flex; gap: 6px; align-items: center; }
+    .signal, .wifi { width: 12px; height: 8px; border-bottom: 2px solid currentColor; opacity: .9; }
+    .wifi { border-radius: 50%; border-top: 2px solid currentColor; }
+    .battery { width: 16px; height: 8px; border: 1px solid currentColor; border-radius: 2px; position: relative; }
+    .battery::after { content: ""; position: absolute; inset: 1px 3px 1px 1px; border-radius: 1px; background: currentColor; }
+
+    .screen-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      overflow-y: auto;
+      padding: 54px 15px 28px;
+      text-align: center;
+      scrollbar-width: none;
+    }
+
+    .screen-content::-webkit-scrollbar { display: none; }
+
+    .screen-actions {
+      position: absolute;
+      top: 48px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 2;
+    }
+
+    .action-button {
+      display: grid;
+      width: 25px;
+      height: 25px;
+      place-items: center;
+      color: rgba(255,255,255,.9);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 4px 12px rgba(0,0,0,.2);
+      font: 700 13px/1 "Avenir Next", Avenir, sans-serif;
+    }
+
+    .profile-header {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .profile-avatar {
+      display: grid;
+      width: 92px;
+      height: 92px;
+      place-items: center;
+      margin-bottom: 2px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,.5);
+      border-radius: 50%;
+      background: #111522;
+      box-shadow: 0 5px 18px rgba(0,0,0,.35), 0 0 18px rgba(87,230,255,.2);
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .profile-name {
+      color: #fff;
+      font: italic 700 20px/1.1 "Avenir Next", Avenir, sans-serif;
+    }
+
+    .link-section {
+      position: relative;
+      width: 100%;
+    }
+
+    .section-title {
+      margin: 10px 0 9px;
+      color: rgba(255,255,255,.88);
+      font: 700 14px/1 "Avenir Next", Avenir, sans-serif;
+      opacity: 0;
+      animation: link-button-in .65s var(--link-delay, 0s) cubic-bezier(.08,.82,.22,1) forwards;
+    }
+
+    .orb {
+      position: absolute;
+      top: 34%;
+      width: 105px;
+      height: 105px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff 0 2%, #78eaff 9%, #8159ff 42%, transparent 70%);
+      filter: blur(1px);
+      opacity: .9;
+      box-shadow: 0 0 52px rgba(107, 174, 255, .42);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .link-list {
+      position: relative;
+      display: grid;
+      width: 100%;
+      gap: 8px;
+      transform-style: preserve-3d;
+    }
+
+    .link-button {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 57px;
+      padding: 8px 11px 8px 9px;
+      color: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,255,255,.24), rgba(255,255,255,.08));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.35), inset 0 -1px 1px rgba(0,0,0,.12), 0 7px 18px rgba(0,0,0,.25);
+      -webkit-backdrop-filter: blur(14px) saturate(145%);
+      backdrop-filter: blur(14px) saturate(145%);
+      font: 700 13px "Avenir Next", Avenir, sans-serif;
+      text-decoration: none;
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+      transition: transform .25s ease, background .25s ease, border-color .25s ease, box-shadow .25s ease;
+      opacity: 0;
+      animation: link-button-in .85s var(--link-delay, 0s) cubic-bezier(.22,.7,.2,1) forwards;
+    }
+
+    .link-button span:nth-child(2) {
+      position: absolute;
+      left: 50%;
+      width: calc(100% - 92px);
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .link-icon {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      place-items: center;
+      overflow: hidden;
+      margin-right: 10px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #9ceeff, #6856dc);
+      color: #fff;
+      font: 800 11px/1 "Avenir Next", Avenir, sans-serif;
+    }
+
+    .link-icon img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .link-more {
+      color: rgba(255,255,255,.7);
+      font-size: 17px;
+      line-height: .5;
+      letter-spacing: 1px;
+    }
+
+    .link-button:hover { transform: translateY(-2px); background: linear-gradient(135deg, rgba(255,255,255,.38), rgba(255,255,255,.14)); border-color: rgba(255,255,255,.52); box-shadow: inset 0 1px 1px rgba(255,255,255,.5), 0 10px 24px rgba(0,0,0,.35), 0 0 18px rgba(87,230,255,.3); }
+    .link-button:active { transform: translateY(1px) scale(.97); background: rgba(255,255,255,.2); box-shadow: inset 0 2px 4px rgba(0,0,0,.18), 0 3px 8px rgba(0,0,0,.2); }
+    .link-button:focus-visible, .copy-invite:focus-visible, .discord-back:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
+
+    .discord-view {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 72px 24px 38px;
+      overflow-y: auto;
+      background: linear-gradient(145deg, rgba(18,27,56,.94), rgba(8,11,26,.97));
+      text-align: center;
+      scrollbar-width: none;
+    }
+
+    .discord-view::-webkit-scrollbar { display: none; }
+    .discord-view.is-visible { display: flex; animation: discord-in .35s ease both; }
+
+    .discord-back {
+      position: absolute;
+      top: 48px;
+      left: 17px;
+      display: grid;
+      width: 29px;
+      height: 29px;
+      place-items: center;
+      color: rgba(255,255,255,.9);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 50%;
+      background: rgba(255,255,255,.1);
+      cursor: pointer;
+      font: 700 16px/1 "Avenir Next", Avenir, sans-serif;
+    }
+
+    .discord-logo {
+      width: 116px;
+      height: 116px;
+      object-fit: cover;
+      border: 2px solid rgba(255,255,255,.45);
+      border-radius: 50%;
+      box-shadow: 0 0 28px rgba(87,230,255,.24), 0 12px 30px rgba(0,0,0,.3);
+    }
+
+    .discord-view h2 {
+      margin: 0;
+      color: #fff;
+      font: 700 22px/1.1 "Avenir Next", Avenir, sans-serif;
+    }
+
+    .discord-copy {
+      max-width: 230px;
+      margin: 0;
+      color: rgba(255,255,255,.78);
+      font: 600 12px/1.45 "Avenir Next", Avenir, sans-serif;
+    }
+
+    .invite-link {
+      width: 100%;
+      padding: 12px 13px;
+      color: rgba(255,255,255,.72);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      font: 600 11px/1.3 "Avenir Next", Avenir, sans-serif;
+      user-select: all;
+    }
+
+    .copy-invite {
+      width: 100%;
+      min-height: 47px;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 13px;
+      background: linear-gradient(135deg, rgba(255,255,255,.26), rgba(255,255,255,.1));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,.35), 0 8px 20px rgba(0,0,0,.22);
+      cursor: pointer;
+      font: 700 13px "Avenir Next", Avenir, sans-serif;
+      transition: background .25s ease, transform .25s ease;
+    }
+
+    .copy-invite:hover { background: linear-gradient(135deg, rgba(255,255,255,.36), rgba(255,255,255,.15)); transform: translateY(-2px); }
+    .copy-invite.is-copied { background: rgba(45,214,154,.35); }
+
+    .home-indicator {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      width: 93px;
+      height: 4px;
+      transform: translateX(-50%);
+      border-radius: 5px;
+      background: rgba(255,255,255,.85);
+    }
+
+    .side-button { position: absolute; background: #888f9f; border-radius: 2px 0 0 2px; left: -3px; box-shadow: inset 0 1px rgba(255,255,255,.4); }
+    .side-button.one { top: 98px; width: 3px; height: 32px; }
+    .side-button.two { top: 143px; width: 3px; height: 55px; }
+    .side-button.three { top: 208px; width: 3px; height: 55px; }
+    .power { position: absolute; right: -3px; top: 156px; width: 3px; height: 83px; border-radius: 0 2px 2px 0; background: #858c9c; }
+
+    .corner-note { position: absolute; bottom: 26px; color: rgba(157,165,196,.55); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; }
+
+    @keyframes rise { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+    @keyframes phone-in {
+      from { opacity: 0; transform: translateY(52vh) rotateY(180deg) scale(.82); }
+      38% { opacity: 1; }
+      to { opacity: 1; transform: translateY(0) rotateY(0deg) scale(1); }
+    }
+    @keyframes phone-float {
+      0%, 100% { --float-y: 0px; --float-z: 0deg; }
+      50% { --float-y: -14px; --float-z: .9deg; }
+    }
+    @keyframes screen-pulse {
+      0%, 100% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.1), inset 0 0 28px rgba(0,0,0,.6); }
+      45% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.22), inset 0 0 34px rgba(87,230,255,.2), 0 0 18px rgba(87,230,255,.22); }
+    }
+    @keyframes click-ripple {
+      from { opacity: .9; transform: scale(.4); }
+      to { opacity: 0; transform: scale(8); }
+    }
+    @keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-13px) scale(1.04); } }
+    @keyframes link-button-in {
+      from { opacity: 0; transform: translateY(14px) scale(.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes discord-in { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: scale(1); } }
+
+    @media (max-height: 700px) {
+      .phone-wrap { width: min(78vw, 315px); }
+      .corner-note { bottom: 12px; }
+    }
+
+    @media (max-width: 420px) {
+      .phone-wrap { width: min(92vw, 350px); }
+      .screen-content { padding-inline: 12px; }
+      .link-button { min-height: 52px; }
+      .profile-avatar { width: 84px; height: 84px; }
+    }
+
+    @media (max-width: 380px) {
+      .phone-wrap { width: 73vw; }
+      .screen-content { padding-inline: 23px; }
+      .link-button { min-height: 48px; font-size: 12px; }
+      .link-icon { width: 33px; height: 33px; flex-basis: 33px; }
+    }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col relative selection:bg-neon-blue selection:text-black">
-
-    <div id="initialBuild" class="initial-build fixed inset-0 z-50 flex items-center justify-center bg-[#050b14]">
-        <div class="text-center space-y-4">
-            <div class="space-y-2">
-                <p class="text-sm font-bold tracking-[0.25em] text-white uppercase">morley.ae</p>
-                <div class="h-1 w-40 overflow-hidden rounded-full bg-slate-800 mx-auto"><div class="h-full bg-neon-blue" style="animation: loading-progress 900ms linear forwards;"></div></div>
+<body>
+  <main class="scene">
+    <canvas id="particles" aria-hidden="true"></canvas>
+    <div class="phone-wrap" aria-label="iPhone-Ansicht">
+      <div class="phone">
+        <span class="side-button one"></span>
+        <span class="side-button two"></span>
+        <span class="side-button three"></span>
+        <span class="power"></span>
+        <div class="screen">
+          <div class="dynamic-island"></div>
+          <div class="status"><span>9:41</span><span class="status-right"><i class="battery"></i></span></div>
+          <div class="screen-content">
+            <div class="profile-header">
+              <div class="profile-avatar"><img src="assets/pfp.png" alt="Morley AE"></div>
+              <div class="profile-name">morley.ae</div>
             </div>
-        </div>
-    </div>
 
-    <!-- Main Content Container -->
-    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-12 relative z-10">
-
-        <!-- Persistent profile and navigation -->
-        <header id="siteHeader" class="text-center space-y-6 py-6 flex flex-col items-center">
-                <div class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-neon-blue/40 shadow-glow-lg overflow-hidden animate-float">
-                    <img src="image_0.png" alt="Main Profile Picture" class="w-full h-full object-cover">
-                    <div class="absolute inset-0 ring-2 ring-inset ring-neon-light/30 rounded-full"></div>
-                </div>
-                
-                <div class="space-y-2">
-                    <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-bold-italic">
-                        morley.ae
-                    </h1>
-                </div>
-
-                <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
-                    <button onclick="switchView('home')" id="navHomeBtn" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow">
-                        Links
-                    </button>
-                    <button onclick="switchView('presets')" id="navPresetsBtn" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800">
-                        Presets Shop
-                    </button>
-                    <button onclick="switchView('scenepacks')" id="navScenepacksBtn" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800">
-                        Scenepacks
-                    </button>
-                    <a href="/endlessaudios/" id="navAudiosBtn" class="px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800">
-                        Audios
-                    </a>
-                    <button id="cartButton" type="button" onclick="openCart()" class="hidden inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white bg-white/5 border border-slate-800" aria-label="Open cart">
-                        <i data-lucide="shopping-cart" class="w-4 h-4"></i><span>Cart</span><span id="cartCount" class="cart-badge">0</span>
-                    </button>
-                </div>
-        </header>
-
-        <!-- ================= SECTION 1: HOME / LINK OVERVIEW ================= -->
-        <section id="homeView" class="space-y-8">
-
-            <!-- Links List -->
-            <div class="space-y-4 max-w-3xl mx-auto" id="linkListContainer">
-                <h2 class="px-1 pt-2 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">Discord Server</h2>
-                <button type="button" onclick="openDiscordLinkModal()" class="block w-full text-left glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
-                                <img src="./logo.png" alt="EndlessAudios" class="h-full w-full object-cover">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">EndlessAudios™ - Discord Server</h3>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">
-                                Join Server
-                            </span>
-                        </div>
-                    </div>
+            <section class="link-section">
+              <h3 class="section-title">EndlessAudios™ - Discord Server</h3>
+              <div class="link-list">
+                <button class="link-button" type="button" id="discord-link">
+                  <span class="link-icon"><img src="assets/logo.png" alt=""></span><span>Audios + Scenepacks</span><span class="link-more">⋮</span>
                 </button>
+              </div>
+            </section>
 
-                <h2 class="px-1 pt-5 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">Resources</h2>
-                <div onclick="switchView('presets')" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center group-hover:scale-110 transition-transform overflow-hidden">
-                                <span class="text-sm font-black tracking-tight text-neon-blue">AE</span>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">My Editing Presets</h3>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">
-                                View Shop
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Link 3: Scenepacks -->
-                <div onclick="switchView('scenepacks')" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform">
-                                <i data-lucide="clapperboard" aria-hidden="true" class="w-7 h-7"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">My Scenepacks</h3>
-                            </div>
-                        </div>
-                        <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">View Packs</span>
-                    </div>
-                </div>
-
-                <a href="/endlessaudios/" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform">
-                                <i data-lucide="music-2" aria-hidden="true" class="w-7 h-7"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">Edit Audios</h3>
-                            </div>
-                        </div>
-                        <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">View Audios</span>
-                    </div>
+            <section class="link-section">
+              <h3 class="section-title">Payhip</h3>
+              <div class="link-list">
+                <a class="link-button" href="https://payhip.com/morleyae" target="_blank" rel="noopener noreferrer">
+                  <span class="link-icon"><img src="assets/payhip_logo.webp" alt=""></span><span>Get my editing presets</span><span class="link-more">⋮</span>
                 </a>
-
-                <h2 class="px-1 pt-5 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">TikTok</h2>
-                <a href="https://www.tiktok.com/@endlessaudioss" target="_blank" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform overflow-hidden">
-                                <img src="https://cdn.simpleicons.org/tiktok/00f2fe" alt="TikTok" class="w-7 h-7 object-contain">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">EndlessAudios™</h3>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">
-                                Open TikTok
-                            </span>
-                        </div>
-                    </div>
+                <a class="link-button" href="https://payhip.com/morleyaescenepacks" target="_blank" rel="noopener noreferrer">
+                  <span class="link-icon"><img src="assets/payhip_logo.webp" alt=""></span><span>Download my scenepacks</span><span class="link-more">⋮</span>
                 </a>
+              </div>
+            </section>
 
-                <a href="https://www.tiktok.com/@morley.ae" target="_blank" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform overflow-hidden">
-                                <img src="https://cdn.simpleicons.org/tiktok/00f2fe" alt="TikTok" class="w-7 h-7 object-contain">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">morley.ae</h3>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">
-                                Open TikTok
-                            </span>
-                        </div>
-                    </div>
+            <section class="link-section">
+              <h3 class="section-title">TikTok</h3>
+              <div class="link-list">
+                <a class="link-button" href="https://tiktok.com/@endlessaudioss" target="_blank" rel="noopener noreferrer">
+                  <span class="link-icon"><img src="assets/tiktok_logo.avif" alt=""></span><span>EndlessAudios™</span><span class="link-more">⋮</span>
                 </a>
-
-                <h2 class="px-1 pt-5 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">Instagram</h2>
-                <a href="https://www.instagram.com/morley.ae" target="_blank" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform overflow-hidden">
-                                <img src="https://cdn.simpleicons.org/instagram/00f2fe" alt="Instagram" class="w-7 h-7 object-contain">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">morley.ae</h3>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">
-                                Open Instagram
-                            </span>
-                        </div>
-                    </div>
+                <a class="link-button" href="https://tiktok.com/@morley.ae" target="_blank" rel="noopener noreferrer">
+                  <span class="link-icon"><img src="assets/tiktok_logo.avif" alt=""></span><span>morley.ae</span><span class="link-more">⋮</span>
                 </a>
+              </div>
+            </section>
 
-                <h2 class="px-1 pt-5 text-xs font-bold uppercase tracking-[0.25em] text-neon-blue">About Me</h2>
-                <div onclick="switchView('about')" class="block glass-panel rounded-2xl p-4 sm:p-5 transition-all duration-300 hover:border-neon-blue/60 hover:shadow-glow group cursor-pointer">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-4">
-                            <div class="w-12 h-12 rounded-xl bg-neon-blue/20 border border-neon-blue/40 flex items-center justify-center text-neon-blue group-hover:scale-110 transition-transform">
-                                <i data-lucide="user-round" aria-hidden="true" class="w-7 h-7"></i>
-                            </div>
-                            <div><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">About Me</h3></div>
-                        </div>
-                        <span class="hidden sm:inline-flex justify-center text-center px-3 py-1.5 rounded-xl bg-neon-blue/10 text-neon-blue text-xs font-semibold">About Me</span>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        <!-- ================= SECTION 2: PRESETS (`/presets`) ================= -->
-        <section id="presetsView" class="hidden space-y-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-3xl font-extrabold text-white">Editing Presets</h2>
-                    <p class="text-slate-400 text-sm">My editing presets, colorings, texts and way more!</p>
-                </div>
-                <button type="button" onclick="switchView('home')" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 text-base font-semibold text-slate-300 hover:border-neon-blue/50 hover:text-neon-blue transition-colors"><i data-lucide="arrow-left" class="w-5 h-5"></i>Links</button>
-            </div>
-
-            <div id="presetCategories" class="flex flex-wrap justify-center gap-2" aria-label="Preset categories"></div>
-            <p id="presetScrollHint" class="hidden text-center text-xs font-bold uppercase tracking-[0.2em] text-slate-500"><i data-lucide="chevrons-down" class="mr-1 inline-block h-4 w-4 align-middle"></i>Scroll to explore more products</p>
-            <div id="presetGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Dynamically populated via JS -->
-            </div>
-        </section>
-
-        <!-- ================= SECTION 3: SCENEPACKS ================= -->
-        <section id="scenepacksView" class="hidden space-y-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h2 class="text-3xl font-extrabold text-white">Scenepacks</h2>
-                    <p class="text-slate-400 text-sm">Explore all my Scenepacks here.</p>
-                </div>
-                <button type="button" onclick="switchView('home')" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 text-base font-semibold text-slate-300 hover:border-neon-blue/50 hover:text-neon-blue transition-colors"><i data-lucide="arrow-left" class="w-5 h-5"></i>Links</button>
-            </div>
-            <div id="scenepackCategories" class="space-y-3" aria-label="Scenepack categories"></div>
-            <p id="scenepackScrollHint" class="hidden text-center text-xs font-bold uppercase tracking-[0.2em] text-slate-500"><i data-lucide="chevrons-down" class="mr-1 inline-block h-4 w-4 align-middle"></i>Scroll to explore more scenepacks</p>
-            <div id="scenepackGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-        </section>
-
-        <!-- ================= PRODUCT DETAIL VIEW ================= -->
-        <section id="productDetailView" class="hidden space-y-6">
-            <button type="button" onclick="goBackToShop()" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 text-base font-semibold text-slate-300 hover:border-neon-blue/50 hover:text-neon-blue transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i><span>Back to shop</span>
-            </button>
-            <div id="productDetailCategories" class="hidden text-center" aria-label="Product categories"></div>
-            <div id="productDetailContent"></div>
-        </section>
-
-        <section id="aboutView" class="hidden space-y-6">
-            <button type="button" onclick="switchView('home')" class="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-white/5 px-5 py-3 text-base font-semibold text-slate-300 hover:border-neon-blue/50 hover:text-neon-blue transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i><span>Back to links</span>
-            </button>
-            <div class="relative overflow-hidden rounded-3xl border border-neon-blue/40 bg-[#0a1628]/80 p-6 shadow-glow-lg sm:p-10">
-                <div class="pointer-events-none absolute -right-16 -top-16 h-48 w-48 rounded-full border border-neon-blue/20 bg-neon-blue/10 blur-2xl"></div>
-                <div class="relative grid gap-10 md:grid-cols-[.8fr_1.2fr] md:items-center">
-                    <div class="text-center md:text-left">
-                        <div class="mx-auto flex h-44 w-44 items-center justify-center rounded-full border-2 border-neon-blue/50 bg-neon-blue/10 shadow-glow-lg animate-float md:mx-0">
-                            <img src="image_0.png" alt="Your profile picture" class="h-36 w-36 rounded-full object-cover">
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold uppercase tracking-[0.25em] text-neon-blue">About me</p>
-                        <h2 class="mt-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">FAQ</h2>
-                        <div class="mt-5 h-1 w-24 rounded-full bg-neon-blue about-line"></div>
-                        <div class="mt-7 space-y-3">
-                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:420ms">
-                                <button type="button" onclick="toggleAccordion('aboutFaqSoftware')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqSoftware">
-                                    <span>What software do I use?</span><i id="icon-aboutFaqSoftware" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
-                                </button>
-                                <div id="aboutFaqSoftware" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">For normal editing → Adobe After Effects<br>For Scenepacks → Adobe Premiere Pro<br>For Quality enhancement → Topaz Video AI</div>
-                            </div>
-                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:520ms">
-                                <button type="button" onclick="toggleAccordion('aboutFaqCreator')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqCreator">
-                                    <span>Who am I?</span><i id="icon-aboutFaqCreator" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
-                                </button>
-                                <div id="aboutFaqCreator" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">morley :)</div>
-                            </div>
-                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:620ms">
-                                <button type="button" onclick="toggleAccordion('aboutFaqInspiration')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqInspiration">
-                                    <span>When did I start editing?</span><i id="icon-aboutFaqInspiration" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
-                                </button>
-                                <div id="aboutFaqInspiration" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">Started with CapCut → 2023<br>Switched to After Effects → April 2024</div>
-                            </div>
-                            <div class="faq-item rounded-xl border border-slate-700/80 bg-white/5" style="animation-delay:720ms">
-                                <button type="button" onclick="toggleAccordion('aboutFaqCommunity')" class="flex w-full items-center justify-between gap-4 px-4 py-4 text-left text-sm font-bold text-white transition-colors hover:text-neon-blue" aria-expanded="false" aria-controls="aboutFaqCommunity">
-                                    <span>How can you reach out to me?</span><i id="icon-aboutFaqCommunity" data-lucide="chevron-down" class="h-4 w-4 shrink-0 text-neon-blue transition-transform duration-300"></i>
-                                </button>
-                                <div id="aboutFaqCommunity" class="faq-answer hidden border-t border-slate-700/70 px-4 py-4 text-sm leading-7 text-slate-300">DM me on Discord → morley.ae<br>DM me on TikTok → morley.ae</div>
-                            </div>
-                        </div>
-                        <div class="mt-8 flex flex-wrap gap-3 text-xs font-bold uppercase tracking-wider text-slate-300">
-                            <span class="rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-2">Editor</span>
-                            <span class="rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-2">Scenepack creator</span>
-                            <span class="rounded-full border border-neon-blue/30 bg-neon-blue/10 px-4 py-2">Audio Creator</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div id="cartView" class="hidden fixed inset-0 z-30 flex items-start justify-center bg-black/75 px-4 py-24" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-            <div id="cartPanel" class="glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 shadow-glow-lg">
-                <div class="flex items-center justify-between gap-4">
-                    <h2 id="cartTitle" class="text-2xl font-extrabold text-white">Cart</h2>
-                    <button type="button" onclick="closeCart()" class="text-slate-400 hover:text-white" aria-label="Close cart"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                <p id="cartStatus" class="mt-2 text-xs text-slate-400"></p>
-                <div id="cartItems" class="mt-5 space-y-3"></div>
-                <div class="mt-6 flex gap-3"><button id="checkoutButton" type="button" onclick="checkoutCart()" class="flex-1 rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50">Proceed to Payhip checkout</button><button type="button" onclick="clearCart()" class="rounded-xl border border-slate-700 px-4 py-3 text-xs font-bold text-slate-300 hover:border-red-400 hover:text-red-400">Clear</button></div>
-            </div>
+            <section class="link-section">
+              <h3 class="section-title">Instagram</h3>
+              <div class="link-list">
+                <a class="link-button" href="https://instagram.com/morley.ae" target="_blank" rel="noopener noreferrer">
+                  <span class="link-icon"><img src="assets/instagram_logo.webp" alt=""></span><span>morley.ae</span><span class="link-more">⋮</span>
+                </a>
+              </div>
+            </section>
+          </div>
+          <section class="discord-view" id="discord-view" aria-hidden="true">
+            <button class="discord-back" type="button" id="discord-back" aria-label="Zurück">‹</button>
+            <img class="discord-logo" src="assets/logo.png" alt="EndlessAudios Logo">
+            <h2>EndlessAudios™</h2>
+            <p class="discord-copy">Copy the link and paste it into your browser!</p>
+            <div class="invite-link">https://discord.gg/ehVMQtUacr</div>
+            <button class="copy-invite" type="button" id="copy-invite">Copy Link</button>
+          </section>
+          <div class="home-indicator"></div>
         </div>
-
-        <div id="previewVideoModal" class="hidden fixed inset-0 z-40 flex items-center justify-center bg-black/80 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="previewVideoTitle">
-            <div id="previewVideoPanel" class="glass-panel w-full max-w-4xl rounded-2xl border border-neon-blue/50 p-4 shadow-glow-lg sm:p-6">
-                <div class="flex items-center justify-between gap-4">
-                    <h2 id="previewVideoTitle" class="truncate text-lg font-extrabold text-white sm:text-2xl">Preview video</h2>
-                    <button type="button" onclick="closePreviewVideo()" class="shrink-0 text-slate-400 hover:text-white" aria-label="Close preview video"><i data-lucide="x" class="h-5 w-5"></i></button>
-                </div>
-                <video id="previewVideoPlayer" class="mt-4 max-h-[75vh] w-full rounded-xl bg-black" controls autoplay playsinline></video>
-            </div>
-        </div>
-
-        <div id="discordLinkModal" class="modal-overlay hidden fixed inset-0 z-50 flex items-center justify-center bg-black/80 px-4 py-8" role="dialog" aria-modal="true" aria-labelledby="discordLinkModalTitle">
-            <div class="modal-surface glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 shadow-glow-lg">
-                <div class="flex items-start justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <img src="./logo.png" alt="EndlessAudios" class="h-12 w-12 rounded-xl border border-neon-blue/40 bg-neon-blue/10 object-cover">
-                        <div>
-                            <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-neon-blue">EndlessAudios™</p>
-                            <h2 id="discordLinkModalTitle" class="text-xl font-extrabold text-white">Join the Discord</h2>
-                        </div>
-                    </div>
-                    <button type="button" onclick="closeDiscordLinkModal()" class="text-slate-400 hover:text-white" aria-label="Close Discord link popup"><i data-lucide="x" class="h-5 w-5"></i></button>
-                </div>
-                <div class="mt-6 space-y-4">
-                    <input id="discordInviteLink" type="text" readonly value="https://discord.gg/ehVMQtUacr" class="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-3 text-sm text-white focus:border-neon-blue focus:outline-none">
-                    <button type="button" onclick="copyDiscordLink()" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow hover:opacity-90">Copy Link</button>
-                    <p class="text-center text-xs leading-relaxed text-slate-300">Copy this link and paste it into your browser to join EndlessAudios!</p>
-                </div>
-            </div>
-        </div>
-
-        <div id="shopNotice" class="fixed left-1/2 top-6 z-[60] w-[min(92vw,36rem)] rounded-xl border border-neon-blue/50 bg-[#0a1628]/95 px-4 py-3 text-center text-sm font-semibold text-white shadow-glow-lg" role="alert" aria-live="polite"></div>
-
-        <!-- Simple community gate for Scenepack downloads -->
-        <div id="downloadGate" class="modal-overlay hidden fixed inset-0 z-40 flex items-center justify-center bg-black/75 px-4" role="dialog" aria-modal="true" aria-labelledby="downloadGateTitle">
-            <div class="modal-surface glass-panel w-full max-w-lg rounded-2xl border border-neon-blue/50 p-6 sm:p-8 text-center shadow-glow-lg">
-                <button type="button" onclick="closeDownloadGate()" class="float-right text-slate-400 hover:text-white" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
-                <i data-lucide="download" class="mx-auto mb-4 h-10 w-10 text-neon-blue"></i>
-                <h2 id="downloadGateTitle" class="text-2xl sm:text-3xl font-extrabold uppercase text-neon-blue">Join EndlessAudios on Discord</h2>
-                <p class="mt-4 text-sm leading-relaxed text-white">You need to join the EndlessAudios Discord server to get the download password.</p>
-                <button type="button" onclick="closeDownloadGate(); openDiscordLinkModal();" class="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-neon-blue px-5 py-3 text-sm font-bold text-black transition-opacity hover:opacity-90"><i data-lucide="message-circle" class="h-4 w-4"></i>Join Discord</button>
-                <form onsubmit="unlockScenepack(event)" class="mt-6 space-y-3 text-left">
-                    <label for="downloadPassword" class="block text-xs font-semibold text-slate-300">Discord password</label>
-                    <input id="downloadPassword" type="password" required autocomplete="off" class="w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3.5 py-2.5 text-white focus:border-neon-blue focus:outline-none" placeholder="Enter password">
-                    <p id="downloadGateStatus" class="hidden text-xs text-red-400"></p>
-                    <button type="submit" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-3 text-sm font-bold text-black shadow-glow hover:opacity-90">Download Scenepack</button>
-                </form>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="mt-auto border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 relative z-10">
-        <p>&copy; 2026 EndlessAudios™ & morley.ae. All rights reserved.</p>
-    </footer>
-
-    <!-- Permanent catalog data, then JavaScript application logic -->
-    <script src="products.js"></script>
-    <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
-
-        function getRouteProductId() {
-            const pathParts = window.location.pathname.split('/').filter(Boolean);
-            if (pathParts[0] === 'product' && pathParts[1]) return pathParts[1];
-            const hash = window.location.hash || '';
-            if (hash.startsWith('#product/')) return hash.split('/')[1];
-            return null;
-        }
-
-        function getRoutePath() {
-            const routeFromQuery = new URLSearchParams(window.location.search).get('route');
-            const rawRoute = routeFromQuery || window.location.pathname || '/';
-            const normalized = rawRoute === '/' ? '/' : rawRoute.replace(/\/+$/, '');
-            return normalized || '/';
-        }
-
-        // Router function for switching views
-        function switchView(view) {
-            const homeView = document.getElementById('homeView');
-            const presetsView = document.getElementById('presetsView');
-            const navHomeBtn = document.getElementById('navHomeBtn');
-                const navPresetsBtn = document.getElementById('navPresetsBtn');
-                const navScenepacksBtn = document.getElementById('navScenepacksBtn');
-                const scenepacksView = document.getElementById('scenepacksView');
-                const productDetailView = document.getElementById('productDetailView');
-                    const aboutView = document.getElementById('aboutView');
-            let activeView;
-
-            homeView.classList.add('hidden');
-            presetsView.classList.add('hidden');
-            scenepacksView.classList.add('hidden');
-            productDetailView.classList.add('hidden');
-            aboutView.classList.add('hidden');
-
-            navHomeBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
-            navPresetsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
-            navScenepacksBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 text-slate-300 hover:text-white bg-white/5 border border-slate-800";
-
-            if (view === 'home') {
-                homeView.classList.remove('hidden');
-                activeView = homeView;
-                navHomeBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow";
-                window.history.pushState({}, '', '/');
-            } else if (view === 'presets') {
-                presetsView.classList.remove('hidden');
-                activeView = presetsView;
-                navPresetsBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow";
-                window.history.pushState({}, '', '/presets');
-                renderPresets();
-            } else if (view === 'scenepacks') {
-                scenepacksView.classList.remove('hidden');
-                activeView = scenepacksView;
-                navScenepacksBtn.className = "px-5 py-2 rounded-xl text-xs font-bold transition-all duration-300 bg-neon-blue/10 text-neon-blue border border-neon-blue/30 shadow-glow";
-                window.history.pushState({}, '', '/scenepacks');
-                renderProducts('scenepack');
-            } else if (view === 'product') {
-                productDetailView.classList.remove('hidden');
-                activeView = productDetailView;
-                const productId = getRouteProductId();
-                if (productId) {
-                    window.history.pushState({}, '', `/product/${productId}`);
-                }
-                renderProductDetail(productId);
-            } else if (view === 'about') {
-                aboutView.classList.remove('hidden');
-                activeView = aboutView;
-                window.history.pushState({}, '', '/about');
-            }
-            if (activeView) {
-                activeView.classList.remove('view-enter');
-                void activeView.offsetWidth;
-                requestAnimationFrame(() => activeView.classList.add('view-enter'));
-            }
-            if (view === 'product') {
-                requestAnimationFrame(() => {
-                    const detailView = document.getElementById('productDetailView');
-                    if (!detailView) return;
-                    const target = Math.max(0, detailView.offsetTop - 12);
-                    window.scrollTo({ top: target, behavior: 'auto' });
-                });
-            } else if (view === 'presets' || view === 'scenepacks' || view === 'about') {
-                scrollPastProfile(activeView);
-            } else {
-                window.scrollTo({ top: 0, behavior: 'auto' });
-            }
-        }
-
-        function scrollPastProfile(viewElement) {
-            requestAnimationFrame(() => {
-                const targetView = viewElement || document.getElementById('presetsView');
-                const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-                const target = Math.min(maxScroll, Math.max(0, (targetView?.offsetTop || 0) - 20));
-                window.scrollTo({ top: Math.max(0, target), behavior: 'auto' });
-            });
-        }
-
-        document.addEventListener('click', event => {
-            const target = event.target.closest('button, a, article[onclick], [onclick]');
-            if (!target || target.id === 'downloadGate') return;
-            target.classList.remove('click-feedback');
-            requestAnimationFrame(() => target.classList.add('click-feedback'));
-            setTimeout(() => target.classList.remove('click-feedback'), 420);
-        });
-
-        // URL Routing Handling
-        function handleUrlRoute() {
-            const route = getRoutePath();
-            const productId = getRouteProductId();
-            if (route.startsWith('/product/')) {
-                if (productId) switchView('product');
-                else switchView('home');
-            } else if (route === '/presets') {
-                switchView('presets');
-            } else if (route === '/scenepacks') {
-                switchView('scenepacks');
-            } else if (route === '/about') {
-                switchView('about');
-            } else {
-                switchView('home');
-            }
-        }
-
-        window.addEventListener('popstate', handleUrlRoute);
-
-        // Accordion Toggle
-        function toggleAccordion(id) {
-            const el = document.getElementById(id);
-            const icon = document.getElementById('icon-' + id);
-            const button = document.querySelector(`[aria-controls="${id}"]`);
-            if (el.classList.contains('hidden')) {
-                el.classList.remove('hidden');
-                el.classList.add('faq-answer');
-                if (icon) icon.style.transform = 'rotate(180deg)';
-                if (button) button.setAttribute('aria-expanded', 'true');
-            } else {
-                el.classList.add('hidden');
-                if (icon) icon.style.transform = 'rotate(0deg)';
-                if (button) button.setAttribute('aria-expanded', 'false');
-            }
-        }
-
-        function getStoredPresets() {
-            return window.PRODUCTS_DATA || [];
-        }
-
-        function getStoredSales() {
-            return Array.isArray(window.SALES_DATA) ? window.SALES_DATA : [];
-        }
-
-        function getActiveSales() {
-            const now = Date.now();
-            return getStoredSales().filter(sale => {
-                const startsAt = sale.startsAt ? new Date(sale.startsAt).getTime() : 0;
-                const endsAt = sale.endsAt ? new Date(sale.endsAt).getTime() : Infinity;
-                return sale.productIds?.length && now >= startsAt && now <= endsAt;
-            });
-        }
-
-        function getSaleForProduct(product) {
-            if (!product || product.type === 'scenepack') return null;
-            return getActiveSales().find(sale => sale.productIds.map(String).includes(String(product.id))) || null;
-        }
-
-        function getNumericPrice(price) {
-            const match = String(price || '').match(/-?\d+(?:[.,]\d+)?/);
-            return match ? Number(match[0].replace(',', '.')) : null;
-        }
-
-        function getSalePrice(product, sale = getSaleForProduct(product)) {
-            const original = getNumericPrice(product?.price);
-            if (!sale || original === null) return null;
-            const value = Number(sale.discountValue);
-            if (!Number.isFinite(value) || value <= 0) return null;
-            const discount = sale.discountType === 'percent' ? original * Math.min(value, 100) / 100 : value;
-            return Math.max(0, original - discount);
-        }
-
-        function formatSalePrice(product, sale = getSaleForProduct(product)) {
-            const salePrice = getSalePrice(product, sale);
-            if (salePrice === null) return '';
-            const original = String(product.price);
-            const match = original.match(/(-?\d+(?:[.,]\d+)?)/);
-            if (!match) return `${salePrice.toFixed(2)}`;
-            const prefix = original.slice(0, match.index);
-            const suffix = original.slice(match.index + match[0].length);
-            const decimals = salePrice % 1 !== 0 || match[0].includes('.') || match[0].includes(',') ? 2 : 0;
-            const formatted = salePrice.toFixed(decimals).replace('.', match[0].includes(',') || suffix.includes('€') ? ',' : '.');
-            return `${prefix}${formatted}${suffix}`;
-        }
-
-        function renderPrice(product, className = 'text-neon-blue') {
-            const sale = getSaleForProduct(product);
-            const salePrice = formatSalePrice(product, sale);
-            if (!salePrice) return `<span class="${className}">${escapeHtml(product.price)}</span>`;
-            return `<span class="text-slate-500 line-through">${escapeHtml(product.price)}</span> <span class="text-lime-300">${escapeHtml(salePrice)}</span>`;
-        }
-
-        const CART_KEY = 'endless_product_cart';
-
-        function getCart() {
-            try {
-                const cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
-                return Array.isArray(cart) ? cart : [];
-            } catch (error) {
-                return [];
-            }
-        }
-
-        function saveCart(cart) {
-            localStorage.setItem(CART_KEY, JSON.stringify(cart));
-            renderCart();
-        }
-
-        function getPayhipId(product) {
-            const value = String(product.payhip || '').trim();
-            if (!value) return '';
-            try {
-                const url = new URL(value);
-                return url.searchParams.get('link') || url.pathname.match(/^\/b\/([A-Za-z0-9]+)$/)?.[1] || '';
-            } catch (error) {
-                return /^[A-Za-z0-9]+$/.test(value) ? value : '';
-            }
-        }
-
-        let shopNoticeTimer;
-
-        function showShopNotice(message) {
-            const notice = document.getElementById('shopNotice');
-            if (!notice) return;
-            window.clearTimeout(shopNoticeTimer);
-            notice.textContent = message;
-            notice.classList.add('is-visible');
-            shopNoticeTimer = window.setTimeout(() => notice.classList.remove('is-visible'), 4200);
-        }
-
-        const DISCORD_LINK = 'https://discord.gg/ehVMQtUacr';
-
-        function syncBodyOverflow() {
-            const hasOpenModal = [
-                document.getElementById('discordLinkModal'),
-                document.getElementById('downloadGate'),
-                document.getElementById('cartView'),
-                document.getElementById('previewVideoModal')
-            ].some(modal => modal && !modal.classList.contains('hidden'));
-            document.body.classList.toggle('overflow-hidden', hasOpenModal);
-        }
-
-        function openDiscordLinkModal() {
-            const modal = document.getElementById('discordLinkModal');
-            const input = document.getElementById('discordInviteLink');
-            if (!modal || !input) return;
-            closeDownloadGate(true);
-            modal.classList.remove('hidden');
-            input.value = DISCORD_LINK;
-            requestAnimationFrame(() => {
-                const surface = modal.querySelector('.modal-surface');
-                if (surface) {
-                    surface.style.animation = 'modal-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both';
-                }
-            });
-            syncBodyOverflow();
-            lucide.createIcons();
-        }
-
-        function closeDiscordLinkModal() {
-            const modal = document.getElementById('discordLinkModal');
-            if (!modal) return;
-            const surface = modal.querySelector('.modal-surface');
-            if (surface) {
-                surface.style.animation = 'modal-fade-out 220ms ease-in both';
-            }
-            window.setTimeout(() => {
-                modal.classList.add('hidden');
-                if (surface) surface.style.animation = '';
-                syncBodyOverflow();
-            }, 180);
-        }
-
-        async function copyDiscordLink() {
-            try {
-                await navigator.clipboard.writeText(DISCORD_LINK);
-            } catch (error) {
-                const input = document.getElementById('discordInviteLink');
-                if (input) {
-                    input.focus();
-                    input.select();
-                    try {
-                        document.execCommand('copy');
-                    } catch (copyError) {
-                        // no-op fallback
-                    }
-                }
-            }
-            showShopNotice('Discord link copied to clipboard.');
-        }
-
-        document.getElementById('discordLinkModal').addEventListener('click', event => {
-            if (event.target.id === 'discordLinkModal') closeDiscordLinkModal();
-        });
-
-        document.addEventListener('keydown', event => {
-            if (event.key === 'Escape' && !document.getElementById('discordLinkModal').classList.contains('hidden')) {
-                closeDiscordLinkModal();
-            }
-        });
-
-        function getProductShareUrl(productId) {
-            const url = new URL(window.location.href);
-            url.pathname = `/product/${productId}`;
-            url.hash = '';
-            url.search = '';
-            return url.href;
-        }
-
-        async function shareProduct(productId) {
-            const shareUrl = getProductShareUrl(productId);
-            try {
-                await navigator.clipboard.writeText(shareUrl);
-            } catch (error) {
-                const textarea = document.createElement('textarea');
-                textarea.value = shareUrl;
-                textarea.setAttribute('readonly', '');
-                textarea.style.position = 'fixed';
-                textarea.style.opacity = '0';
-                document.body.appendChild(textarea);
-                textarea.select();
-                document.execCommand('copy');
-                textarea.remove();
-            }
-            showShopNotice('Link copied to clipboard.');
-        }
-
-        function addToCart(productId) {
-            const product = getStoredPresets().find(item => String(item.id) === String(productId));
-            if (!product) return;
-            const productIdFromPayhip = getPayhipId(product);
-            if (!productIdFromPayhip) {
-                showShopNotice('This product has no valid Payhip product ID yet.');
-                return;
-            }
-            const cart = getCart();
-            const currentType = cart.length ? cart[0].type : null;
-            if (currentType && currentType !== product.type) {
-                showShopNotice('Presets and Scenepacks cannot be mixed in one cart. Empty the cart first or finish the current checkout.');
-                return;
-            }
-            if (!cart.some(item => String(item.id) === String(product.id))) {
-                cart.push({ id: product.id, type: product.type });
-                saveCart(cart);
-            }
-            openCart();
-        }
-
-        function removeFromCart(productId) {
-            saveCart(getCart().filter(item => String(item.id) !== String(productId)));
-        }
-
-        function clearCart() {
-            saveCart([]);
-        }
-
-        function getCartProducts() {
-            return getCart().map(item => getStoredPresets().find(product => String(product.id) === String(item.id))).filter(Boolean);
-        }
-
-        function renderCart() {
-            const cart = getCart();
-            const products = getCartProducts();
-            const count = document.getElementById('cartCount');
-            const items = document.getElementById('cartItems');
-            const status = document.getElementById('cartStatus');
-            const checkout = document.getElementById('checkoutButton');
-            const cartButton = document.getElementById('cartButton');
-            if (!count || !items || !status || !checkout || !cartButton) return;
-            count.textContent = products.length;
-            const wasHidden = cartButton.classList.contains('hidden');
-            cartButton.classList.toggle('hidden', products.length === 0);
-            if (wasHidden && products.length) {
-                cartButton.classList.remove('cart-pop');
-                requestAnimationFrame(() => cartButton.classList.add('cart-pop'));
-            }
-            status.textContent = products.length ? `${products.length} ${products.length === 1 ? 'item' : 'items'} · ${products[0].type === 'scenepack' ? 'Scenepacks' : 'Products'}` : 'Your cart is empty.';
-            items.innerHTML = products.length ? products.map((product, index) => `<div class="cart-item-enter flex items-center justify-between gap-3 rounded-xl border border-slate-800 bg-white/5 p-3" style="animation-delay:${index * 70}ms"><div class="min-w-0"><p class="truncate text-sm font-bold text-white">${escapeHtml(product.title)}</p><p class="text-xs">${renderPrice(product)}</p></div><button type="button" onclick="removeFromCart(${product.id})" class="shrink-0 text-xs font-semibold text-slate-400 hover:text-red-400">Remove</button></div>`).join('') : '<p class="rounded-xl border border-dashed border-slate-700 p-5 text-center text-sm text-slate-500">No products selected.</p>';
-            checkout.disabled = !products.length;
-        }
-
-        function openCart() {
-            renderCart();
-            const cartView = document.getElementById('cartView');
-            cartView.classList.remove('hidden', 'cart-fade-out');
-            const cartPanel = document.getElementById('cartPanel');
-            cartPanel.classList.remove('cart-pop');
-            requestAnimationFrame(() => cartPanel.classList.add('cart-pop'));
-            lucide.createIcons();
-        }
-
-        function closeCart() {
-            const cartView = document.getElementById('cartView');
-            cartView.classList.remove('cart-pop');
-            cartView.classList.add('cart-fade-out');
-            window.setTimeout(() => {
-                cartView.classList.add('hidden');
-                cartView.classList.remove('cart-fade-out');
-            }, 260);
-        }
-
-        function buildCheckoutUrl(products) {
-            const ids = products.map(getPayhipId);
-            if (!ids.length || ids.some(id => !id)) return '';
-            const checkout = new URL('https://payhip.com/buy');
-            ids.forEach(id => checkout.searchParams.append('cart_links[]', id));
-            return checkout.toString();
-        }
-
-        function checkoutCart() {
-            const products = getCartProducts();
-            if (!products.length) return;
-            if (products.some(product => product.type !== products[0].type)) {
-                showShopNotice('Presets and Scenepacks cannot be mixed in one cart. Empty the cart first or finish the current checkout.');
-                return;
-            }
-            const checkoutUrl = buildCheckoutUrl(products);
-            if (!checkoutUrl) {
-                showShopNotice('At least one selected product has no valid Payhip product ID.');
-                return;
-            }
-            if (products[0].type === 'scenepack') {
-                openScenepackCheckout(products);
-                closeCart();
-                return;
-            }
-            window.open(checkoutUrl, '_blank', 'noopener');
-        }
-
-        function openScenepackCheckout(products) {
-                window.pendingDownloadProducts = products;
-                const requirePassword = products.some(product => product.requirePassword === true)
-                    || (products.some(product => product.requirePassword === undefined) && window.SCENEPACK_PASSWORD_REQUIRED !== false);
-                if (!requirePassword) {
-                    const checkoutUrl = buildCheckoutUrl(products);
-                    if (checkoutUrl) {
-                        window.open(checkoutUrl, '_blank', 'noopener');
-                    }
-                    window.pendingDownloadProducts = null;
-                    return;
-                }
-                document.getElementById('downloadPassword').value = '';
-                document.getElementById('downloadGateStatus').classList.add('hidden');
-                const gate = document.getElementById('downloadGate');
-                gate.classList.remove('hidden');
-                const surface = gate.querySelector('.modal-surface');
-                if (surface) {
-                    surface.style.animation = 'modal-fade-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both';
-                }
-                syncBodyOverflow();
-                lucide.createIcons();
-                requestAnimationFrame(() => document.getElementById('downloadPassword').focus());
-        }
-
-        function buyProduct(productId) {
-            const product = getStoredPresets().find(item => String(item.id) === String(productId));
-            if (!product) return;
-            const checkoutUrl = buildCheckoutUrl([product]);
-            if (!checkoutUrl) {
-                showShopNotice('This product has no valid Payhip product ID yet.');
-                return;
-            }
-            if (product.type === 'scenepack') {
-                openScenepackCheckout([product]);
-                return;
-            }
-            window.open(checkoutUrl, '_blank', 'noopener');
-        }
-
-        function openDownloadGate(productId) {
-            const product = getStoredPresets().find(item => String(item.id) === String(productId));
-            if (product) openScenepackCheckout([product]);
-        }
-
-        function getPlayableVideoUrl(value) {
-            try {
-                const url = new URL(String(value).trim());
-                if (url.hostname === 'github.com') {
-                    const parts = url.pathname.split('/').filter(Boolean);
-                    if (parts.length >= 5 && parts[2] === 'blob') {
-                        return `https://raw.githubusercontent.com/${parts[0]}/${parts[1]}/${parts.slice(3).join('/')}`;
-                    }
-                    if (parts.length >= 5 && parts[2] === 'raw') {
-                        return `https://raw.githubusercontent.com/${parts[0]}/${parts[1]}/${parts.slice(3).join('/')}`;
-                    }
-                }
-                return url.href;
-            } catch (error) {
-                return '';
-            }
-        }
-
-        function openPreviewVideo(url, title, index) {
-            const playableUrl = getPlayableVideoUrl(url);
-            const modal = document.getElementById('previewVideoModal');
-            const player = document.getElementById('previewVideoPlayer');
-            const heading = document.getElementById('previewVideoTitle');
-            if (!playableUrl || !modal || !player) {
-                showShopNotice('This preview video URL is not valid.');
-                return;
-            }
-            heading.textContent = `${title} · Preview ${index + 1}`;
-            player.src = playableUrl;
-            modal.classList.remove('hidden');
-            document.body.classList.add('overflow-hidden');
-            lucide.createIcons();
-            player.play().catch(() => {});
-        }
-
-        function closePreviewVideo() {
-            const modal = document.getElementById('previewVideoModal');
-            const player = document.getElementById('previewVideoPlayer');
-            if (player) {
-                player.pause();
-                player.removeAttribute('src');
-                player.load();
-            }
-            if (modal) modal.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-
-        document.getElementById('previewVideoModal').addEventListener('click', event => {
-            if (event.target.id === 'previewVideoModal') closePreviewVideo();
-        });
-        document.addEventListener('keydown', event => {
-            if (event.key === 'Escape') closePreviewVideo();
-        });
-
-        function getProductCategories(type) {
-            const categories = window.PRODUCT_CATEGORIES || {};
-            if (type === 'scenepack') {
-                if (Array.isArray(categories.scenepack)) return { movieShow: categories.scenepack, characterActor: [] };
-                return categories.scenepack || {};
-            }
-            return Array.isArray(categories[type]) ? categories[type] : [];
-        }
-
-        function getAssignedCategories(product) {
-            return Array.isArray(product.categories) ? product.categories : [];
-        }
-
-        function getAssignedPresetCategories(product) {
-            return Array.isArray(product.presetCategories) ? product.presetCategories : getAssignedCategories(product);
-        }
-
-        function getAssignedSceneCategories(product, group) {
-            return Array.isArray(product[group]) ? product[group] : getAssignedCategories(product);
-        }
-
-        function saveProductCatalog(products) {
-            window.PRODUCTS_DATA = products;
-            localStorage.setItem('endless_product_catalog', JSON.stringify(products));
-        }
-
-        function getProductMedia(product) {
-            const media = product.media && product.media.length ? product.media : [{ type: 'image', src: product.image }];
-            if (product.isColoring && product.ccPreview?.withCc && product.ccPreview?.withoutCc) {
-                return [media[0], { type: 'cc-comparison', withCc: product.ccPreview.withCc, withoutCc: product.ccPreview.withoutCc }];
-            }
-            return media;
-        }
-
-        function mediaFromUrls(value) {
-            return value.split('\n').map(url => url.trim()).filter(Boolean).map(url => ({
-                type: /\.(mp4|webm|mov)(\?.*)?$/i.test(url) ? 'video' : 'image',
-                src: url
-            }));
-        }
-
-        function renderCategoryFilters(type, activeCategory = 'all', targetId = null) {
-            const container = document.getElementById(targetId || (type === 'preset' ? 'presetCategories' : 'scenepackCategories'));
-            if (!container) return;
-            if (type === 'preset') {
-                container.innerHTML = categoryButtons(type, getProductCategories(type), activeCategory);
-                const buttons = container.querySelectorAll('[data-filter-type]');
-                buttons.forEach(button => {
-                    button.addEventListener('click', () => setProductCategory(button.dataset.filterType, button.dataset.category));
-                });
-                return;
-            }
-            const sceneCategories = getProductCategories(type);
-            const sceneState = activeCategory || { movieShow: 'all', characterActor: 'all' };
-            container.innerHTML = `<div class="grid grid-cols-1 gap-3 sm:grid-cols-2"><label class="text-xs font-bold uppercase tracking-wider text-slate-400">Movie / Show<select onchange="setProductCategory('scenepack-movieShow', this.value)" class="mt-2 w-full rounded-xl border border-slate-800 bg-white/5 px-4 py-2.5 text-xs font-semibold normal-case tracking-normal text-slate-200 focus:border-neon-blue focus:outline-none">${categoryOptions(sceneCategories.movieShow || [], sceneState.movieShow || 'all')}</select></label><label class="text-xs font-bold uppercase tracking-wider text-slate-400">Character / Actor<select onchange="setProductCategory('scenepack-characterActor', this.value)" class="mt-2 w-full rounded-xl border border-slate-800 bg-white/5 px-4 py-2.5 text-xs font-semibold normal-case tracking-normal text-slate-200 focus:border-neon-blue focus:outline-none">${categoryOptions(sceneCategories.characterActor || [], sceneState.characterActor || 'all')}</select></label></div>`;
-        }
-
-        function categoryOptions(categories, activeCategory) {
-            return ['all', ...categories].map(category => `<option value="${escapeHtml(category)}"${category === activeCategory ? ' selected' : ''}>${category === 'all' ? 'All' : escapeHtml(category)}</option>`).join('');
-        }
-
-        function escapeHtml(value) {
-            return String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[character]));
-        }
-
-        function formatProductInfo(value) {
-            const escaped = escapeHtml(value || '').replace(/^\s*([-*_])(?:\s*\1){2,}\s*$/gm, '<hr class="my-4 border-slate-700">');
-            return escaped
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
-                .replace(/\n/g, '<br>');
-        }
-
-        function categoryButtons(type, categories, activeCategory) {
-            return ['all', ...categories].map(category => {
-                const active = category === activeCategory;
-                return `<button type="button" data-filter-type="${escapeHtml(type)}" data-category="${escapeHtml(category)}" class="rounded-xl border px-4 py-2 text-xs font-semibold transition-colors ${active ? 'border-neon-blue/60 bg-neon-blue/15 text-neon-blue' : 'border-slate-800 bg-white/5 text-slate-300 hover:border-neon-blue/40 hover:text-white'}">${category === 'all' ? 'All' : escapeHtml(category)}</button>`;
-            }).join('');
-        }
-
-        function setProductCategory(type, category) {
-            window.activeProductCategory = window.activeProductCategory || {};
-            if (type === 'scenepack-movieShow' || type === 'scenepack-characterActor') {
-                const group = type.replace('scenepack-', '');
-                window.activeProductCategory.scenepack = window.activeProductCategory.scenepack || { movieShow: 'all', characterActor: 'all' };
-                window.activeProductCategory.scenepack[group] = category;
-                renderProducts('scenepack');
-                const productId = getRouteProductId();
-                const sceneProduct = getStoredPresets().find(item => String(item.id) === productId);
-                if (sceneProduct && sceneProduct.type === 'scenepack') renderCategoryFilters('scenepack', window.activeProductCategory.scenepack, 'productDetailCategories');
-                return;
-            }
-            window.activeProductCategory[type] = category;
-            renderProducts(type);
-            const productId = getRouteProductId();
-            const product = getStoredPresets().find(item => String(item.id) === productId);
-            if (product && product.type === type) renderCategoryFilters(type, category, 'productDetailCategories');
-        }
-
-        function renderProducts(type) {
-            const grid = document.getElementById(type === 'preset' ? 'presetGrid' : 'scenepackGrid');
-            window.activeProductCategory = window.activeProductCategory || {};
-            if (type === 'scenepack' && typeof window.activeProductCategory.scenepack !== 'object') window.activeProductCategory.scenepack = { movieShow: 'all', characterActor: 'all' };
-            const activeCategory = (window.activeProductCategory && window.activeProductCategory[type]) || (type === 'scenepack' ? { movieShow: 'all', characterActor: 'all' } : 'all');
-            const products = getStoredPresets().filter(product => {
-                if ((product.type || 'preset') !== type) return false;
-                if (type === 'preset') return activeCategory === 'all' || getAssignedPresetCategories(product).includes(activeCategory);
-                const movieShowMatches = activeCategory.movieShow === 'all' || getAssignedSceneCategories(product, 'movieShows').includes(activeCategory.movieShow);
-                const characterMatches = activeCategory.characterActor === 'all' || getAssignedSceneCategories(product, 'characters').includes(activeCategory.characterActor);
-                return movieShowMatches && characterMatches;
-            });
-            renderCategoryFilters(type, activeCategory);
-            const scrollHint = document.getElementById(type === 'preset' ? 'presetScrollHint' : 'scenepackScrollHint');
-            if (scrollHint) scrollHint.classList.toggle('hidden', products.length <= 2);
-            grid.innerHTML = products.length ? products.map((product, index) => productCard(product, index)).join('') : `<div class="md:col-span-2 glass-panel rounded-2xl p-8 text-center text-sm text-slate-500">No ${type === 'preset' ? 'presets' : 'scenepacks'} published yet.</div>`;
-            lucide.createIcons();
-            observeProductCards(grid);
-        }
-
-        function observeProductCards(grid) {
-            const cards = grid.querySelectorAll('.product-card-enter');
-            cards.forEach(card => card.classList.add('is-visible'));
-            bindOutroHoverVideos(grid);
-        }
-
-        function bindOutroHoverVideos(grid) {
-            const hoverCards = grid.querySelectorAll('[data-outro-video]');
-            hoverCards.forEach(card => {
-                const video = card.querySelector('video[data-outro-video-player]');
-                if (!video) return;
-                const mediaWrap = card.querySelector('.outro-hover-media');
-                if (!mediaWrap) return;
-                card.addEventListener('mouseenter', () => {
-                    mediaWrap.classList.add('is-hovering');
-                    video.currentTime = 0;
-                    const playPromise = video.play();
-                    if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
-                });
-                card.addEventListener('mouseleave', () => {
-                    mediaWrap.classList.remove('is-hovering');
-                    video.pause();
-                    video.currentTime = 0;
-                });
-            });
-        }
-
-        function productCard(p, index = 0) {
-            const media = getProductMedia(p)[0];
-            const sale = getSaleForProduct(p);
-            const mediaIsVideo = media.type === 'video';
-            const explicitOutroVideo = typeof p.outroVideo === 'string' ? p.outroVideo.trim() : '';
-            const fallbackOutroVideo = Array.isArray(p.previewVideos) ? p.previewVideos.find((url, idx) => idx > 0 && typeof url === 'string' && url.trim()) || null : null;
-            const hasOutroVideo = Boolean(p.isOutro && (explicitOutroVideo || fallbackOutroVideo));
-            const hoverVideoUrl = hasOutroVideo ? (explicitOutroVideo || fallbackOutroVideo) : null;
-            const staticCoverUrl = hasOutroVideo ? (p.outroCover || p.image || media.src) : (media.src || p.image);
-            const previewVideoPoster = typeof p.previewImage === 'string' && p.previewImage.trim() ? p.previewImage.trim() : '';
-            const preview = hasOutroVideo ? `<div class="outro-hover-media"><img src="${escapeHtml(staticCoverUrl)}" alt="${escapeHtml(p.title)}" class="outro-static-image w-full h-full object-cover"><video data-outro-video-player src="${escapeHtml(hoverVideoUrl)}" class="outro-hover-video w-full h-full object-cover" muted loop playsinline preload="auto"></video></div>` : (mediaIsVideo ? `<video src="${media.src}" poster="${previewVideoPoster ? escapeHtml(previewVideoPoster) : ''}" class="video-autoplay-cover w-full h-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${media.src || p.image}" alt="${p.title}" class="w-full h-full object-contain">`);
-            return `<article data-outro-video="${hasOutroVideo ? 'true' : 'false'}" onclick="openProduct(${p.id})" style="animation-delay:${index * 90}ms" class="product-card-enter glass-panel rounded-2xl overflow-hidden border border-neon-border/40 flex flex-col group cursor-pointer">
-                <div class="media-frame relative aspect-square overflow-hidden bg-slate-900">${preview}${sale ? '<div class="absolute left-0 top-5 -rotate-45 -translate-x-8 bg-lime-300 px-12 py-1.5 text-center text-xs font-black tracking-[0.25em] text-slate-950 shadow-lg">SALE</div>' : ''}<div class="absolute top-3 right-3 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-neon-blue/30 text-xs font-bold shadow-glow">${renderPrice(p)}</div></div>
-                <div class="p-5 flex flex-col flex-grow space-y-3"><h3 class="font-bold text-lg text-white group-hover:text-neon-blue transition-colors">${p.title}</h3><p class="text-xs text-slate-400 flex-grow leading-relaxed">${p.desc}</p><div class="space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${p.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${p.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${p.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(p, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${p.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div></div>
-            </article>`;
-        }
-
-        function renderPresets() {
-            renderProducts('preset');
-        }
-
-        function openProduct(id) {
-            window.presetPreviewIndex = 0;
-            window.history.pushState({}, '', `/product/${id}`);
-            switchView('product');
-        }
-
-        function goBackToShop() {
-            const productId = getRouteProductId();
-            const product = getStoredPresets().find(item => String(item.id) === productId);
-            switchView(product && product.type === 'scenepack' ? 'scenepacks' : 'presets');
-        }
-
-        function closeDownloadGate(immediate = false) {
-            const gate = document.getElementById('downloadGate');
-            if (!gate) return;
-            if (immediate) {
-                gate.classList.add('hidden');
-                const surface = gate.querySelector('.modal-surface');
-                if (surface) surface.style.animation = '';
-                window.pendingDownloadProduct = null;
-                window.pendingDownloadProducts = null;
-                syncBodyOverflow();
-                return;
-            }
-            const surface = gate.querySelector('.modal-surface');
-            if (surface) {
-                surface.style.animation = 'modal-fade-out 220ms ease-in both';
-            }
-            window.setTimeout(() => {
-                gate.classList.add('hidden');
-                if (surface) surface.style.animation = '';
-                window.pendingDownloadProduct = null;
-                window.pendingDownloadProducts = null;
-                syncBodyOverflow();
-            }, 180);
-        }
-
-        function unlockScenepack(event) {
-            event.preventDefault();
-            const product = window.pendingDownloadProducts && window.pendingDownloadProducts[0];
-            const password = document.getElementById('downloadPassword').value;
-            const status = document.getElementById('downloadGateStatus');
-            if (!product || password !== window.SCENEPACK_DOWNLOAD_PASSWORD) {
-                status.textContent = 'Wrong password. Join the EndlessAudios Discord server to get the current password.';
-                status.classList.remove('hidden');
-                return;
-            }
-            const products = window.pendingDownloadProducts || [product];
-            closeDownloadGate();
-            const checkoutUrl = buildCheckoutUrl(products);
-            if (checkoutUrl) window.open(checkoutUrl, '_blank', 'noopener');
-        }
-
-        function renderProductDetail(id) {
-            const product = getStoredPresets().find(item => String(item.id) === String(id));
-            const container = document.getElementById('productDetailContent');
-            if (!product) { container.innerHTML = '<p class="text-slate-400">Product not found.</p>'; return; }
-            const sale = getSaleForProduct(product);
-            const productMedia = getProductMedia(product);
-            const previewControls = productMedia.length > 1 ? `<button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(-1)" aria-label="Previous preview" class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-left" class="h-5 w-5"></i></button><button type="button" onclick="event.preventDefault(); event.stopPropagation(); changePresetPreview(1)" aria-label="Next preview" class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full border border-neon-blue/50 bg-black/60 p-2 text-neon-blue transition-colors hover:bg-neon-blue hover:text-black"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>` : '';
-            const media = product.type === 'preset' ? `<div class="relative aspect-square overflow-hidden rounded-xl bg-slate-900"><div id="presetPreviewImage" class="h-full w-full"></div>${previewControls}</div>` : productMedia.map(item => item.type === 'video' ? `<video src="${item.src}" poster="${escapeHtml(typeof product.previewImage === 'string' ? product.previewImage.trim() : '')}" class="video-autoplay-cover w-full aspect-square object-cover rounded-xl bg-black" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${item.src}" alt="${product.title}" class="w-full aspect-square object-contain rounded-xl bg-slate-900">`).join('');
-            const saleHint = sale ? '<p class="mt-3 rounded-lg border border-lime-300/30 bg-lime-300/10 px-3 py-2 text-xs font-semibold text-lime-200">This sale is applied automatically at Payhip checkout.</p>' : '';
-            const action = `<div class="mt-5 max-w-md space-y-2"><button type="button" onclick="event.stopPropagation(); buyProduct(${product.id})" class="w-full rounded-xl bg-gradient-to-r from-neon-blue to-neon-light py-2.5 text-xs font-bold text-black shadow-glow transition-all hover:opacity-90"><i data-lucide="${product.type === 'scenepack' ? 'download' : 'arrow-up-right'}" class="mr-1 inline-block h-4 w-4 align-middle"></i>${product.type === 'scenepack' ? 'Download now' : 'Buy now'} · ${renderPrice(product, 'text-black')}</button><button type="button" onclick="event.stopPropagation(); addToCart(${product.id})" class="w-full rounded-xl border border-neon-blue/40 bg-neon-blue/10 py-2 text-xs font-bold text-neon-blue transition-all hover:bg-neon-blue/20"><i data-lucide="shopping-cart" class="mr-1 inline-block h-4 w-4 align-middle"></i>Add to cart</button><button type="button" onclick="event.stopPropagation(); shareProduct(${product.id})" class="w-full rounded-xl border border-slate-700 bg-white/5 py-2 text-xs font-bold text-slate-300 transition-all hover:border-neon-blue/40 hover:text-neon-blue"><i data-lucide="share-2" class="mr-1 inline-block h-4 w-4 align-middle"></i>Share product</button></div>${saleHint}`;
-            const previewVideos = product.type === 'preset' && Array.isArray(product.previewVideos) ? product.previewVideos : [];
-            const videoLinks = previewVideos.length ? `<div class="mt-4 space-y-2"><h4 class="text-sm font-bold text-white">Preview videos</h4>${previewVideos.map((url, index) => `<button type="button" onclick="event.stopPropagation(); openPreviewVideo('${escapeHtml(url).replace(/'/g, '&#039;')}', '${escapeHtml(product.title).replace(/'/g, '&#039;')}', ${index})" class="flex w-full items-center gap-2 rounded-xl border border-neon-blue/40 bg-neon-blue/10 px-4 py-2.5 text-left text-sm font-semibold text-neon-blue transition-colors hover:bg-neon-blue/20 hover:text-white"><i data-lucide="play" class="h-4 w-4 shrink-0"></i>Preview ${index + 1}</button>`).join('')}</div>` : '';
-            container.innerHTML = `<div class="glass-panel rounded-2xl p-5 sm:p-8 border border-neon-blue/30 shadow-glow-lg space-y-6"><div><div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4"><div>${sale ? '<span class="inline-flex rounded-md bg-lime-300 px-3 py-1 text-xs font-black uppercase tracking-[0.2em] text-slate-950">Sale</span>' : ''}<span class="block text-[10px] uppercase tracking-widest text-neon-blue mt-2">${product.type === 'scenepack' ? 'Scene Pack' : 'Editing Preset'}</span><h2 class="text-3xl font-extrabold text-white mt-2">${product.title}</h2><p class="text-slate-400 mt-2">${product.desc}</p></div><span class="text-2xl font-bold">${renderPrice(product)}</span></div></div><div class="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"><div>${media}${videoLinks}${action}</div><div class="border-t border-slate-800 pt-5 md:border-t-0 md:border-l md:pl-6 md:pt-0"><h3 class="font-bold text-white mb-2">Product information</h3><div class="text-sm leading-relaxed text-slate-300">${formatProductInfo(product.details || product.desc)}</div></div></div></div>`;
-            const activeFilter = product.type === 'preset' ? ((window.activeProductCategory && window.activeProductCategory.preset) || 'all') : ((window.activeProductCategory && window.activeProductCategory.scenepack) || { movieShow: 'all', characterActor: 'all' });
-            renderCategoryFilters(product.type, activeFilter, 'productDetailCategories');
-            if (product.type === 'preset') renderPresetPreview(productMedia);
-            lucide.createIcons();
-        }
-
-        function renderPresetPreview(media) {
-            const image = media[window.presetPreviewIndex || 0] || media[0];
-            const container = document.getElementById('presetPreviewImage');
-            if (!container || !image) return;
-            if (image.type === 'cc-comparison') {
-                container.innerHTML = `<div class="cc-comparison" data-cc-comparison><img src="${escapeHtml(image.withoutCc)}" alt="Preview without coloring"><div class="cc-comparison-with" data-cc-with><img src="${escapeHtml(image.withCc)}" alt="Preview with coloring"></div><input class="cc-comparison-range" type="range" min="0" max="100" value="50" aria-label="Compare preview with and without coloring"><span class="cc-comparison-handle" data-cc-handle aria-hidden="true"><i data-lucide="grip-vertical" class="h-4 w-4"></i></span></div>`;
-                const comparison = container.querySelector('[data-cc-comparison]');
-                const range = comparison.querySelector('.cc-comparison-range');
-                const withLayer = comparison.querySelector('[data-cc-with]');
-                const handle = comparison.querySelector('[data-cc-handle]');
-                const updateComparison = () => {
-                    withLayer.style.width = `${range.value}%`;
-                    handle.style.left = `${range.value}%`;
-                };
-                const syncComparisonImage = () => {
-                    withLayer.querySelector('img').style.width = `${comparison.clientWidth}px`;
-                };
-                range.addEventListener('input', updateComparison);
-                window.addEventListener('resize', syncComparisonImage);
-                syncComparisonImage();
-                updateComparison();
-                lucide.createIcons();
-                return;
-            }
-            const productId = getRouteProductId();
-            const product = getStoredPresets().find(item => String(item.id) === String(productId));
-            const previewPoster = product && typeof product.previewImage === 'string' ? product.previewImage.trim() : '';
-            container.innerHTML = image.type === 'video' ? `<video src="${image.src}" poster="${escapeHtml(previewPoster)}" class="video-autoplay-cover h-full w-full object-cover" autoplay loop muted playsinline preload="auto"></video>` : `<img src="${image.src}" alt="Preset preview ${(window.presetPreviewIndex || 0) + 1}" class="h-full w-full object-contain">`;
-        }
-
-        function changePresetPreview(direction) {
-            const productId = getRouteProductId();
-            const product = getStoredPresets().find(item => String(item.id) === productId);
-            if (!product || product.type !== 'preset') return;
-            const media = getProductMedia(product);
-            window.presetPreviewIndex = ((window.presetPreviewIndex || 0) + direction + media.length) % media.length;
-            renderPresetPreview(media);
-        }
-
-        // Initialize on load
-        renderCart();
-        handleUrlRoute();
-    </script>
+      </div>
+    </div>
+    <div class="corner-note">© 2026 morley.ae</div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('particles');
+    const context = canvas.getContext('2d');
+    const particles = [];
+    const pointer = { x: null, y: null };
+    const particleCount = 105;
+
+    function resize() {
+      const density = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * density;
+      canvas.height = window.innerHeight * density;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      context.setTransform(density, 0, 0, density, 0, 0);
+    }
+
+    function createParticle() {
+      return {
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        radius: Math.random() * 1.7 + .35,
+        speed: Math.random() * .34 + .08,
+        drift: (Math.random() - .5) * .18,
+        burstX: 0,
+        burstY: 0,
+        alpha: Math.random() * .55 + .16,
+        hue: Math.random() > .5 ? 190 : 260
+      };
+    }
+
+    function draw() {
+      context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      for (const particle of particles) {
+        particle.y -= particle.speed;
+        particle.x += particle.drift + particle.burstX;
+        particle.y += particle.burstY;
+        particle.burstX *= .94;
+        particle.burstY *= .94;
+        if (particle.y < -10) { particle.y = window.innerHeight + 10; particle.x = Math.random() * window.innerWidth; }
+        if (particle.x < -10 || particle.x > window.innerWidth + 10) particle.drift *= -1;
+        const distance = pointer.x === null ? 999 : Math.hypot(particle.x - pointer.x, particle.y - pointer.y);
+        const glow = distance < 120 ? (1 - distance / 120) * .8 : 0;
+        context.beginPath();
+        context.arc(particle.x, particle.y, particle.radius + glow, 0, Math.PI * 2);
+        context.fillStyle = `hsla(${particle.hue}, 90%, 75%, ${particle.alpha + glow})`;
+        context.shadowBlur = glow * 16;
+        context.shadowColor = particle.hue === 190 ? '#57e6ff' : '#a77bff';
+        context.fill();
+      }
+      context.shadowBlur = 0;
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    for (let index = 0; index < particleCount; index += 1) particles.push(createParticle());
+    window.addEventListener('resize', resize);
+    window.addEventListener('pointermove', (event) => { pointer.x = event.clientX; pointer.y = event.clientY; });
+    window.addEventListener('pointerleave', () => { pointer.x = null; pointer.y = null; });
+
+    const discordLink = document.getElementById('discord-link');
+    const discordView = document.getElementById('discord-view');
+    const discordBack = document.getElementById('discord-back');
+    const copyInvite = document.getElementById('copy-invite');
+    const discordInvite = 'https://discord.gg/ehVMQtUacr';
+    const phoneWrap = document.querySelector('.phone-wrap');
+    const phone = phoneWrap.querySelector('.phone');
+    const scene = document.querySelector('.scene');
+    document.querySelectorAll('.section-title, .link-button').forEach((element, index) => {
+      element.style.setProperty('--link-delay', `${index * 150}ms`);
+    });
+    const tilt = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
+
+    function triggerPhonePulse() {
+      phone.classList.remove('phone-pulse');
+      void phone.offsetWidth;
+      phone.classList.add('phone-pulse');
+      window.setTimeout(() => phone.classList.remove('phone-pulse'), 600);
+    }
+
+    phoneWrap.addEventListener('click', () => {
+      triggerPhonePulse();
+    });
+
+    scene.addEventListener('click', (event) => {
+      if (event.target.closest('.phone-wrap')) return;
+      for (const particle of particles) {
+        const offsetX = particle.x - event.clientX;
+        const offsetY = particle.y - event.clientY;
+        const distance = Math.hypot(offsetX, offsetY);
+        if (distance > 220 || distance < 1) continue;
+        const strength = (1 - distance / 220) * .9;
+        particle.burstX += (offsetX / distance) * strength;
+        particle.burstY += (offsetY / distance) * strength;
+      }
+      const ripple = document.createElement('span');
+      ripple.className = 'click-ripple';
+      ripple.style.left = `${event.clientX}px`;
+      ripple.style.top = `${event.clientY}px`;
+      scene.appendChild(ripple);
+      ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+    });
+
+    function updatePhoneTilt() {
+      tilt.currentX += (tilt.targetX - tilt.currentX) * .08;
+      tilt.currentY += (tilt.targetY - tilt.currentY) * .08;
+      phone.style.setProperty('--tilt-x', `${tilt.currentX.toFixed(2)}deg`);
+      phone.style.setProperty('--tilt-y', `${tilt.currentY.toFixed(2)}deg`);
+      requestAnimationFrame(updatePhoneTilt);
+    }
+
+    window.addEventListener('pointermove', (event) => {
+      if (!window.matchMedia('(hover: hover)').matches || !phoneWrap.matches(':hover')) return;
+      const bounds = phoneWrap.getBoundingClientRect();
+      const normalizedX = (event.clientX - (bounds.left + bounds.width / 2)) / (bounds.width / 2);
+      const normalizedY = (event.clientY - (bounds.top + bounds.height / 2)) / (bounds.height / 2);
+      tilt.targetY = Math.max(-6, Math.min(6, normalizedX * 6));
+      tilt.targetX = Math.max(-5, Math.min(5, normalizedY * -5));
+    });
+
+    phoneWrap.addEventListener('pointerleave', () => {
+      tilt.targetX = 0;
+      tilt.targetY = 0;
+    });
+
+    window.addEventListener('pointerleave', () => {
+      tilt.targetX = 0;
+      tilt.targetY = 0;
+    });
+
+    discordLink.addEventListener('click', () => {
+      discordView.classList.add('is-visible');
+      discordView.setAttribute('aria-hidden', 'false');
+    });
+
+    discordBack.addEventListener('click', () => {
+      discordView.classList.remove('is-visible');
+      discordView.setAttribute('aria-hidden', 'true');
+      copyInvite.textContent = 'Copy Link';
+      copyInvite.classList.remove('is-copied');
+    });
+
+    copyInvite.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(discordInvite);
+        copyInvite.textContent = 'Copied to Clipboard';
+        copyInvite.classList.add('is-copied');
+      } catch (error) {
+        copyInvite.textContent = 'Copy not available';
+      }
+    });
+    updatePhoneTilt();
+    draw();
+  </script>
 </body>
 </html>
