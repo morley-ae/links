@@ -647,12 +647,12 @@ h1 {
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
-    transition: border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+    transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
     text-transform: uppercase;
     white-space: nowrap;
 }
 
-.filter-tab:hover { border-color: var(--text-muted); color: var(--text-main); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.14); position: relative; z-index: 10; }
+.filter-tab:hover { border-color: var(--text-muted); color: var(--text-main); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(6, 182, 212, 0.14); position: relative; z-index: 10; }
 .filter-tab:not(.active) {
     background: var(--card-bg);
     border-color: var(--border-color);
@@ -848,13 +848,14 @@ h1 {
     padding: 14px 18px;
     border-radius: 12px;
     border-bottom: 1px solid rgba(255,255,255,0.02);
-    transition: background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     gap: 15px;
     cursor: pointer;
 }
 
 .audio-row:hover {
     background-color: var(--card-hover);
+    transform: translateX(4px);
     border-color: rgba(139, 92, 246, 0.2);
     box-shadow: 0 12px 28px rgba(0,0,0,0.45), 0 0 18px rgba(6, 182, 212, 0.08);
 }
@@ -873,6 +874,66 @@ h1 {
     transition: transform 0.2s;
 }
 .audio-row:hover .track-cover { transform: scale(1.05); border-color: var(--accent-cyan); }
+
+@keyframes explore-audio-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.explore-popular-audio,
+.explore-inspo-card {
+    animation: explore-audio-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform, opacity;
+}
+
+.explore-popular-audio:nth-child(2) { animation-delay: 0.04s; }
+.explore-popular-audio:nth-child(3) { animation-delay: 0.08s; }
+.explore-popular-audio:nth-child(4) { animation-delay: 0.12s; }
+.explore-popular-audio:nth-child(5) { animation-delay: 0.16s; }
+.explore-popular-audio:nth-child(6) { animation-delay: 0.20s; }
+
+.explore-popular-audio {
+    transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+    border-radius: 10px;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+}
+
+.explore-popular-audio:hover {
+    background-color: rgba(255, 255, 255, 0.035);
+    border-color: rgba(139, 92, 246, 0.25) !important;
+    transform: translateX(4px);
+}
+
+.explore-inspo-card {
+    transition: transform 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.explore-inspo-card:hover {
+    background-color: rgba(28, 28, 38, 0.92) !important;
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 10px 24px rgba(6, 182, 212, 0.12);
+    transform: translateY(-4px);
+}
+
+.explore-audio-action {
+    transition: transform 0.16s ease, background-color 0.16s ease, border-color 0.16s ease;
+}
+
+.explore-audio-action:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-cyan) !important;
+    background-color: rgba(6, 182, 212, 0.14) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .explore-popular-audio,
+    .explore-inspo-card,
+    .explore-audio-action {
+        animation: none;
+        transition: none;
+    }
+}
 
 .track-details .title { font-size: 14px; font-weight: 600; color: var(--text-main); }
 .track-details .meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }

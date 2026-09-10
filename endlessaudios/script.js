@@ -139,6 +139,11 @@ function showToast(message) {
         position: fixed;
         bottom: 90px;
         left: 50%;
+        width: calc(100vw - 32px);
+        max-width: 560px;
+        box-sizing: border-box;
+        pointer-events: none;
+        text-align: center;
         transform: translateX(-50%) translateY(20px);
         background: rgba(18, 18, 24, 0.95);
         backdrop-filter: blur(16px);
@@ -151,6 +156,7 @@ function showToast(message) {
         box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         z-index: 2000;
         opacity: 0;
+        animation: none;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     `;
     document.body.appendChild(toast);
@@ -175,14 +181,16 @@ function showBeatMarkedInfo(event) {
 function shareTrack(event, track) {
     if (event) event.stopPropagation();
     if (!track?.filename) return;
-    const url = `${window.location.origin}${APP_BASE_PATH}/audio/${encodeURIComponent(track.filename)}`;
-    const copyPromise = navigator.clipboard?.writeText(url);
+    const url = new URL(`${APP_BASE_PATH}/`, window.location.origin);
+    url.searchParams.set("audio", track.filename);
+    const shareUrl = url.href;
+    const copyPromise = navigator.clipboard?.writeText(shareUrl);
     if (copyPromise) {
         copyPromise.then(() => showToast("Link copied to clipboard!"))
-            .catch(() => copyShareUrlFallback(url));
+            .catch(() => copyShareUrlFallback(shareUrl));
         return;
     }
-    copyShareUrlFallback(url);
+    copyShareUrlFallback(shareUrl);
 }
 
 function copyShareUrlFallback(url) {
@@ -335,8 +343,22 @@ function setActiveNavLink(pathname) {
 function handleRouting(pathname, pushHistory = true) {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     const cleanPath = pathname.replace(/\/$/, "");
+    const sharedFilename = new URLSearchParams(window.location.search).get("audio");
     
-    if (cleanPath.startsWith(`${APP_BASE_PATH}/audio/`)) {
+    if (sharedFilename && (cleanPath === APP_BASE_PATH || cleanPath === "" || cleanPath === "/")) {
+        const filename = sharedFilename;
+        const track = audioFiles.find(a => a.filename === filename);
+        if (pushHistory) history.pushState({ view: 'detail', filename: filename }, '', `${APP_BASE_PATH}/?audio=${encodeURIComponent(filename)}`);
+        if (track) {
+            renderDetailView(track);
+        } else {
+            setTimeout(() => {
+                const found = audioFiles.find(a => a.filename === filename);
+                if (found) renderDetailView(found);
+                else renderHomeView();
+            }, 500);
+        }
+    } else if (cleanPath.startsWith(`${APP_BASE_PATH}/audio/`)) {
         const filename = decodeURIComponent(cleanPath.split(`${APP_BASE_PATH}/audio/`)[1]);
         const track = audioFiles.find(a => a.filename === filename);
         if (pushHistory) history.pushState({ view: 'detail', filename: filename }, '', pathname);
@@ -1108,17 +1130,17 @@ function renderExploreView() {
         .slice(0, 5);
     const popularMarkup = allTimeList.length
         ? allTimeList.map((track, index) => `
-            <div style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-color);">
+            <div class="explore-popular-audio" style="display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid var(--border-color);">
                 <strong style="width:22px; color:var(--accent-cyan);">${index + 1}</strong>
                 <div style="flex:1; min-width:0;">
                     <div style="font-size:14px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${track.title}</div>
                     <div style="font-size:11px; color:var(--text-muted);">by @${track.uploader}</div>
                 </div>
                 <span style="font-size:12px; color:var(--text-muted); white-space:nowrap;">${Number(track.downloads || 0)} downloads</span>
-                <button title="Play" onclick="playTrack(audioFiles.find(x => x.filename === '${track.filename}'), '${getPreviewAndDownloadUrls(track).fullPreviewUrl}')" style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; padding:0; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.04); color:var(--text-main); cursor:pointer;">
+                <button class="explore-audio-action" title="Play" onclick="playTrack(audioFiles.find(x => x.filename === '${track.filename}'), '${getPreviewAndDownloadUrls(track).fullPreviewUrl}')" style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; padding:0; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.04); color:var(--text-main); cursor:pointer;">
                     <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                 </button>
-                <button title="Download" onclick="downloadTrack(event, '${getPreviewAndDownloadUrls(track).fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; padding:0; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.04); color:var(--text-main); cursor:pointer;">
+                <button class="explore-audio-action" title="Download" onclick="downloadTrack(event, '${getPreviewAndDownloadUrls(track).fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="display:flex; align-items:center; justify-content:center; width:30px; height:30px; padding:0; border:1px solid var(--border-color); border-radius:8px; background:rgba(255,255,255,0.04); color:var(--text-main); cursor:pointer;">
                     <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"/></svg>
                 </button>
             </div>`).join("")
@@ -1164,6 +1186,7 @@ function triggerInspoRandomizer() {
     selected.forEach(track => {
         const { fullPreviewUrl, fullDownloadUrl } = getPreviewAndDownloadUrls(track);
         const card = document.createElement("div");
+        card.className = "explore-inspo-card";
         card.style.cssText = `
             background: rgba(18, 18, 24, 0.8);
             border: 1px solid var(--border-hover);
@@ -1181,8 +1204,8 @@ function triggerInspoRandomizer() {
                 <div style="font-size: 11px; color: var(--text-muted);">by @${track.uploader}</div>
             </div>
             <div style="display: flex; gap: 8px;">
-                <button onclick="playTrack(audioFiles.find(x => x.filename === '${track.filename}'), '${fullPreviewUrl}')" style="flex: 1; background: var(--accent-glow); color: #fff; border: none; padding: 6px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Play</button>
-                <button onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 11px; cursor: pointer;">↓</button>
+                <button class="explore-audio-action" onclick="playTrack(audioFiles.find(x => x.filename === '${track.filename}'), '${fullPreviewUrl}')" style="flex: 1; background: var(--accent-glow); color: #fff; border: none; padding: 6px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer;">Play</button>
+                <button class="explore-audio-action" onclick="downloadTrack(event, '${fullDownloadUrl}', audioFiles.find(x => x.filename === '${track.filename}'))" style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 10px; border-radius: 8px; font-size: 11px; cursor: pointer;">↓</button>
             </div>
         `;
         container.appendChild(card);
