@@ -1254,9 +1254,9 @@ function renderDetailView(track) {
                     <div style="font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 4px;">Explore the full library</div>
                     <div style="font-size: 13px; color: var(--text-muted);">Discover more professional audio assets crafted for editors.</div>
                 </div>
-                <button onclick="showHome()" style="background: linear-gradient(135deg, var(--accent-glow), var(--accent-cyan)); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                <a href="${APP_BASE_PATH}/" onclick="event.preventDefault(); showHome();" style="display: inline-flex; align-items: center; background: linear-gradient(135deg, var(--accent-glow), var(--accent-cyan)); color: #fff; border: none; padding: 12px 24px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
                     Listen to all audios here ↗
-                </button>
+                </a>
             </div>
             
             <div style="margin-top: 25px;">
