@@ -865,9 +865,8 @@ h1 {
 .track-details { min-width: 0; }
 
 .track-details .title {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .track-cover {
