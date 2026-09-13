@@ -561,7 +561,6 @@
       .link-icon { width: 33px; height: 33px; flex-basis: 33px; }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </head>
 <body>
   <main class="scene">
@@ -639,13 +638,21 @@
   </main>
 
   <script>
-    const counter = new Counter({ workspace: 'morleyae' });
+    const counterApiBase = 'https://api.counterapi.dev/v2/morleyae';
+
+    function trackCounter(counterName) {
+      fetch(`${counterApiBase}/${encodeURIComponent(counterName)}/up`, {
+        method: 'GET',
+        keepalive: true,
+        mode: 'cors'
+      }).catch((error) => {
+        console.error('CounterAPI tracking failed:', error);
+      });
+    }
 
     document.querySelectorAll('[data-counter]').forEach((link) => {
       link.addEventListener('click', () => {
-        counter.up(link.dataset.counter).catch((error) => {
-          console.error('CounterAPI tracking failed:', error);
-        });
+        trackCounter(link.dataset.counter);
       });
     });
 

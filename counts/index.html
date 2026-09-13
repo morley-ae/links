@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080a16">
-  <title>Link-Klicks | morley.ae</title>
+  <title>Link clicks | morley.ae</title>
   <style>
     :root {
       --background: #080a16;
@@ -19,6 +19,23 @@
 
     * { box-sizing: border-box; }
 
+    body { overflow-x: hidden; }
+
+    body::before,
+    body::after {
+      position: fixed;
+      width: 220px;
+      height: 220px;
+      border: 1px solid rgba(87, 230, 255, .12);
+      border-radius: 50%;
+      content: "";
+      pointer-events: none;
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+
+    body::before { top: 8%; left: -120px; }
+    body::after { right: -120px; bottom: 8%; animation-delay: -5s; }
+
     body {
       min-height: 100svh;
       margin: 0;
@@ -31,10 +48,50 @@
     }
 
     main {
+      display: none;
       width: min(100% - 32px, 680px);
       margin: 0 auto;
       padding: 54px 0 36px;
+      animation: page-in .8s cubic-bezier(.2,.8,.2,1) both;
     }
+
+    .auth.is-hidden + main { display: block; }
+
+    .auth {
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      padding: 24px;
+      animation: page-in .8s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .auth-card {
+      width: min(100%, 390px);
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(145deg, var(--surface-bright), var(--surface));
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .35);
+    }
+
+    .auth-title { margin: 10px 0 8px; font: 400 32px/1.05 Georgia, "Times New Roman", serif; }
+    .auth-copy { margin: 0 0 22px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .auth-form { display: grid; gap: 10px; }
+    .auth-input {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 13px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      background: rgba(0, 0, 0, .2);
+      font: inherit;
+    }
+    .auth-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(87, 230, 255, .12); }
+    .auth-submit { min-height: 44px; border: 0; border-radius: 10px; color: #07111d; background: var(--cyan); font-weight: 800; cursor: pointer; }
+    .auth-error { min-height: 18px; color: #ff8fba; font-size: 12px; }
+    .is-hidden { display: none; }
 
     header { margin-bottom: 28px; }
 
@@ -110,7 +167,14 @@
       border-radius: 14px;
       background: linear-gradient(135deg, var(--surface-bright), var(--surface));
       box-shadow: 0 10px 28px rgba(0, 0, 0, .2);
+      animation: card-in .65s both;
     }
+
+    .count-card:nth-child(2) { animation-delay: 80ms; }
+    .count-card:nth-child(3) { animation-delay: 160ms; }
+    .count-card:nth-child(4) { animation-delay: 240ms; }
+    .count-card:nth-child(5) { animation-delay: 320ms; }
+    .count-card:nth-child(6) { animation-delay: 400ms; }
 
     .count-card.is-loading { opacity: .65; }
 
@@ -137,10 +201,18 @@
 
     .count-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
     .count-platform { margin-top: 3px; color: var(--muted); font-size: 12px; }
-    .count-value { color: var(--cyan); font-size: 27px; font-weight: 700; }
+    .count-value { color: var(--cyan); font-size: 27px; font-weight: 700; transition: transform .3s ease, color .3s ease; }
+    .count-value.is-updated { animation: value-pop .45s ease both; }
     .count-error { color: #ff8fba; font-size: 12px; }
 
     footer { margin-top: 24px; color: var(--muted); font-size: 12px; }
+
+    @keyframes page-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes value-pop { 50% { color: #fff; transform: scale(1.12); } }
+    @keyframes drift { to { transform: translate(28px, -18px) rotate(18deg); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .refresh:not(:disabled) .refresh-icon { animation: spin 8s linear infinite; }
 
     @media (max-width: 420px) {
       main { width: min(100% - 24px, 680px); padding-top: 34px; }
@@ -150,26 +222,64 @@
   </style>
 </head>
 <body>
+  <section class="auth" id="auth" aria-labelledby="auth-title">
+    <div class="auth-card">
+      <div class="eyebrow">morley.ae / private</div>
+      <h1 class="auth-title" id="auth-title">Link clicks</h1>
+      <p class="auth-copy">Enter the private password to view the current button statistics.</p>
+      <form class="auth-form" id="auth-form">
+        <input class="auth-input" id="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+        <button class="auth-submit" type="submit">Unlock dashboard</button>
+        <div class="auth-error" id="auth-error" role="alert"></div>
+      </form>
+    </div>
+  </section>
   <main>
     <header>
       <div class="eyebrow">morley.ae</div>
-      <h1>Link-Klicks</h1>
-      <p class="intro">Aktuelle Zahlen für alle Buttons.</p>
+      <h1>Link clicks</h1>
+      <p class="intro">Current numbers for every button.</p>
     </header>
 
     <div class="toolbar">
-      <div class="updated" id="updated">Wird geladen ...</div>
-      <button class="refresh" id="refresh" type="button" aria-label="Zahlen aktualisieren">
+      <div class="updated" id="updated">Loading ...</div>
+      <button class="refresh" id="refresh" type="button" aria-label="Refresh numbers">
         <svg class="refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0-14.8-3L3 11m0 0V5m0 6h6M4 13a8.1 8.1 0 0 0 14.8 3L21 13m0 0v6m0-6h-6"/></svg>
-        Aktualisieren
+        Refresh
       </button>
     </div>
 
     <section class="counts" id="counts" aria-live="polite"></section>
-    <footer>Die Zahlen werden direkt von CounterAPI geladen.</footer>
+    <footer>Numbers are loaded directly from CounterAPI.</footer>
   </main>
 
   <script>
+    const passwordHash = '02e486a47fb65a8afb4975dd441453ba656658715d2e7289e1ef3c1f52cea8e4';
+    const auth = document.getElementById('auth');
+    const authForm = document.getElementById('auth-form');
+    const passwordInput = document.getElementById('password');
+    const authError = document.getElementById('auth-error');
+
+    async function hashPassword(password) {
+      const data = new TextEncoder().encode(password);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash), (byte) => byte.toString(16).padStart(2, '0')).join('');
+    }
+
+    authForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      authError.textContent = '';
+      const isValid = (await hashPassword(passwordInput.value)) === passwordHash;
+      if (!isValid) {
+        authError.textContent = 'Incorrect password.';
+        passwordInput.value = '';
+        passwordInput.focus();
+        return;
+      }
+      auth.classList.add('is-hidden');
+      loadCounts();
+    });
+
     const apiBase = 'https://api.counterapi.dev/v2/morleyae';
     const counters = [
       { name: 'payhip', label: 'Editing Presets', platform: 'Payhip', icon: 'P' },
@@ -201,7 +311,7 @@
 
     async function loadCounts() {
       refreshButton.disabled = true;
-      updatedElement.textContent = 'Wird aktualisiert ...';
+      updatedElement.textContent = 'Refreshing ...';
 
       await Promise.all(counters.map(async (counter) => {
         const card = document.querySelector(`[data-name="${counter.name}"]`);
@@ -210,21 +320,23 @@
           const response = await fetch(`${apiBase}/${encodeURIComponent(counter.name)}`);
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const result = await response.json();
-          value.textContent = Number(result.data.up_count || 0).toLocaleString('de-DE');
+          value.textContent = Number(result.data.up_count || 0).toLocaleString('en-US');
+          value.classList.remove('is-updated');
+          void value.offsetWidth;
+          value.classList.add('is-updated');
         } catch (error) {
-          value.innerHTML = '<span class="count-error">Fehler</span>';
-          console.error(`Counter ${counter.name} konnte nicht geladen werden:`, error);
+          value.innerHTML = '<span class="count-error">Error</span>';
+          console.error(`Could not load counter ${counter.name}:`, error);
         } finally {
           card.classList.remove('is-loading');
         }
       }));
 
-      updatedElement.textContent = `Zuletzt aktualisiert: ${new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' }).format(new Date())}`;
+      updatedElement.textContent = `Last updated: ${new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit' }).format(new Date())}`;
       refreshButton.disabled = false;
     }
 
     renderCards();
-    loadCounts();
     refreshButton.addEventListener('click', loadCounts);
     window.setInterval(loadCounts, 30000);
   </script>
