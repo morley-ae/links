@@ -34,6 +34,8 @@
       const profileName = page.querySelector('.profile-name');
       const discordSection = page.querySelector('#discord-link')?.closest('.link-section');
       const screenContent = page.querySelector('.screen-content');
+      const pageSwitch = page.querySelector('.page-switch');
+      const pageSwitchImage = pageSwitch?.querySelector('img');
 
       if (profileImage) {
         profileImage.src = 'assets/logo.png';
@@ -41,6 +43,16 @@
       }
 
       if (profileName) profileName.textContent = 'EndlessAudios™';
+
+      if (pageSwitch) {
+        pageSwitch.href = '/';
+        pageSwitch.setAttribute('aria-label', 'Morley AE öffnen');
+      }
+
+      if (pageSwitchImage) {
+        pageSwitchImage.src = 'assets/pfp.png';
+        pageSwitchImage.alt = 'Morley AE';
+      }
 
       if (discordSection && screenContent) {
         const profileHeader = screenContent.querySelector('.profile-header');
