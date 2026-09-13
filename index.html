@@ -415,31 +415,40 @@
     .link-button:focus-visible, .copy-invite:focus-visible, .discord-back:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
 
     .page-switch {
-      display: grid;
-      width: 42px;
-      height: 42px;
-      margin-top: 18px;
-      place-items: center;
-      border: 1px solid rgba(255,255,255,.28);
-      border-radius: 50%;
-      background: rgba(255,255,255,.1);
-      box-shadow: 0 6px 18px rgba(0,0,0,.25), 0 0 12px rgba(87,230,255,.12);
-      opacity: .82;
-      transition: transform .25s ease, opacity .25s ease, box-shadow .25s ease;
+      position: relative;
+      display: inline-block;
+      margin-top: 14px;
+      color: rgba(255,255,255,.76);
+      font: 600 12px/1 "Avenir Next", Avenir, sans-serif;
+      letter-spacing: .04em;
+      text-decoration: none;
+      opacity: 0;
+      animation: link-button-in .85s var(--link-delay, 0s) cubic-bezier(.22,.7,.2,1) forwards;
+      transition: color .2s ease;
     }
 
-    .page-switch img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
+    .page-switch::after {
+      position: absolute;
+      right: 0;
+      bottom: -3px;
+      left: 0;
+      height: 1px;
+      content: "";
+      background: currentColor;
+      opacity: 0;
+      transform: scaleX(.35);
+      transition: opacity .2s ease, transform .2s ease;
     }
 
     .page-switch:hover,
     .page-switch:focus-visible {
-      opacity: 1;
-      transform: translateY(-3px) scale(1.1);
-      box-shadow: 0 10px 24px rgba(0,0,0,.35), 0 0 22px rgba(87,230,255,.42);
+      color: #fff;
+    }
+
+    .page-switch:hover::after,
+    .page-switch:focus-visible::after {
+      opacity: .9;
+      transform: scaleX(1);
     }
 
     .page-switch:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
@@ -652,9 +661,6 @@
               </div>
             </section>
 
-            <a class="page-switch" href="/endlessaudios/" target="_top" aria-label="EndlessAudios öffnen">
-              <img src="assets/logo.png" alt="EndlessAudios Logo">
-            </a>
           </div>
           <section class="discord-view" id="discord-view" aria-hidden="true">
             <button class="discord-back" type="button" id="discord-back" aria-label="Zurück">‹</button>
