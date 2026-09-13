@@ -641,7 +641,8 @@
     const counterApiBase = 'https://api.counterapi.dev/v2/morleyae';
 
     function trackCounter(counterName) {
-      fetch(`${counterApiBase}/${encodeURIComponent(counterName)}/up`, {
+      const cacheBuster = `?t=${Date.now()}`;
+      fetch(`${counterApiBase}/${encodeURIComponent(counterName)}/up${cacheBuster}`, {
         method: 'GET',
         keepalive: true,
         mode: 'cors'

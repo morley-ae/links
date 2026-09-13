@@ -317,7 +317,7 @@
         const card = document.querySelector(`[data-name="${counter.name}"]`);
         const value = card.querySelector('.count-value');
         try {
-          const response = await fetch(`${apiBase}/${encodeURIComponent(counter.name)}`);
+          const response = await fetch(`${apiBase}/${encodeURIComponent(counter.name)}?t=${Date.now()}`);
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const result = await response.json();
           value.textContent = Number(result.data.up_count || 0).toLocaleString('en-US');
