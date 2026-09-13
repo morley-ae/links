@@ -58,7 +58,7 @@
         screenContent.insertBefore(discordSection, profileHeader?.nextSibling || screenContent.firstChild);
       }
 
-      const animatedElements = page.querySelectorAll('.section-title, .link-button, .payhip-ad');
+      const animatedElements = page.querySelectorAll('.section-title, .link-button');
       animatedElements.forEach((element, index) => {
         element.style.setProperty('--link-delay', `${index * 150}ms`);
         element.style.animation = 'none';
