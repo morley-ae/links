@@ -57,6 +57,18 @@
         const profileHeader = screenContent.querySelector('.profile-header');
         screenContent.insertBefore(discordSection, profileHeader?.nextSibling || screenContent.firstChild);
       }
+
+      const animatedElements = page.querySelectorAll('.section-title, .link-button, .payhip-ad');
+      animatedElements.forEach((element, index) => {
+        element.style.setProperty('--link-delay', `${index * 150}ms`);
+        element.style.animation = 'none';
+      });
+
+      void page.body.offsetWidth;
+
+      animatedElements.forEach((element) => {
+        element.style.animation = '';
+      });
     });
   </script>
 </body>

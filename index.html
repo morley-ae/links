@@ -414,6 +414,36 @@
     .link-button:active { transform: translateY(1px) scale(.97); background: rgba(255,255,255,.2); box-shadow: inset 0 2px 4px rgba(0,0,0,.18), 0 3px 8px rgba(0,0,0,.2); }
     .link-button:focus-visible, .copy-invite:focus-visible, .discord-back:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
 
+    .payhip-ad {
+      display: block;
+      width: 100%;
+      margin-top: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 13px;
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 7px 18px rgba(0,0,0,.22);
+      opacity: 0;
+      animation: link-button-in .85s 300ms cubic-bezier(.22,.7,.2,1) forwards;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .payhip-ad video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      object-fit: cover;
+    }
+
+    .payhip-ad:hover,
+    .payhip-ad:focus-visible {
+      border-color: rgba(255,255,255,.46);
+      box-shadow: 0 10px 24px rgba(0,0,0,.34), 0 0 16px rgba(87,230,255,.18);
+      transform: translateY(-2px);
+    }
+
+    .payhip-ad:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
+
     .page-switch {
       position: relative;
       display: inline-block;
@@ -631,6 +661,10 @@
               </div>
             </section>
 
+            <a class="payhip-ad" href="https://payhip.com/morleyae" data-counter="payhip-ad" target="_blank" rel="noopener noreferrer" aria-label="Payhip öffnen">
+              <video src="assets/payhip ad 3.mp4" autoplay muted loop playsinline preload="metadata"></video>
+            </a>
+
             <section class="link-section">
               <h3 class="section-title">EndlessAudios™</h3>
               <div class="link-list">
@@ -766,7 +800,7 @@
     document.querySelectorAll('.section-title, .link-button').forEach((element, index) => {
       element.style.setProperty('--link-delay', `${index * 150}ms`);
     });
-    const tilt = { targetX: 0, targetY: 0, currentX: 0, currentY: 0 };
+    const tilt = { targetX: 0, targetY: 0, currentX: 0, currentY: 0, returning: false };
 
     function triggerPhonePulse() {
       phone.classList.remove('phone-pulse');
@@ -799,8 +833,9 @@
     });
 
     function updatePhoneTilt() {
-      tilt.currentX += (tilt.targetX - tilt.currentX) * .08;
-      tilt.currentY += (tilt.targetY - tilt.currentY) * .08;
+      const tiltEase = tilt.returning ? .025 : .08;
+      tilt.currentX += (tilt.targetX - tilt.currentX) * tiltEase;
+      tilt.currentY += (tilt.targetY - tilt.currentY) * tiltEase;
       phone.style.setProperty('--tilt-x', `${tilt.currentX.toFixed(2)}deg`);
       phone.style.setProperty('--tilt-y', `${tilt.currentY.toFixed(2)}deg`);
       requestAnimationFrame(updatePhoneTilt);
@@ -808,19 +843,22 @@
 
     window.addEventListener('pointermove', (event) => {
       if (!window.matchMedia('(hover: hover)').matches || !phoneWrap.matches(':hover')) return;
+      tilt.returning = false;
       const bounds = phoneWrap.getBoundingClientRect();
       const normalizedX = (event.clientX - (bounds.left + bounds.width / 2)) / (bounds.width / 2);
       const normalizedY = (event.clientY - (bounds.top + bounds.height / 2)) / (bounds.height / 2);
-      tilt.targetY = Math.max(-6, Math.min(6, normalizedX * 6));
-      tilt.targetX = Math.max(-5, Math.min(5, normalizedY * -5));
+      tilt.targetY = Math.max(-8, Math.min(8, normalizedX * 8));
+      tilt.targetX = Math.max(-4, Math.min(4, normalizedY * -4));
     });
 
     phoneWrap.addEventListener('pointerleave', () => {
+      tilt.returning = true;
       tilt.targetX = 0;
       tilt.targetY = 0;
     });
 
     window.addEventListener('pointerleave', () => {
+      tilt.returning = true;
       tilt.targetX = 0;
       tilt.targetY = 0;
     });
