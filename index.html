@@ -769,8 +769,8 @@
         particle.y -= particle.speed;
         particle.x += particle.drift + particle.burstX;
         particle.y += particle.burstY;
-        particle.burstX *= .94;
-        particle.burstY *= .94;
+        particle.burstX *= .95;
+        particle.burstY *= .95;
         if (particle.y < -10) { particle.y = window.innerHeight + 10; particle.x = Math.random() * window.innerWidth; }
         if (particle.x < -10 || particle.x > window.innerWidth + 10) particle.drift *= -1;
         const distance = pointer.x === null ? 999 : Math.hypot(particle.x - pointer.x, particle.y - pointer.y);
