@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080a16">
+  <title>Link-Klicks | morley.ae</title>
+  <style>
+    :root {
+      --background: #080a16;
+      --surface: rgba(20, 25, 48, .82);
+      --surface-bright: rgba(38, 46, 79, .72);
+      --text: #f5f7ff;
+      --muted: #9da5c4;
+      --cyan: #57e6ff;
+      --violet: #a77bff;
+      --line: rgba(255, 255, 255, .14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100svh;
+      margin: 0;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 15% 0%, rgba(32, 160, 209, .18), transparent 32%),
+        radial-gradient(circle at 90% 100%, rgba(119, 55, 199, .2), transparent 36%),
+        var(--background);
+      font-family: "Avenir Next", Avenir, "Helvetica Neue", sans-serif;
+    }
+
+    main {
+      width: min(100% - 32px, 680px);
+      margin: 0 auto;
+      padding: 54px 0 36px;
+    }
+
+    header { margin-bottom: 28px; }
+
+    .eyebrow {
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 10px 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 8vw, 48px);
+      font-weight: 400;
+      letter-spacing: -.04em;
+    }
+
+    .intro {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .updated { color: var(--muted); font-size: 12px; }
+
+    .refresh {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 38px;
+      padding: 8px 13px;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .08);
+      font: 700 12px "Avenir Next", Avenir, sans-serif;
+      cursor: pointer;
+    }
+
+    .refresh:hover { background: var(--surface-bright); }
+    .refresh:disabled { cursor: wait; opacity: .65; }
+
+    .refresh-icon {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2;
+    }
+
+    .counts { display: grid; gap: 10px; }
+
+    .count-card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 18px;
+      min-height: 78px;
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--surface-bright), var(--surface));
+      box-shadow: 0 10px 28px rgba(0, 0, 0, .2);
+    }
+
+    .count-card.is-loading { opacity: .65; }
+
+    .count-label {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .count-icon {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 36px;
+      place-items: center;
+      color: var(--cyan);
+      border: 1px solid rgba(87, 230, 255, .28);
+      border-radius: 10px;
+      background: rgba(87, 230, 255, .09);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .count-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+    .count-platform { margin-top: 3px; color: var(--muted); font-size: 12px; }
+    .count-value { color: var(--cyan); font-size: 27px; font-weight: 700; }
+    .count-error { color: #ff8fba; font-size: 12px; }
+
+    footer { margin-top: 24px; color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 420px) {
+      main { width: min(100% - 24px, 680px); padding-top: 34px; }
+      .count-card { padding-inline: 14px; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div class="eyebrow">morley.ae</div>
+      <h1>Link-Klicks</h1>
+      <p class="intro">Aktuelle Zahlen für alle Buttons.</p>
+    </header>
+
+    <div class="toolbar">
+      <div class="updated" id="updated">Wird geladen ...</div>
+      <button class="refresh" id="refresh" type="button" aria-label="Zahlen aktualisieren">
+        <svg class="refresh-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8.1 8.1 0 0 0-14.8-3L3 11m0 0V5m0 6h6M4 13a8.1 8.1 0 0 0 14.8 3L21 13m0 0v6m0-6h-6"/></svg>
+        Aktualisieren
+      </button>
+    </div>
+
+    <section class="counts" id="counts" aria-live="polite"></section>
+    <footer>Die Zahlen werden direkt von CounterAPI geladen.</footer>
+  </main>
+
+  <script>
+    const apiBase = 'https://api.counterapi.dev/v2/morleyae';
+    const counters = [
+      { name: 'payhip', label: 'Editing Presets', platform: 'Payhip', icon: 'P' },
+      { name: 'scenepacks', label: 'Scenepacks', platform: 'Payhip', icon: 'P' },
+      { name: 'dc-server', label: 'Discord Server', platform: 'EndlessAudios', icon: 'D' },
+      { name: 'morleyae-tt', label: 'morley.ae', platform: 'TikTok', icon: 'T' },
+      { name: 'endlessaudios-tt', label: 'EndlessAudios', platform: 'TikTok', icon: 'T' },
+      { name: 'instagram-morleyae', label: 'morley.ae', platform: 'Instagram', icon: 'I' }
+    ];
+
+    const countsElement = document.getElementById('counts');
+    const updatedElement = document.getElementById('updated');
+    const refreshButton = document.getElementById('refresh');
+
+    function renderCards() {
+      countsElement.innerHTML = counters.map((counter) => `
+        <article class="count-card is-loading" data-name="${counter.name}">
+          <div class="count-label">
+            <span class="count-icon" aria-hidden="true">${counter.icon}</span>
+            <div>
+              <div class="count-name">${counter.label}</div>
+              <div class="count-platform">${counter.platform}</div>
+            </div>
+          </div>
+          <div class="count-value">...</div>
+        </article>
+      `).join('');
+    }
+
+    async function loadCounts() {
+      refreshButton.disabled = true;
+      updatedElement.textContent = 'Wird aktualisiert ...';
+
+      await Promise.all(counters.map(async (counter) => {
+        const card = document.querySelector(`[data-name="${counter.name}"]`);
+        const value = card.querySelector('.count-value');
+        try {
+          const response = await fetch(`${apiBase}/${encodeURIComponent(counter.name)}`);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const result = await response.json();
+          value.textContent = Number(result.data.up_count || 0).toLocaleString('de-DE');
+        } catch (error) {
+          value.innerHTML = '<span class="count-error">Fehler</span>';
+          console.error(`Counter ${counter.name} konnte nicht geladen werden:`, error);
+        } finally {
+          card.classList.remove('is-loading');
+        }
+      }));
+
+      updatedElement.textContent = `Zuletzt aktualisiert: ${new Intl.DateTimeFormat('de-DE', { hour: '2-digit', minute: '2-digit' }).format(new Date())}`;
+      refreshButton.disabled = false;
+    }
+
+    renderCards();
+    loadCounts();
+    refreshButton.addEventListener('click', loadCounts);
+    window.setInterval(loadCounts, 30000);
+  </script>
+</body>
+</html>
