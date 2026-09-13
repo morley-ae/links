@@ -561,6 +561,7 @@
       .link-icon { width: 33px; height: 33px; flex-basis: 33px; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </head>
 <body>
   <main class="scene">
@@ -583,10 +584,10 @@
             <section class="link-section">
               <h3 class="section-title">Payhip</h3>
               <div class="link-list">
-                <a class="link-button" href="https://payhip.com/morleyae" target="_blank" rel="noopener noreferrer">
+                <a class="link-button" href="https://payhip.com/morleyae" data-counter="payhip" target="_blank" rel="noopener noreferrer">
                   <span class="link-icon"><img src="assets/payhip_logo.webp" alt=""></span><span>Get my editing presets</span><span class="link-more">⋮</span>
                 </a>
-                <a class="link-button" href="https://payhip.com/morleyaescenepacks" target="_blank" rel="noopener noreferrer">
+                <a class="link-button" href="https://payhip.com/morleyaescenepacks" data-counter="scenepacks" target="_blank" rel="noopener noreferrer">
                   <span class="link-icon"><img src="assets/payhip_logo.webp" alt=""></span><span>Download my scenepacks</span><span class="link-more">⋮</span>
                 </a>
               </div>
@@ -595,7 +596,7 @@
             <section class="link-section">
               <h3 class="section-title">EndlessAudios™</h3>
               <div class="link-list">
-                <button class="link-button" type="button" id="discord-link">
+                <button class="link-button" type="button" id="discord-link" data-counter="dc-server">
                   <span class="link-icon"><img src="assets/logo.png" alt=""></span><span>Discord Server</span><span class="link-more">⋮</span>
                 </button>
               </div>
@@ -604,10 +605,10 @@
             <section class="link-section">
               <h3 class="section-title">TikTok</h3>
               <div class="link-list">
-                <a class="link-button" href="https://tiktok.com/@morley.ae" target="_blank" rel="noopener noreferrer">
+                <a class="link-button" href="https://tiktok.com/@morley.ae" data-counter="morleyae-tt" target="_blank" rel="noopener noreferrer">
                   <span class="link-icon"><img src="assets/tiktok_logo.avif" alt=""></span><span>morley.ae</span><span class="link-more">⋮</span>
                 </a>
-                <a class="link-button" href="https://tiktok.com/@endlessaudioss" target="_blank" rel="noopener noreferrer">
+                <a class="link-button" href="https://tiktok.com/@endlessaudioss" data-counter="endlessaudios-tt" target="_blank" rel="noopener noreferrer">
                   <span class="link-icon"><img src="assets/tiktok_logo.avif" alt=""></span><span>EndlessAudios™</span><span class="link-more">⋮</span>
                 </a>
               </div>
@@ -616,7 +617,7 @@
             <section class="link-section">
               <h3 class="section-title">Instagram</h3>
               <div class="link-list">
-                <a class="link-button" href="https://instagram.com/morley.ae" target="_blank" rel="noopener noreferrer">
+                <a class="link-button" href="https://instagram.com/morley.ae" data-counter="instagram-morleyae" target="_blank" rel="noopener noreferrer">
                   <span class="link-icon"><img src="assets/instagram_logo.webp" alt=""></span><span>morley.ae</span><span class="link-more">⋮</span>
                 </a>
               </div>
@@ -638,6 +639,16 @@
   </main>
 
   <script>
+    const counter = new Counter({ workspace: 'morleyae' });
+
+    document.querySelectorAll('[data-counter]').forEach((link) => {
+      link.addEventListener('click', () => {
+        counter.up(link.dataset.counter).catch((error) => {
+          console.error('CounterAPI tracking failed:', error);
+        });
+      });
+    });
+
     const canvas = document.getElementById('particles');
     const context = canvas.getContext('2d');
     const particles = [];
