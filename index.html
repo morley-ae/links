@@ -415,35 +415,64 @@
     .link-button:focus-visible, .copy-invite:focus-visible, .discord-back:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
 
     .payhip-ad {
+      position: relative;
       display: block;
       width: 100%;
-      margin-top: 12px;
+      margin-bottom: 6px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 13px;
-      background: rgba(255,255,255,.06);
-      box-shadow: 0 7px 18px rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 12px;
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 7px 18px rgba(0,0,0,.25);
+      cursor: pointer;
       opacity: 0;
-      animation: link-button-in .85s 300ms cubic-bezier(.22,.7,.2,1) forwards;
+      animation: link-button-in .85s var(--link-delay, 0s) cubic-bezier(.22,.7,.2,1) forwards;
       transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-    }
-
-    .payhip-ad video {
-      display: block;
-      width: auto;
-      height: auto;
-      max-width: 100%;
-      margin: 0 auto;
     }
 
     .payhip-ad:hover,
     .payhip-ad:focus-visible {
-      border-color: rgba(255,255,255,.46);
-      box-shadow: 0 10px 24px rgba(0,0,0,.34), 0 0 16px rgba(87,230,255,.18);
+      border-color: rgba(255,255,255,.52);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35), 0 0 18px rgba(87,230,255,.22);
       transform: translateY(-2px);
     }
 
     .payhip-ad:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 3px; }
+
+    .payhip-ad video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .payhip-ad-unmute {
+      position: absolute;
+      right: 8px;
+      bottom: 8px;
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      color: rgba(255,255,255,.9);
+      border: 1px solid rgba(255,255,255,.3);
+      border-radius: 50%;
+      background: rgba(8,10,22,.62);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      cursor: pointer;
+      font: 700 12px/1 "Avenir Next", Avenir, sans-serif;
+      transition: background .2s ease, transform .2s ease;
+    }
+
+    .payhip-ad-unmute:hover,
+    .payhip-ad-unmute:focus-visible {
+      background: rgba(8,10,22,.86);
+      transform: scale(1.08);
+    }
+
+    .payhip-ad-unmute:focus-visible { outline: 2px solid rgba(130,235,255,.9); outline-offset: 2px; }
 
     .page-switch {
       position: relative;
@@ -652,6 +681,12 @@
 
             <section class="link-section">
               <h3 class="section-title">Payhip</h3>
+              <div class="payhip-ad" id="payhipAd" role="link" tabindex="0" aria-label="Payhip öffnen">
+                <video id="payhipAdVideo" autoplay muted loop playsinline preload="auto">
+                  <source src="assets/payhip%20ad%203.mp4" type="video/mp4">
+                </video>
+                <button class="payhip-ad-unmute" id="payhipAdUnmute" type="button" aria-label="Ton einschalten" aria-pressed="false">♪</button>
+              </div>
               <div class="link-list">
                 <a class="link-button" href="https://payhip.com/morleyae" data-counter="payhip" target="_blank" rel="noopener noreferrer">
                   <span class="link-icon"><img src="assets/payhip_logo.webp" alt=""></span><span>Get my editing presets</span><span class="link-more">⋮</span>
@@ -661,10 +696,6 @@
                 </a>
               </div>
             </section>
-
-            <a class="payhip-ad" href="https://payhip.com/morleyae" data-counter="payhip-ad" target="_blank" rel="noopener noreferrer" aria-label="Payhip öffnen">
-              <video width="1400" height="1080" src="assets/payhip ad 3.mp4" autoplay muted loop playsinline preload="metadata"></video>
-            </a>
 
             <section class="link-section">
               <h3 class="section-title">EndlessAudios™</h3>
@@ -767,8 +798,8 @@
         particle.y -= particle.speed;
         particle.x += particle.drift + particle.burstX;
         particle.y += particle.burstY;
-        particle.burstX *= .95;
-        particle.burstY *= .95;
+        particle.burstX *= .94;
+        particle.burstY *= .94;
         if (particle.y < -10) { particle.y = window.innerHeight + 10; particle.x = Math.random() * window.innerWidth; }
         if (particle.x < -10 || particle.x > window.innerWidth + 10) particle.drift *= -1;
         const distance = pointer.x === null ? 999 : Math.hypot(particle.x - pointer.x, particle.y - pointer.y);
@@ -795,10 +826,14 @@
     const discordBack = document.getElementById('discord-back');
     const copyInvite = document.getElementById('copy-invite');
     const discordInvite = 'https://discord.gg/ehVMQtUacr';
+    const payhipAd = document.getElementById('payhipAd');
+    const payhipAdVideo = document.getElementById('payhipAdVideo');
+    const payhipAdUnmute = document.getElementById('payhipAdUnmute');
+    const payhipUrl = 'https://payhip.com/morleyae';
     const phoneWrap = document.querySelector('.phone-wrap');
     const phone = phoneWrap.querySelector('.phone');
     const scene = document.querySelector('.scene');
-    document.querySelectorAll('.section-title, .link-button').forEach((element, index) => {
+    document.querySelectorAll('.section-title, .link-button, .payhip-ad').forEach((element, index) => {
       element.style.setProperty('--link-delay', `${index * 150}ms`);
     });
     const tilt = { targetX: 0, targetY: 0, currentX: 0, currentY: 0, returning: false };
@@ -862,6 +897,30 @@
       tilt.returning = true;
       tilt.targetX = 0;
       tilt.targetY = 0;
+    });
+
+    function openPayhipAd() {
+      trackCounter('payhip-ad');
+      window.open(payhipUrl, '_blank', 'noopener,noreferrer');
+    }
+
+    payhipAd.addEventListener('click', (event) => {
+      if (event.target === payhipAdUnmute) return;
+      openPayhipAd();
+    });
+
+    payhipAd.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      openPayhipAd();
+    });
+
+    payhipAdUnmute.addEventListener('click', (event) => {
+      event.stopPropagation();
+      payhipAdVideo.muted = !payhipAdVideo.muted;
+      payhipAdUnmute.textContent = payhipAdVideo.muted ? '♪' : '🔊';
+      payhipAdUnmute.setAttribute('aria-label', payhipAdVideo.muted ? 'Ton einschalten' : 'Ton ausschalten');
+      payhipAdUnmute.setAttribute('aria-pressed', String(!payhipAdVideo.muted));
     });
 
     discordLink.addEventListener('click', () => {
